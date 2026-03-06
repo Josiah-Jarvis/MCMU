@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.2] - 2026-03-06
+
+### Added
+
+* Now can download and install mods
+* Can delete mods
+
+### Fixed
+
+* Script executing twice
+
 ## [0.1.1] - 2026-03-06
 
 ### Added
@@ -14,3 +25,4 @@
 
 [0.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.0
 [0.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.1
+[0.1.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.2

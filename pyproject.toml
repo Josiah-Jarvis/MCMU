@@ -3,8 +3,8 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
+dynamic = ["version"]
 name = "MCModUpdater"
-version = "0.1.1"
 requires-python = ">=3.11"
 authors = [
     {name="Josiah Jarvis"}
@@ -26,3 +26,7 @@ Documentation = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/READM
 Repository = "https://github.com/Josiah-Jarvis/MCModUpdater/"
 Issues = "https://github.com/Josiah-Jarvis/MCModUpdater/issues"
 Changelog = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/CHANGELOG.md"
+
+[tool.hatch.version]
+source = "regex"
+path = "src/MCModUpdater/__main__.py"
