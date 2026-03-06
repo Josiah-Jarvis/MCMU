@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "MCModUpdater"
-version = "0.1.0"
+version = "0.1.1"
 requires-python = ">=3.11"
 authors = [
     {name="Josiah Jarvis"}
@@ -17,8 +17,12 @@ readme = "README.md"
 license = "MIT"
 keywords = ["Minecraft", "Mods"]
 
-
 [project.scripts]
-mcmodupdater = "__main__:main"
+mcmodupdater = "MCModUpdater:__main__.main()"
 
 [project.urls]
+Homepage = "https://github.com/Josiah-Jarvis/MCModUpdater"
+Documentation = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/README.md"
+Repository = "https://github.com/Josiah-Jarvis/MCModUpdater/"
+Issues = "https://github.com/Josiah-Jarvis/MCModUpdater/issues"
+Changelog = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/CHANGELOG.md"

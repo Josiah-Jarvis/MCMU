@@ -1,5 +1,16 @@
 # Changelog
 
-## 0.1.0 - 2026-03-04
+## [0.1.1] - 2026-03-06
 
-- Initial Release
+### Added
+
+* Check Modrinth for mod versions
+* Get list of mods from config file
+* Add mods to config file
+
+## [0.1.0] - 2026-03-03
+
+* Initial Release
+
+[0.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.0
+[0.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.1
