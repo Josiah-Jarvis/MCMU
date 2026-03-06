@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.3] - 2026-03-06
+
+### Added
+
+* Checks for mod updates
+
 ## [0.1.2] - 2026-03-06
 
 ### Added
@@ -26,3 +32,4 @@
 [0.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.0
 [0.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.1
 [0.1.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.2
+[0.1.3]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.3
