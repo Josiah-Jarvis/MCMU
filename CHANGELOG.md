@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1] - 2026-03-07
+
+* Dummy Release
+
 ## [0.2.0] - 2026-03-07
 
 ### Changed
@@ -51,4 +55,5 @@
 [0.1.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.2
 [0.1.3]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.3
 [0.1.4]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.4
-[0.1.5]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.5
+[0.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.0
+[0.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.1

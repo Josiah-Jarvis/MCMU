@@ -1,3 +1,6 @@
 .PHONY: build
-build: src/mcm/__main__.py
+build: src/mcmu/__main__.py
 	python3 -m build
+
+upload: dist/mcmu*
+	python3 -m twine upload dist/mcmu*

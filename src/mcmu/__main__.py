@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 game_version = "1.21.11"
 __author__ = "Josiah Jarvis"
 
