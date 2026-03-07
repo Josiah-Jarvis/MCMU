@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 game_version = "1.21.11"
 __author__ = "Josiah Jarvis"
 
@@ -44,18 +44,16 @@ class Mod:
         if response.status_code == 404:
             print("404 Mod not found")
             sys.exit(1)
-        x=0
-        for version in response.json():
-            print(response.json()[x]['game_versions'])
-            print(x)
-#            print(version)
-            print(f"[\'{self.version}\']")
-            if (response.json()[x]["game_versions"] != f"[\'{self.version}\']") and (self.loader not in response.json()[x]["loaders"]):
-                x+=1
-                continue
-            else:
-                if response.json()[x]["version_number"] != current_version:
-                    return True
+
+        project_info = response.json()
+        latest_version = None
+        for version in project_info:
+            if self.version in version["game_versions"] and self.loader in version["loaders"]:
+                if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                    latest_version = version
+
+        if latest_version is not None and latest_version["version_number"] != current_version:
+            return True
         return False
 
     def exists(self):
@@ -76,31 +74,28 @@ class Mod:
             print(f"Failed to retrieve project information. Status code: {response.status_code}")
             return
 
-        x=0
         project_info = response.json()
-        print(project_info)
+        latest_version = None
         for version in project_info:
-            print(project_info[x]["game_versions"][0])
-            print(self.version)
-            if (project_info[x]["game_versions"] != f"[\'{self.version}\']") and (self.loader not in project_info[x]["loaders"]):
-                x+=1
-                continue
-            else:
-                latest_version = project_info[x]['files']
-                break
+            if self.version in version["game_versions"] and self.loader in version["loaders"]:
+                if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                    latest_version = version
 
-        print(latest_version[0])
-        response = requests.get(latest_version[0]['url'], stream=True)
+        if latest_version is None:
+            print("No version found for the specified game version and loader.")
+            return
+
+        response = requests.get(latest_version['files'][0]['url'], stream=True)
         if response.status_code != 200:
             print(f"Failed to download the mod. Status code: {response.status_code}")
             return False
-        with open(Path(mod_path, latest_version[0]['filename']), 'wb') as file:
+        with open(Path(mod_path, latest_version['files'][0]['filename']), 'wb') as file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     file.write(chunk)
-    
-        print(f"Downloaded {latest_version[0]['filename']} successfully.")
-        return {'file': latest_version[0]['filename'], 'version': project_info[0]['version_number'], 'name': project_info[0]['name']}
+
+        print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
+        return {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': latest_version['name']}
 
     def delete(self, mod_path, mod_file):
         Path(mod_path, mod_file).unlink()
@@ -111,7 +106,6 @@ class Mod:
         print("Deleted.")
         print(f"Installing latest version...")
         return self.install(mod_path)
-
 
 def setup(args):
 
@@ -133,13 +127,9 @@ def setup(args):
 def main():
     args = cmd()
     config = setup(args)
-    print(args)
-    print(args.add)
-    print(config)
     mods = config['mods']
     if args.update:
         for mod_name in mods:
-            print(mod_name)
             mod = Mod(mod_name, args.game_version)
             if mod.check_update(mods[mod_name]['version']):
                 print(f"Mod: \"{mod.name}\" has an update available.")
@@ -152,13 +142,10 @@ def main():
                             json.dump(config, fp, indent=4)
     elif args.add:
         mod = urlsplit(args.add)
-        print(mod.path)
         if re.match(r"/mod/*", mod.path):
             match = re.split(r"mod/", mod.path)
-            print(match)
             if match:
                 mod_name = match[1]
-                print(mod_name)
             else:
                 print("Invalid mod name")
             mod = Mod(mod_name, args.game_version)
@@ -175,13 +162,10 @@ def main():
             pass
     if args.delete:
         mod = urlsplit(args.delete)
-        print(mod.path)
         if re.match(r"/mod/*", mod.path):
             match = re.split(r"mod/", mod.path)
-            print(match)
             if match:
                 mod_name = match[1]
-                print(mod_name)
         if mod_name in config['mods']:
             mod = Mod(mod_name, game_version=game_version)
             mod.delete(args.mod_path, config['mods'][mod_name]['file'])
