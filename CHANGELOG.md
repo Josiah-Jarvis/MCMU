@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0] - 2026-03-07
+
+### Changed
+
+* Changed name from "MCModUpdater" to "mcm"
+* Changed command line arguments around
+
 ## [0.1.4] - 2026-03-06
 
 ### Fixed
@@ -44,3 +51,4 @@
 [0.1.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.2
 [0.1.3]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.3
 [0.1.4]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.4
+[0.1.5]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.5

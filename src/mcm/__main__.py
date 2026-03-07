@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from urllib.parse import urlsplit
 
-__version__ = "0.1.4"
+__version__ = "0.2.0"
 game_version = "1.21.11"
 __author__ = "Josiah Jarvis"
 
@@ -17,13 +17,17 @@ def cmd():
         prog="MCModUpdater",
         epilog="..."
     )
+    subparsers = parser.add_subparsers()
+    update_parser = subparsers.add_parser("update",)
+    remove_parser = subparsers.add_parser("remove")
+    install_parser = subparsers.add_parser("install")
+    update_parser.add_argument("-n", "--now", action="store_true")
+    remove_parser.add_argument("remove_package")
+    install_parser.add_argument("install_package")
     parser.add_argument("-v", "--version", action="version", version=__version__)
-    parser.add_argument("-a", "--add")
     parser.add_argument("-m", "--mod_path", default=Path(Path.home(), ".minecraft/mods"))
     parser.add_argument("-g", "--game_version", default=game_version)
     parser.add_argument("-c", "--config", default=Path(Path.home(), ".minecraft/config/mcmodupdater.json"))
-    parser.add_argument("-d", "--delete")
-    parser.add_argument("-u", "--update")
 
     return parser.parse_args()
 
@@ -128,7 +132,8 @@ def main():
     args = cmd()
     config = setup(args)
     mods = config['mods']
-    if args.update:
+    print(args)
+    if hasattr(args, 'now'):
         for mod_name in mods:
             mod = Mod(mod_name, args.game_version)
             if mod.check_update(mods[mod_name]['version']):
@@ -140,8 +145,8 @@ def main():
                         with open(Path(args.config), "w") as fp:
                             config['mods'][mod.name] = installed
                             json.dump(config, fp, indent=4)
-    elif args.add:
-        mod = urlsplit(args.add)
+    elif hasattr(args, 'install_package'):
+        mod = urlsplit(args.install_package)
         if re.match(r"/mod/*", mod.path):
             match = re.split(r"mod/", mod.path)
             if match:
@@ -160,8 +165,8 @@ def main():
                 print("Mod does not exist.")
         else:
             pass
-    if args.delete:
-        mod = urlsplit(args.delete)
+    elif hasattr(args, 'remove_package'):
+        mod = urlsplit(args.remove_package)
         if re.match(r"/mod/*", mod.path):
             match = re.split(r"mod/", mod.path)
             if match:

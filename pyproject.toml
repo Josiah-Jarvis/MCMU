@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 dynamic = ["version"]
-name = "MCModUpdater"
+name = "mcm"
 requires-python = ">=3.11"
 authors = [
     {name="Josiah Jarvis"}
@@ -18,7 +18,7 @@ license = "MIT"
 keywords = ["Minecraft", "Mods"]
 
 [project.scripts]
-mcmodupdater = "MCModUpdater:__main__.main()"
+mcm = "mcm:__main__.main()"
 
 [project.urls]
 Homepage = "https://github.com/Josiah-Jarvis/MCModUpdater"
@@ -29,4 +29,4 @@ Changelog = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/CHANGELOG
 
 [tool.hatch.version]
 source = "regex"
-path = "src/MCModUpdater/__main__.py"
+path = "src/mcm/__main__.py"
