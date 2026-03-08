@@ -1,0 +1,7 @@
+# Project security
+
+I take security very seriously.
+
+## Reporting
+
+Please report all vulnerability at the [private vulnerability reporting](https://github.com/Josiah-Jarvis/MCModUpdater/security/advisories/new)
