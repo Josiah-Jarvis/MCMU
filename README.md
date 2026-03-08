@@ -27,23 +27,23 @@ options:
 ### Update installed mods
 
 ```bash
-$ mcmu update -n
+mcmu update -n
 ```
 
 ### Remove a mod
 
 ```bash
-$ mcmu remove https://www.modrinth.com/mod/mod-name
+mcmu remove https://www.modrinth.com/mod/mod-name
 ```
 
 ### Install a mod
 
 ```bash
-$ mcmu install https://www.modrinth.com/mod/mod-name
+mcmu install https://www.modrinth.com/mod/mod-name
 ```
 
 ## FAQ
 
 ### Why did you build this?
 
-I built this because I wanted to use Minecrafts default launcher but still be able to easily install and update mods like in Modrinths launcher.
+I built this because I wanted to use Minecraft's default launcher but still be able to easily install and update mods like in Modrinth's launcher.
