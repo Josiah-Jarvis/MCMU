@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.2] - 2026-03-08
+
+### Added
+
+* Added help messages to command line arguments
+
+### Changed
+
+* When no options are present prints help message
+
 ## [0.2.1] - 2026-03-07
 
 * Dummy Release
@@ -57,3 +67,4 @@
 [0.1.4]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.4
 [0.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.0
 [0.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.1
+[0.2.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.2

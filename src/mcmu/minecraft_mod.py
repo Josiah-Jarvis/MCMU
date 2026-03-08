@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+from pathlib import Path
+
+class Mod:
+    """
+        
+    """
+    def __init__(self, mod_name: str, game_version: str, loader: str = "fabric"):
+        self.name = mod_name
+        self.version = game_version
+        self.loader = loader
+        self.parameters = {
+            "loaders": [self.loader],
+            "game_versions": [self.version],
+            "include_changelog": "false"
+        }
+
+    def check_update(self, current_version: str) -> bool:
+        response = requests.get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
+        if response.status_code == 404:
+            print("404 Mod not found")
+            return False
+
+        project_info = response.json()
+        latest_version = None
+        for version in project_info:
+            if self.version in version["game_versions"] and self.loader in version["loaders"]:
+                if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                    latest_version = version
+
+        if latest_version is not None and latest_version["version_number"] != current_version:
+            return True
+        return False
+
+    def exists(self) -> bool:
+        parameters = {
+            "loaders": [self.loader],
+            "game_versions": [self.version],
+            "include_changelog": "false"
+        }
+        response = requests.get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
+        if response.status_code == 404:
+            return False
+        else:
+            return True
+
+    def install(self, mod_path: Path) -> [bool, dict]:
+        response = requests.get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
+        if response.status_code != 200:
+            print(f"Failed to retrieve project information. Status code: {response.status_code}")
+            return False
+
+        project_info = response.json()
+        latest_version = None
+        for version in project_info:
+            if self.version in version["game_versions"] and self.loader in version["loaders"]:
+                if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                    latest_version = version
+
+        if latest_version is None:
+            print("No version found for the specified game version and loader.")
+            return False
+
+        response = requests.get(latest_version['files'][0]['url'], stream=True)
+        if response.status_code != 200:
+            print(f"Failed to download the mod. Status code: {response.status_code}")
+            return False
+        with open(Path(mod_path, latest_version['files'][0]['filename']), 'wb') as file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    file.write(chunk)
+
+        print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
+        return {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': latest_version['name']}
+
+    def delete(self, mod_path: Path, mod_file: str) -> bool:
+        Path(mod_path, mod_file).unlink()
+        return True
+
+    def update(self, mod_path: Path, mod_file: str) -> dict:
+        print(f"Deleting {mod_path}{mod_file}...")
+        self.delete(mod_path, mod_file)
+        print("Deleted.")
+        print(f"Installing latest version...")
+        return self.install(mod_path)
