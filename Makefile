@@ -4,4 +4,4 @@ build: src/mcmu/__main__.py
 	python3 -m build
 
 upload: dist/mcmu*
-	python3 -m twine upload dist/ --config-file .pypirc
+	python3 -m twine upload dist/* --config-file .pypirc
