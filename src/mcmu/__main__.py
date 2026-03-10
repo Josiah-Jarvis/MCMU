@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 # Local Imports
 from .minecraft_mod import Mod
 
-__version__ = "1.0.0rc0"
+__version__ = "1.0.0rc1"
 __author__ = "Josiah Jarvis"
 
 parser = argparse.ArgumentParser(
@@ -43,6 +43,9 @@ def load_config_file(config_f: Path) -> dict:
         sys.exit(1)
     except FileNotFoundError:
         print("Config file does not exist.")
+        print("Creating...")
+        with open(config_f, "w+") as fp:
+            json.dump({"mods":{}}, fp, indent=4)
         sys.exit(1)
     except PermissionError:
         print("No permission to write file.")
@@ -88,30 +91,18 @@ def main():
                         config['mods'][mod.name] = installed
                         write_config_file(config_file, config)
     elif hasattr(args, 'install_package'):
-        mod = urlsplit(args.install_package)
-        if re.match(r"/mod/*", mod.path):
-            match = re.split(r"mod/", mod.path)
-            if match:
-                mod_name = match[1]
-            else:
-                print("Invalid mod name")
-            mod = Mod(mod_name, args.game_version)
-            if mod.exists():
-                print("Mod exists.")
-                installed = mod.install(mod_path)
-                if installed:
-                    config['mods'][mod.name] = installed
-                    write_config_file(config_file, config)
-            else:
-                print("Mod does not exist.")
+        mod_name = args.install_package
+        mod = Mod(mod_name, args.game_version)
+        if mod.exists():
+            print("Mod exists.")
+            installed = mod.install(mod_path)
+            if installed:
+                config['mods'][mod.name] = installed
+                write_config_file(config_file, config)
         else:
-            pass
+            print("Mod does not exist.")
     elif hasattr(args, 'remove_package'):
-        mod = urlsplit(args.remove_package)
-        if re.match(r"/mod/*", mod.path):
-            match = re.split(r"mod/", mod.path)
-            if match:
-                mod_name = match[1]
+        mod_name = args.remove_package
         if mod_name in config['mods']:
             mod = Mod(mod_name, game_version=args.game_version)
             try:

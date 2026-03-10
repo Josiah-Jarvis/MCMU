@@ -4,6 +4,7 @@
 
 [ ] Add logging
 [ ] Add documentation
+[ ] List installed packages
 
 ## In Progress
 

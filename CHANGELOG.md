@@ -1,6 +1,16 @@
 # Changelog
 
-## [1.0.0rc0] - 2026-03-09
+## [1.0.0rc1] - 2026-03-10
+
+### Changed
+
+* Now only needs mods name not mods URL to install
+
+### Fixed
+
+* Fixed not creating the config file on start
+
+## [1.0.0rc0] - 2026-03-10
 
 This is the first release candidate for version [1.0.0+1.21.11].
 
