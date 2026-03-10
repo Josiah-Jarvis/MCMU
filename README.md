@@ -6,18 +6,18 @@ A utility to update and install Minecraft mods for java edition.
 
 ```bash
 $ mcmu
-usage: MCModUpdater [-h] [-v] [-m MINECRAFT_DIR] [-g GAME_VERSION]
-                    {update,remove,install} ...
-
-positional arguments:
-  {update,remove,install}
+usage: mcmu [-h] [-u] [-r REMOVE] [-i INSTALL] [-l] [-v] [-m MINECRAFT_DIR] [-g GAME_VERSION]
 
 options:
   -h, --help            show this help message and exit
+  -u, --update          Updates installed mods
+  -r, --remove REMOVE   Removes an installed mod
+  -i, --install INSTALL
+                        Installs a mod
+  -l, --list            List installed mods
   -v, --version         show program's version number and exit
   -m, --minecraft_dir MINECRAFT_DIR
-                        Path to the Minecraft folder, defaults to
-                        '~/.minecraft/'
+                        Path to the Minecraft folder, defaults to '~/.minecraft/'
   -g, --game_version GAME_VERSION
                         Default game version
 
