@@ -27,19 +27,25 @@ options:
 ### Update installed mods
 
 ```bash
-mcmu update -n
+mcmu -u
 ```
 
 ### Remove a mod
 
 ```bash
-mcmu remove mod-name
+mcmu -r mod-name
 ```
 
 ### Install a mod
 
 ```bash
-mcmu install mod-name
+mcmu -i mod-name
+```
+
+### List mods
+
+```bash
+mcmu -l
 ```
 
 ## FAQ

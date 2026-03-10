@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import requests
 
 class Mod:
@@ -43,7 +42,7 @@ class Mod:
         else:
             return True
 
-    def install(self, mod_path: Path) -> [bool, dict]:
+    def install(self, mod_path) -> [bool, dict]:
         response = requests.get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
         if response.status_code != 200:
             print(f"Failed to retrieve project information. Status code: {response.status_code}")
@@ -72,11 +71,11 @@ class Mod:
         print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
         return {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': latest_version['name']}
 
-    def delete(self, mod_path: Path, mod_file: str) -> bool:
+    def delete(self, mod_path, mod_file: str) -> bool:
         Path(mod_path, mod_file).unlink()
         return True
 
-    def update(self, mod_path: Path, mod_file: str) -> dict:
+    def update(self, mod_path, mod_file: str) -> dict:
         print(f"Deleting {mod_path}{mod_file}...")
         self.delete(mod_path, mod_file)
         print("Deleted.")

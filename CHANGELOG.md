@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0.dev0] - 2026-03-10
+
+### Added
+
+* You can list installed mods now
+
+### Changed
+
+* Started implemented a logging system
+
 ## [1.0.0] - 2026-03-10
 
 First stable release.

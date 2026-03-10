@@ -8,4 +8,4 @@ Please report all vulnerability at the [private vulnerability reporting](https:/
 
 ## Versions
 
-Only the latest version will receive security updates.
+Only the latest stable version will receive security updates.

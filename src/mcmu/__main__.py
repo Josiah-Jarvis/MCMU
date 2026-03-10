@@ -1,30 +1,29 @@
 #!/usr/bin/env python3
 
+# Imports
+import re
+import sys
+import json
+import logging
 import argparse
 import requests
-import json
-import sys
-import re
 from pathlib import Path
-from urllib.parse import urlsplit
+from .minecraft_mod import Mod  # Mod function import
 
-# Local Imports
-from .minecraft_mod import Mod
-
-__version__ = "1.0.0"
+__version__ = "1.1.0.dev0"
 __author__ = "Josiah Jarvis"
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(format="%(levelname)s: %(message)s")
 
 parser = argparse.ArgumentParser(
     prog="mcmu",
     epilog="..."
 )
-subparsers = parser.add_subparsers()
-update_parser = subparsers.add_parser("update")
-remove_parser = subparsers.add_parser("remove")
-install_parser = subparsers.add_parser("install")
-update_parser.add_argument("-n", "--now", action="store_true", help="Update mods now", required=True)
-remove_parser.add_argument("remove_package", help="Mod to remove")
-install_parser.add_argument("install_package", help="Mod to install")
+parser.add_argument("-u", "--update", help="Updates installed mods", action="store_true")
+parser.add_argument("-r", "--remove", help="Removes an installed mod")
+parser.add_argument("-i", "--install", help="Installs a mod")
+parser.add_argument("-l", "--list", help="List installed mods", action="store_true")
 parser.add_argument("-v", "--version", action="version", version=__version__)
 # Unix systems defaults to ~/.minecraft/ for the minecraft dir, I don't know about Windows or MacOS
 parser.add_argument("-m", "--minecraft_dir", default=Path(Path.home(), ".minecraft/"), help="Path to the Minecraft folder, defaults to '~/.minecraft/'")
@@ -39,16 +38,17 @@ def load_config_file(config_f: Path) -> dict:
         with open(config_f, "r") as fp:
             config = json.load(fp)
     except json.JSONDecodeError:
-        print("Not a valid JSON file.")
+        logger.critical("Config file not valid JSON.")
         sys.exit(1)
     except FileNotFoundError:
-        print("Config file does not exist.")
-        print("Creating...")
+        logger.warn("Config file does not exist.")
         with open(config_f, "w+") as fp:
+            logger.debug("Creating config file.")
             json.dump({"mods":{}}, fp, indent=4)
+        logger.info("Exiting, please re-run.")
         sys.exit(1)
     except PermissionError:
-        print("No permission to write file.")
+        logger.error("No permission to write to file.")
         sys.exit(1)
     return config
 
@@ -57,20 +57,15 @@ def write_config_file(config_f: Path, config_d: dict):
         with open(config_f, "w") as fp:
             json.dump(config_d, fp, indent=4)
     except FileNotFoundError:
-        print("Config file does not exist.")
+        logger.critical("Config file does not exist.")
         sys.exit(1)
     except PermissionError:
-        print("No permission to write file.")
+        logger.error("No permission to write to file.")
         sys.exit(1)
 
 
 def setup(args):
-    if config_file.exists():
-        config = load_config_file(config_file)
-    else:
-        print(f"Config file: {config_file} not found, creating...")
-        write_config_file(config_file, {"mods": {}})
-        print(f"Config file created at: {config_file}.")
+    config = load_config_file(config_file)
 
     return config
 
@@ -78,8 +73,7 @@ def main():
     config = setup(args)
     mods = config['mods']
     mod_path = Path(args.minecraft_dir, "mods/")
-    print(args)
-    if hasattr(args, 'now'):
+    if args.update:
         for mod_name in mods:
             mod = Mod(mod_name, args.game_version)
             if mod.check_update(mods[mod_name]['version']):
@@ -90,31 +84,33 @@ def main():
                     if installed:
                         config['mods'][mod.name] = installed
                         write_config_file(config_file, config)
-    elif hasattr(args, 'install_package'):
-        mod_name = args.install_package
+    elif args.install:
+        mod_name = args.install
         mod = Mod(mod_name, args.game_version)
         if mod.exists():
-            print("Mod exists.")
             installed = mod.install(mod_path)
             if installed:
                 config['mods'][mod.name] = installed
                 write_config_file(config_file, config)
         else:
-            print("Mod does not exist.")
-    elif hasattr(args, 'remove_package'):
-        mod_name = args.remove_package
+            logger.error("Mod does not exist on Modrinth.")
+    elif args.remove:
+        mod_name = args.remove
         if mod_name in config['mods']:
             mod = Mod(mod_name, game_version=args.game_version)
             try:
                 mod.delete(mod_path, config['mods'][mod_name]['file'])
             except FileNotFoundError:
-                print("Mod already deleted.")
+                logger.warn("Mod's file already deleted.")
             except PermissionError:
-                print(f"No permission to delete mod file: {config['mods'][mod_name]['file']}")
+                logger.critical("No permission to delete mod file.")
                 sys.exit(1)
             del config['mods'][mod.name]
             write_config_file(config_file, config)
         else:
-            print("Mod not installed")
+            logger.error("Mod not installed.")
+    elif args.list:
+        for mod in config['mods']:
+            print(f"{config['mods'][mod]['name']}\n\tVersion: {config['mods'][mod]['version']}\n\tFile: {config['mods'][mod]['file']}")
     else:
         parser.print_help()
