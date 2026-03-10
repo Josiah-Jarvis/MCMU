@@ -11,11 +11,11 @@ from urllib.parse import urlsplit
 # Local Imports
 from .minecraft_mod import Mod
 
-__version__ = "1.0.0rc1"
+__version__ = "1.0.0"
 __author__ = "Josiah Jarvis"
 
 parser = argparse.ArgumentParser(
-    prog="MCModUpdater",
+    prog="mcmu",
     epilog="..."
 )
 subparsers = parser.add_subparsers()
@@ -32,7 +32,7 @@ parser.add_argument("-m", "--minecraft_dir", default=Path(Path.home(), ".minecra
 parser.add_argument("-g", "--game_version", default="1.21.11", help="Default game version")
 
 args = parser.parse_args()
-config_file = Path(args.minecraft_dir, "config/mcmodupdater.json")
+config_file = Path(args.minecraft_dir, "config/mcmu.json")
 
 def load_config_file(config_f: Path) -> dict:
     try:

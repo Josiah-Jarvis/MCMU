@@ -33,13 +33,13 @@ mcmu update -n
 ### Remove a mod
 
 ```bash
-mcmu remove https://www.modrinth.com/mod/mod-name
+mcmu remove mod-name
 ```
 
 ### Install a mod
 
 ```bash
-mcmu install https://www.modrinth.com/mod/mod-name
+mcmu install mod-name
 ```
 
 ## FAQ
@@ -47,3 +47,7 @@ mcmu install https://www.modrinth.com/mod/mod-name
 ### Why did you build this?
 
 I built this because I wanted to use Minecraft's default launcher but still be able to easily install and update mods like in Modrinth's launcher.
+
+### Where do I get the mod name from?
+
+Go to [Modrinth](https://modrinth.com) and search for you desired mod. Then get the part after the /mod/ in the url, that is the mod name.

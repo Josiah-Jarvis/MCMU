@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.0] - 2026-03-10
+
+First stable release.
+
 ## [1.0.0rc1] - 2026-03-10
 
 ### Changed
