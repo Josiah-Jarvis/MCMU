@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+import requests
 
 class Mod:
-    """
-        
-    """
     def __init__(self, mod_name: str, game_version: str, loader: str = "fabric"):
         self.name = mod_name
         self.version = game_version

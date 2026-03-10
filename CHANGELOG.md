@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0rc0] - 2026-03-09
+
+This is the first release candidate for version [1.0.0+1.21.11].
+
+### Changed
+
+* Dedicated functions for loading and writing config file
+
+### Fixed
+
+* Fixed "NameError: name 'requests' is not defined" when trying to install a mod
+
 ## [0.2.2] - 2026-03-08
 
 ### Added
@@ -68,3 +80,4 @@
 [0.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.0
 [0.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.1
 [0.2.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.2
+[1.0.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0rc0

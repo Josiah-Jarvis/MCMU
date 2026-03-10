@@ -11,7 +11,7 @@ from urllib.parse import urlsplit
 # Local Imports
 from .minecraft_mod import Mod
 
-__version__ = "0.2.2"
+__version__ = "1.0.0rc0"
 __author__ = "Josiah Jarvis"
 
 parser = argparse.ArgumentParser(
@@ -52,7 +52,7 @@ def load_config_file(config_f: Path) -> dict:
 def write_config_file(config_f: Path, config_d: dict):
     try:
         with open(config_f, "w") as fp:
-            json.dump(fp, config_d)
+            json.dump(config_d, fp, indent=4)
     except FileNotFoundError:
         print("Config file does not exist.")
         sys.exit(1)
@@ -63,12 +63,10 @@ def write_config_file(config_f: Path, config_d: dict):
 
 def setup(args):
     if config_file.exists():
-        with open(config_file) as fp:
-            config = json.load(fp)
+        config = load_config_file(config_file)
     else:
         print(f"Config file: {config_file} not found, creating...")
-        with open(config_file, "w") as fp:
-            json.dump({"mods": {}}, fp, indent=4)
+        write_config_file(config_file, {"mods": {}})
         print(f"Config file created at: {config_file}.")
 
     return config
@@ -87,9 +85,8 @@ def main():
                 if update == (None or "Y"):
                     installed = mod.update(mod_path, mods[mod_name]['file'])
                     if installed:
-                        with open(Path(config_file), "w") as fp:
-                            config['mods'][mod.name] = installed
-                            json.dump(config, fp, indent=4)
+                        config['mods'][mod.name] = installed
+                        write_config_file(config_file, config)
     elif hasattr(args, 'install_package'):
         mod = urlsplit(args.install_package)
         if re.match(r"/mod/*", mod.path):
@@ -103,9 +100,8 @@ def main():
                 print("Mod exists.")
                 installed = mod.install(mod_path)
                 if installed:
-                    with open(Path(config_file), "w") as fp:
-                        config['mods'][mod.name] = installed
-                        json.dump(config, fp, indent=4)
+                    config['mods'][mod.name] = installed
+                    write_config_file(config_file, config)
             else:
                 print("Mod does not exist.")
         else:
@@ -125,11 +121,9 @@ def main():
             except PermissionError:
                 print(f"No permission to delete mod file: {config['mods'][mod_name]['file']}")
                 sys.exit(1)
-            with open(Path(config_file), "w") as fp:
-                del config['mods'][mod.name]
-                json.dump(config, fp, indent=4)
+            del config['mods'][mod.name]
+            write_config_file(config_file, config)
         else:
             print("Mod not installed")
     else:
         parser.print_help()
-        print("a")
