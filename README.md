@@ -20,8 +20,6 @@ options:
                         Path to the Minecraft folder, defaults to '~/.minecraft/'
   -g, --game_version GAME_VERSION
                         Default game version
-
-...
 ```
 
 ### Update installed mods

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0] - 2026-03-12
+
+### Fixed
+
+* Fixed "NameError: name 'Path' is not defined" when trying to delete a mod
+
 ## [1.1.0.dev1] - 2026-03-11
 
 ### Changed

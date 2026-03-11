@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import requests
+from pathlib import Path
 
 class Mod:
     def __init__(self, mod_name: str, game_version: str):
