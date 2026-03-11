@@ -4,7 +4,6 @@
 
 ## In Progress
 
-[ ] Add documentation
 [ ] Add comments to the code
 
 ## Completed
