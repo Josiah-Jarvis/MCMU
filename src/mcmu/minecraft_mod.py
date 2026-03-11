@@ -3,12 +3,11 @@
 import requests
 
 class Mod:
-    def __init__(self, mod_name: str, game_version: str, loader: str = "fabric"):
+    def __init__(self, mod_name: str, game_version: str):
         self.name = mod_name
         self.version = game_version
-        self.loader = loader
         self.parameters = {
-            "loaders": [self.loader],
+            "loaders": ["fabric"],
             "game_versions": [self.version],
             "include_changelog": "false"
         }
@@ -22,7 +21,7 @@ class Mod:
         project_info = response.json()
         latest_version = None
         for version in project_info:
-            if self.version in version["game_versions"] and self.loader in version["loaders"]:
+            if self.version in version["game_versions"] and "fabric" in version["loaders"]:
                 if latest_version is None or version["version_number"] > latest_version["version_number"]:
                     latest_version = version
 
@@ -31,11 +30,6 @@ class Mod:
         return False
 
     def exists(self) -> bool:
-        parameters = {
-            "loaders": [self.loader],
-            "game_versions": [self.version],
-            "include_changelog": "false"
-        }
         response = requests.get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
         if response.status_code == 404:
             return False
@@ -51,7 +45,7 @@ class Mod:
         project_info = response.json()
         latest_version = None
         for version in project_info:
-            if self.version in version["game_versions"] and self.loader in version["loaders"]:
+            if self.version in version["game_versions"] and "fabric" in version["loaders"]:
                 if latest_version is None or version["version_number"] > latest_version["version_number"]:
                     latest_version = version
 

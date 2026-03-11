@@ -10,16 +10,13 @@ import requests
 from pathlib import Path
 from .minecraft_mod import Mod  # Mod function import
 
-__version__ = "1.1.0.dev0"
+__version__ = "1.1.0.dev1"
 __author__ = "Josiah Jarvis"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format="%(levelname)s: %(message)s")
 
-parser = argparse.ArgumentParser(
-    prog="mcmu",
-    epilog="..."
-)
+parser = argparse.ArgumentParser(prog="mcmu")
 parser.add_argument("-u", "--update", help="Updates installed mods", action="store_true")
 parser.add_argument("-r", "--remove", help="Removes an installed mod")
 parser.add_argument("-i", "--install", help="Installs a mod")
@@ -63,14 +60,8 @@ def write_config_file(config_f: Path, config_d: dict):
         logger.error("No permission to write to file.")
         sys.exit(1)
 
-
-def setup(args):
-    config = load_config_file(config_file)
-
-    return config
-
 def main():
-    config = setup(args)
+    config = load_config_file(config_file)
     mods = config['mods']
     mod_path = Path(args.minecraft_dir, "mods/")
     if args.update:
@@ -85,27 +76,25 @@ def main():
                         config['mods'][mod.name] = installed
                         write_config_file(config_file, config)
     elif args.install:
-        mod_name = args.install
-        mod = Mod(mod_name, args.game_version)
+        mod = Mod(args.install, args.game_version)
         if mod.exists():
             installed = mod.install(mod_path)
             if installed:
-                config['mods'][mod.name] = installed
+                config['mods'][args.install] = installed
                 write_config_file(config_file, config)
         else:
             logger.error("Mod does not exist on Modrinth.")
     elif args.remove:
-        mod_name = args.remove
-        if mod_name in config['mods']:
-            mod = Mod(mod_name, game_version=args.game_version)
+        if args.remove in config['mods']:
+            mod = Mod(args.remove, game_version=args.game_version)
             try:
-                mod.delete(mod_path, config['mods'][mod_name]['file'])
+                mod.delete(args.remove, config['mods'][args.remove]['file'])
             except FileNotFoundError:
                 logger.warn("Mod's file already deleted.")
             except PermissionError:
                 logger.critical("No permission to delete mod file.")
                 sys.exit(1)
-            del config['mods'][mod.name]
+            del config['mods'][args.remove]
             write_config_file(config_file, config)
         else:
             logger.error("Mod not installed.")

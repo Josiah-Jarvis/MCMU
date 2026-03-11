@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0.dev1] - 2026-03-11
+
+### Changed
+
+* Future support for other mod loaders removed
+
+### Removed
+
+* Removed duplicate code in src/mcmu/minecraft_mod.py
+
 ## [1.1.0.dev0] - 2026-03-10
 
 ### Added
@@ -105,3 +115,7 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [0.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.1
 [0.2.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.2
 [1.0.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0rc0
+[1.0.0rc1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0rc1
+[1.0.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0
+[1.1.0.dev0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev0
+[1.1.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev1
