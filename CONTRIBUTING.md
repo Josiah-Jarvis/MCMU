@@ -1,5 +1,7 @@
 # Contributing guidelines
 
+If you want to contribute check *TODO.md* first!
+
 Here is the best way to contribute:
 
 * Fork the project
