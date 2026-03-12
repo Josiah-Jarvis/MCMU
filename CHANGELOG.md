@@ -1,30 +1,44 @@
 # Changelog
 
+## [1.1.1a0] - 2026-03-12
+
+1.1.0 is scheduled for 14 March 2026 (Pi day)
+
+### Changed
+
+- Changed default version for Minecraft to 26.1 for the soon to be released 26.1
+- Made version message pretty
+- Took deleting mod files out of *minecraft_mod.py* and put it in *__main__.py*
+
+### Security
+
+- Changed python required version to >=3.13 to reflect the supported python versions: [Status of Python versions](https://devguide.python.org/versions/)
+
 ## [1.1.0] - 2026-03-12
 
 ### Fixed
 
-* Fixed "NameError: name 'Path' is not defined" when trying to delete a mod
+- Fixed "NameError: name 'Path' is not defined" when trying to delete a mod
 
 ## [1.1.0.dev1] - 2026-03-11
 
 ### Changed
 
-* Future support for other mod loaders removed
+- Future support for other mod loaders removed
 
 ### Removed
 
-* Removed duplicate code in src/mcmu/minecraft_mod.py
+- Removed duplicate code in src/mcmu/minecraft_mod.py
 
 ## [1.1.0.dev0] - 2026-03-10
 
 ### Added
 
-* You can list installed mods now
+- You can list installed mods now
 
 ### Changed
 
-* Started implemented a logging system
+- Started implemented a logging system
 
 ## [1.0.0] - 2026-03-10
 
@@ -34,11 +48,11 @@ First stable release.
 
 ### Changed
 
-* Now only needs mods name not mods URL to install
+- Now only needs mods name not mods URL to install
 
 ### Fixed
 
-* Fixed not creating the config file on start
+- Fixed not creating the config file on start
 
 ## [1.0.0rc0] - 2026-03-10
 
@@ -46,71 +60,71 @@ This is the first release candidate for version [1.0.0+1.21.11].
 
 ### Changed
 
-* Dedicated functions for loading and writing config file
+- Dedicated functions for loading and writing config file
 
 ### Fixed
 
-* Fixed "NameError: name 'requests' is not defined" when trying to install a mod
+- Fixed "NameError: name 'requests' is not defined" when trying to install a mod
 
 ## [0.2.2] - 2026-03-08
 
 ### Added
 
-* Added help messages to command line arguments
+- Added help messages to command line arguments
 
 ### Changed
 
-* When no options are present prints help message
+- When no options are present prints help message
 
 ## [0.2.1] - 2026-03-07
 
-* Dummy Release
+- Dummy Release
 
 ## [0.2.0] - 2026-03-07
 
 ### Changed
 
-* Changed name from "MCModUpdater" to "mcm"
-* Changed command line arguments around
+- Changed name from "MCModUpdater" to "mcm"
+- Changed command line arguments around
 
 ## [0.1.4] - 2026-03-06
 
 ### Fixed
 
-* Fixed Downloading latest mod version instead of latest version for the current installed Minecraft version
+- Fixed Downloading latest mod version instead of latest version for the current installed Minecraft version
 
 ### Changed
 
-* Removed some of the debug print statements
+- Removed some of the debug print statements
 
 ## [0.1.3] - 2026-03-06
 
 ### Added
 
-* Checks for mod updates
+- Checks for mod updates
 
 ## [0.1.2] - 2026-03-06
 
 ### Added
 
-* Now can download and install mods
-* Can delete mods
+- Now can download and install mods
+- Can delete mods
 
 ### Fixed
 
-* Script executing twice
+- Script executing twice
 
 ## [0.1.1] - 2026-03-06
 
 ### Added
 
-* Check Modrinth for mod versions
-* Get list of mods from config file
-* Add mods to config file
+- Check Modrinth for mod versions
+- Get list of mods from config file
+- Add mods to config file
 
 ## [0.1.0] - 2026-03-03
 
-* Initial Release
+- Initial Release
 
 [0.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.0
 [0.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.1
@@ -125,3 +139,5 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.0.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0
 [1.1.0.dev0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev0
 [1.1.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev1
+[1.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0
+[1.1.1a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1a0

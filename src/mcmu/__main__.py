@@ -2,28 +2,28 @@
 
 # Imports
 import sys
-import logging
-import argparse
 from json import load, dump, JSONDecodeError
 from pathlib import Path
+from logging import getLogger, basicConfig
+from argparse import ArgumentParser
 from .minecraft_mod import Mod  # Mod function import
 
-__version__ = "1.1.0"
+__version__ = "1.1.1a0"
 __author__ = "Josiah Jarvis"
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(format="%(levelname)s: %(message)s")
+logger = getLogger(__name__)
+basicConfig(format="%(levelname)s: %(message)s")
 
-parser = argparse.ArgumentParser(prog="mcmu")
+parser = ArgumentParser(prog="mcmu")
 parser.add_argument("-u", "--update", help="Updates installed mods", action="store_true")
 parser.add_argument("-r", "--remove", help="Removes an installed mod")
 parser.add_argument("-i", "--install", help="Installs a mod")
 parser.add_argument("-l", "--list", help="List installed mods", action="store_true")
-parser.add_argument("-v", "--version", action="version", version=__version__)
+parser.add_argument("-v", "--version", action="version", version=f"MCMU version: {__version__}")
 # Unix systems defaults to ~/.minecraft/ for the minecraft dir, I don't know about Windows or MacOS
 parser.add_argument("-m", "--minecraft_dir", default=Path(Path.home(), ".minecraft/"), help="Path to the Minecraft folder, defaults to '~/.minecraft/'")
 # Game version defaults to 1.21.11 as it is the latest Minecraft release
-parser.add_argument("-g", "--game_version", default="1.21.11", help="Default game version")
+parser.add_argument("-g", "--game_version", default="26.1", help="Default game version")
 
 args = parser.parse_args()
 config_file = Path(args.minecraft_dir, "config/mcmu.json")
@@ -67,7 +67,8 @@ def main():
                 print(f"Mod: \"{mod.name}\" has an update available.")
                 update = input("Would you like to update [Y/n]: ")
                 if update == (None or "Y"):
-                    installed = mod.update(mod_path, mods[mod_name]['file'])
+                    Path(mod_path, mods[mod_name]['file']).unlink()
+                    installed = mod.install(mod_path)
                     if installed:
                         config['mods'][mod.name] = installed
                         write_config_file(config_file, config)
@@ -86,9 +87,9 @@ def main():
         if args.remove not in config['mods']:
             logger.error("Mod not installed")
             sys.exit(1)
-        mod = Mod(args.remove, game_version=args.game_version)
+        mod = Mod(args.remove, args.game_version)
         try:
-            mod.delete(mod_path, config['mods'][args.remove]['file'])
+            Path(mod_path, config['mods'][args.remove]['file']).unlink()
         except FileNotFoundError:
             logger.warn("Mod's file already deleted.")
         except PermissionError:

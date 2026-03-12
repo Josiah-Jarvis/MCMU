@@ -5,6 +5,7 @@
 ## In Progress
 
 [ ] Add comments to the code
+[ ] Fix downgrading mods
 
 ## Completed
 

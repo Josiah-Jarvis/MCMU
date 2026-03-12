@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import requests
-from pathlib import Path
 
 class Mod:
     def __init__(self, mod_name: str, game_version: str):
@@ -58,21 +57,10 @@ class Mod:
         if response.status_code != 200:
             print(f"Failed to download the mod. Status code: {response.status_code}")
             return False
-        with open(Path(mod_path, latest_version['files'][0]['filename']), 'wb') as file:
+        with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     file.write(chunk)
 
         print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
-        return {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': latest_version['name']}
-
-    def delete(self, mod_path, mod_file: str) -> bool:
-        Path(mod_path, mod_file).unlink()
-        return True
-
-    def update(self, mod_path, mod_file: str) -> dict:
-        print(f"Deleting {mod_path}{mod_file}...")
-        self.delete(mod_path, mod_file)
-        print("Deleted.")
-        print(f"Installing latest version...")
-        return self.install(mod_path)
+        return {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': self.name}
