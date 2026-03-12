@@ -2,7 +2,7 @@
 
 ## [1.1.1a0] - 2026-03-12
 
-1.1.0 is scheduled for 14 March 2026 (Pi day)
+1.1.1 is scheduled for 14 March 2026 (Pi day)
 
 ### Changed
 
