@@ -5,3 +5,6 @@ build: src/mcmu/__main__.py
 
 upload: dist/mcmu*
 	python3 -m twine upload dist/* --config-file .pypirc
+
+requirements.txt: .venv/*
+	pip freeze > requirements.txt
