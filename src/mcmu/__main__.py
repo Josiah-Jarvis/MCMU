@@ -9,7 +9,7 @@ from logging import getLogger, basicConfig
 from requests import get
 from argparse import ArgumentParser
 
-__version__ = "1.2.0rc0"
+__version__ = "1.2.0"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)

@@ -1,8 +1,14 @@
 # Changelog
 
+## [1.2.0] - 2026-03-13
+
+Happy Pi days for reals this time
+
+No changes from [1.2.0rc0](#120rc0---2026-03-13)
+
 ## [1.2.0rc0] - 2026-03-13
 
-If no serious bugs are found this release will become [1.2.0]
+If no serious bugs are found this release will become [1.2.0](#120---2026-03-13)
 
 ### Fixed
 
@@ -208,3 +214,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.2.0a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a0
 [1.2.0a1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a1
 [1.2.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0rc0
+[1.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0
