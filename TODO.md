@@ -6,6 +6,7 @@
 
 [ ] Add comments to the code
 [ ] Fix downgrading mods
+[ ] Get rid of the config file (might have found a solution!)
 
 ## Completed
 
