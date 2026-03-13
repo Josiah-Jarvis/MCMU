@@ -2,11 +2,13 @@
 
 ## To Do
 
+[ ] Get rid of the config file (might have found a solution!)
+[ ] Fix downgrading mods
+
 ## In Progress
 
 [ ] Add comments to the code
-[ ] Fix downgrading mods
-[ ] Get rid of the config file (might have found a solution!)
+[ ] Search mods from Modrinth
 
 ## Completed
 

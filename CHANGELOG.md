@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.1] - 2026-03-13
+
+### Changed
+
+* Change help message for the -g command line argument
+
 ## [1.2.0] - 2026-03-13
 
 Happy Pi days for reals this time
@@ -215,3 +221,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.2.0a1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a1
 [1.2.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0rc0
 [1.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0
+[1.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.1

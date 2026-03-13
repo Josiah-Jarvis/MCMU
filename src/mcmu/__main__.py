@@ -9,7 +9,7 @@ from logging import getLogger, basicConfig
 from requests import get
 from argparse import ArgumentParser
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -24,7 +24,7 @@ parser.add_argument("-v", "--version", action="version", version=f"MCMU version:
 # Unix systems defaults to ~/.minecraft/ for the minecraft dir, I don't know about Windows or MacOS
 parser.add_argument("-m", "--minecraft_dir", default=Path(Path.home(), ".minecraft/"), help="Path to the Minecraft folder, defaults to '~/.minecraft/'")
 # Game version defaults to 1.21.11 as it is the latest Minecraft release
-parser.add_argument("-g", "--game_version", default="26.1", help="Default game version")
+parser.add_argument("-g", "--game_version", default="26.1", help="The game version to use to install mods, defaults to '26.1'")
 
 args = parser.parse_args()  # Parser the arguments
 config_file = Path(args.minecraft_dir, "config/mcmu.json")  # Path to the config file
