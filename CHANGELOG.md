@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.2.0a1] - 2026-03-13
+
+### Changed
+
+* Now shows additional storage that will be taken up by updating a mod
+* Now uses Mod.check_update() instead of Mod.install() when installing a mod
+
+### Removed
+
+* Removed Mod.install()
+
 ## [1.2.0a0] - 2026-03-13
 
 ### Added
@@ -178,3 +189,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.2.0.dev0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev0
 [1.2.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev1
 [1.2.0a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a0
+[1.2.0a1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a1

@@ -56,7 +56,7 @@ homepage = "https://github.com/Josiah-Jarvis/MCModUpdater"
 source = "https://github.com/Josiah-Jarvis/MCModUpdater/"
 download = "https://pypi.org/project/mcmu/#files"
 changelog = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/CHANGELOG.md"
-releasenotes = "https://github.com/Josiah-Jarvis/MCModUpdater/compare/1.2.0.dev1...1.2.0a0" # Change before every release
+releasenotes = "https://github.com/Josiah-Jarvis/MCModUpdater/compare/1.2.0a0...1.2.0a1" # Change before every release
 documentation = "https://github.com/Josiah-Jarvis/MCModUpdater/blob/master/README.md"
 issues = "https://github.com/Josiah-Jarvis/MCModUpdater/issues"
 
