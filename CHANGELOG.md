@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0a0] - 2026-03-13
+
+### Added
+
+* Shows space that will be taken up by a new mod
+* Shows space that will be saved when removing a mod
+
+### Changed
+
+* Now asks for permission to install mod
+* Now asks for permission to remove mod
+* Moved *minecraft_mod.py* code into *__main__.py*
+
 ## [1.2.0.dev1] - 2026-03-13
 
 ### Added
@@ -162,3 +175,6 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0
 [1.1.1a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1a0
 [1.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1
+[1.2.0.dev0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev0
+[1.2.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev1
+[1.2.0a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a0

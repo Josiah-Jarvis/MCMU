@@ -5,10 +5,10 @@
 from json import load, dump, JSONDecodeError
 from pathlib import Path
 from logging import getLogger, basicConfig
+from requests import get
 from argparse import ArgumentParser
-from .minecraft_mod import Mod  # Mod function import
 
-__version__ = "1.2.0.dev1"
+__version__ = "1.2.0a0"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -27,6 +27,72 @@ parser.add_argument("-g", "--game_version", default="26.1", help="Default game v
 
 args = parser.parse_args()
 config_file = Path(args.minecraft_dir, "config/mcmu.json")
+
+class Mod:
+    def __init__(self, mod_name: str, game_version: str):
+        self.name = mod_name
+        self.version = game_version
+        self.parameters = {
+            "loaders": ["fabric"],
+            "game_versions": [self.version],
+            "include_changelog": "false"
+        }
+
+    def check_update(self, current_version: str) -> bool:
+        response = get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
+        if response.status_code == 404:
+            print("404 Mod not found")
+            return False
+
+        project_info = response.json()
+        latest_version = None
+        for version in project_info:
+            if self.version in version["game_versions"] and "fabric" in version["loaders"]:
+                if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                    latest_version = version
+
+        if latest_version is not None and latest_version["version_number"] != current_version:
+            return True
+        return False
+
+    def exists(self) -> bool:
+        response = get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
+        if response.status_code == 404:
+            return False
+        else:
+            return True
+
+    def install(self, mod_path) -> [bool, dict]:
+        response = get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
+        if response.status_code != 200:
+            print(f"Failed to retrieve project information. Status code: {response.status_code}")
+            return False
+
+        project_info = response.json()
+        latest_version = None
+        for version in project_info:
+            if self.version in version["game_versions"] and "fabric" in version["loaders"]:
+                if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                    latest_version = version
+
+        return latest_version
+
+        if latest_version is None:
+            print("No version found for the specified game version and loader.")
+            return False
+
+        response = get(latest_version['files'][0]['url'], stream=True)
+        if response.status_code != 200:
+            print(f"Failed to download the mod. Status code: {response.status_code}")
+            return False
+        with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    file.write(chunk)
+
+        print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
+        return {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': self.name}
+
 
 def write_config_file(config_f: Path, config_d: dict):
     try:
@@ -69,22 +135,54 @@ def main():
                 print(f"Mod: \"{mod.name}\" has an update available.")
                 update = input("Would you like to update [Y/n]: ")
                 if update == (None or "Y"):
-                    Path(mod_path, mods[mod_name]['file']).unlink()
-                    installed = mod.install(mod_path)
-                    if installed:
-                        config['mods'][mod.name] = installed
-                        if not write_config_file(config_file, config):
+                    latest_version = mod.install(mod_path)
+                    if latest_version:
+                        if latest_version is None:
+                            print("No version found for the specified game version and loader.")
                             return 1
+                        if input(f"{args.install} will take up: {latest_version['files'][0]['size']} bytes, would you like to install? [Y/n]") is ("" or "Y"):
+                            Path(mod_path, mods[mod_name]['file']).unlink()
+                            response = get(latest_version['files'][0]['url'], stream=True)
+                            if response.status_code != 200:
+                                print(f"Failed to download the mod. Status code: {response.status_code}")
+                                return False
+                            with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:
+                                for chunk in response.iter_content(chunk_size=1024):
+                                    if chunk:
+                                        file.write(chunk)
+                            print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
+                            config['mods'][args.install] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': args.update}
+                            if not write_config_file(config_file, config):
+                                return 1
+                        else:
+                            print("Canceling.")
+                            return 0
             else:
                 print(f"Mod: {mod.name} at latest version!")
     elif args.install:
         mod = Mod(args.install, args.game_version)
         if mod.exists():
-            installed = mod.install(mod_path)
-            if installed:
-                config['mods'][args.install] = installed
-                if not write_config_file(config_file, config):
+            latest_version = mod.install(mod_path)
+            if latest_version:
+                if latest_version is None:
+                    print("No version found for the specified game version and loader.")
                     return 1
+                if input(f"{args.install} will take up: {latest_version['files'][0]['size']} bytes, would you like to install? [Y/n]") is ("" or "Y"):
+                    response = get(latest_version['files'][0]['url'], stream=True)
+                    if response.status_code != 200:
+                        print(f"Failed to download the mod. Status code: {response.status_code}")
+                        return False
+                    with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:
+                        for chunk in response.iter_content(chunk_size=1024):
+                            if chunk:
+                                file.write(chunk)
+                    print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
+                    config['mods'][args.install] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': args.install}
+                    if not write_config_file(config_file, config):
+                        return 1
+                else:
+                    print("Canceling.")
+                    return 0
         else:
             logger.error("Mod does not exist on Modrinth.")
     elif args.remove:
@@ -93,7 +191,12 @@ def main():
             return 1
         mod = Mod(args.remove, args.game_version)
         try:
-            Path(mod_path, config['mods'][args.remove]['file']).unlink()
+            mod_file = Path(mod_path, config['mods'][args.remove]['file'])
+            if input(f"Would you like to remove {args.remove}? This operation will clear {mod_file.stat().st_size} bytes. [Y/n]") is ("" or "Y"):
+                mod_file.unlink()
+            else:
+                print("Canceling.")
+                return 0
         except FileNotFoundError:
             logger.warn("Mod's file already deleted.")
         except PermissionError:
