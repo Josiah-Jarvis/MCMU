@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0.dev0] - 2026-03-13
+
+
+
+## [1.1.1] - 2026-03-13
+
+Happy almost Pi Day! Here is the newest stable release.
+
+### Changed
+
+- Changed sys.exit() to return statements.
+
 ## [1.1.1a0] - 2026-03-12
 
 1.1.1 is scheduled for 14 March 2026 (Pi day)
@@ -141,3 +153,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.1.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev1
 [1.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0
 [1.1.1a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1a0
+[1.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1
