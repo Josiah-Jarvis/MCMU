@@ -2,7 +2,9 @@
 
 ## [1.2.0.dev0] - 2026-03-13
 
+### Changed
 
+* Made update messages pretty
 
 ## [1.1.1] - 2026-03-13
 

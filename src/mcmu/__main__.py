@@ -8,7 +8,7 @@ from logging import getLogger, basicConfig
 from argparse import ArgumentParser
 from .minecraft_mod import Mod  # Mod function import
 
-__version__ = "1.1.1"
+__version__ = "1.2.0.dev0"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -76,7 +76,7 @@ def main():
                         if not write_config_file(config_file, config):
                             return 1
             else:
-                print(f"Mod: {mods[mod_name]} at latest version!")
+                print(f"Mod: {mod.name} at latest version!")
     elif args.install:
         mod = Mod(args.install, args.game_version)
         if mod.exists():
