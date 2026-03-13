@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.0rc0] - 2026-03-13
+
+If no serious bugs are found this release will become [1.2.0]
+
+### Fixed
+
+* Fixed mod failing to update because of "AttributeError: 'PosixPath' object has no attribute 'stats'. Did you mean: 'stat'?"
+* Fixed when updating mods a new mod entry is made titled null breaking future update runs
+
+### Changed
+
+* Took check_update() code out of Mod class
+
+### Removed
+
+* Removed Mod class
+
 ## [1.2.0a1] - 2026-03-13
 
 ### Changed
@@ -190,3 +207,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [1.2.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev1
 [1.2.0a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a0
 [1.2.0a1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a1
+[1.2.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0rc0

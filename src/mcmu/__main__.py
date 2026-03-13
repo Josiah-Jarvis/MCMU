@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 # Imports
+from copy import copy
 from json import load, dump, JSONDecodeError
 from pathlib import Path
 from logging import getLogger, basicConfig
 from requests import get
 from argparse import ArgumentParser
 
-__version__ = "1.2.0a1"
+__version__ = "1.2.0rc0"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -25,35 +26,27 @@ parser.add_argument("-m", "--minecraft_dir", default=Path(Path.home(), ".minecra
 # Game version defaults to 1.21.11 as it is the latest Minecraft release
 parser.add_argument("-g", "--game_version", default="26.1", help="Default game version")
 
-args = parser.parse_args()
-config_file = Path(args.minecraft_dir, "config/mcmu.json")
+args = parser.parse_args()  # Parser the arguments
+config_file = Path(args.minecraft_dir, "config/mcmu.json")  # Path to the config file
 
-class Mod:
-    def __init__(self, mod_name: str, game_version: str):
-        self.name = mod_name
-        self.version = game_version
-        self.parameters = {
+def check_update(mod_name: str, current_version: str) -> bool:
+    parameters = {
             "loaders": ["fabric"],
-            "game_versions": [self.version],
+            "game_versions": [args.game_version],
             "include_changelog": "false"
-        }
-
-    def check_update(self, current_version: str) -> bool:
-        response = get(f"https://api.modrinth.com/v2/project/{self.name}/version", params=self.parameters)
-        if response.status_code == 404:
-            print("404 Mod not found")
-            return False
-
-        project_info = response.json()
-        latest_version = None
-        for version in project_info:
-            if self.version in version["game_versions"] and "fabric" in version["loaders"]:
-                if latest_version is None or version["version_number"] > latest_version["version_number"]:
-                    latest_version = version
-
-        if latest_version is not None and latest_version["version_number"] != current_version:
-            return latest_version
+    }
+    response = get(f"https://api.modrinth.com/v2/project/{mod_name}/version", params=parameters)
+    if response.status_code == 404:
         return False
+    project_info = response.json()
+    latest_version = None
+    for version in project_info:
+        if args.game_version in version["game_versions"] and "fabric" in version["loaders"]:
+            if latest_version is None or version["version_number"] > latest_version["version_number"]:
+                latest_version = version
+    if latest_version is not None and latest_version["version_number"] != current_version:
+        return latest_version
+    return False
 
 def write_config_file(config_f: Path, config_d: dict):
     try:
@@ -84,22 +77,21 @@ def main():
     except PermissionError:
         logger.error("No permission to write to file.")
         return 1
-    mods = config['mods']
+    mods = copy(config['mods'])
     mod_path = Path(args.minecraft_dir, "mods/")
     if not mod_path.exists():
         logger.critical(f"Mods folder: {mod_path} does not exist. Please create it.\nExiting...")
         return 1
     if args.update:
         for mod_name in mods:
-            mod = Mod(mod_name, args.game_version)
-            latest_version = mod.check_update(mods[mod_name]['version'])
+            latest_version = check_update(mod_name, mods[mod_name]['version'])
             if latest_version:
                 if latest_version:
                     if latest_version is None:
                         print("No version found for the specified game version and loader.")
                         return 1
                     old_file = Path(mod_path, mods[mod_name]['file'])
-                    additional_storage = latest_version['files'][0]['size'] - old_file.stats().st_size
+                    additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size
                     if input(f"{args.install} will take up: {additional_storage} additional bytes, would you like to install? [Y/n]: ") is ("" or "Y"):
                         old_file.unlink()
                         response = get(latest_version['files'][0]['url'], stream=True)
@@ -111,7 +103,7 @@ def main():
                                 if chunk:
                                     file.write(chunk)
                         print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
-                        config['mods'][args.install] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': args.update}
+                        config['mods'][mod_name] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': mod_name}
                         if not write_config_file(config_file, config):
                             return 1
                     else:
@@ -121,10 +113,9 @@ def main():
                     logger.error("Mod does not exist on Modrinth")
                     return 1
             else:
-                print(f"Mod: {mod.name} at latest version!")
+                print(f"Mod: {mod_name} at latest version!")
     elif args.install:
-        mod = Mod(args.install, args.game_version)
-        latest_version = mod.check_update("0")
+        latest_version = check_update(args.install, "0")
         if latest_version:
             if latest_version is None:
                 print("No version found for the specified game version and loader.")
