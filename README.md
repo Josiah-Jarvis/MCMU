@@ -2,6 +2,10 @@
 
 A utility to update and install Minecraft mods for java edition. Only works for Fabric Loader (currently).
 
+!IMPORTANT!
+
+Your .minecraft/mods/ folder must be empty before you use this program. Unintended things might happen if it is not empty.
+
 ## Usage
 
 ```bash
