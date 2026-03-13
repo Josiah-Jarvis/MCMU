@@ -8,7 +8,7 @@ from logging import getLogger, basicConfig
 from argparse import ArgumentParser
 from .minecraft_mod import Mod  # Mod function import
 
-__version__ = "1.2.0.dev0"
+__version__ = "1.2.0.dev1"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -102,6 +102,7 @@ def main():
         del config['mods'][args.remove]
         if not write_config_file(config_file, config):
             return 1
+        print(f"Mod: {args.remove}, successfully removed")
     elif args.list:
         for mod in config['mods']:
             print(f"{config['mods'][mod]['name']}\n\tVersion: {config['mods'][mod]['version']}\n\tFile: {config['mods'][mod]['file']}")

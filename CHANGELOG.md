@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.2.0.dev1] - 2026-03-13
+
+### Added
+
+* Added a message when a mod is removed
+
 ## [1.2.0.dev0] - 2026-03-13
 
 ### Changed
