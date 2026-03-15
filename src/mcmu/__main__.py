@@ -9,7 +9,7 @@ from logging import getLogger, basicConfig
 from requests import get
 from argparse import ArgumentParser
 
-__version__ = "1.3.0a0"
+__version__ = "1.3.0a1"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -37,10 +37,9 @@ def check_update(mod_name: str, current_version: str) -> [bool, dict]:
             "game_versions": f'["{args.game_version}"]',
             "include_changelog": "false"
     }
-    print(parameters)
     response = get(f"https://api.modrinth.com/v2/project/{mod_name}/version", params=parameters)
     if response.status_code == 404:
-        return False
+        return 404
     project_info = response.json()
     latest_version = None
     for version in project_info:
@@ -87,33 +86,32 @@ def main():
     if args.update:
         for mod_name in mods:
             latest_version = check_update(mod_name, mods[mod_name]['version'])
-            if latest_version:
-                if latest_version:
-                    if latest_version is None:
-                        print("No version found for the specified game version and loader.")
-                        return 1
-                    old_file = Path(mod_path, mods[mod_name]['file'])
-                    additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size
-                    if input(f"{args.install} will take up: {additional_storage} additional bytes, would you like to install? [Y/n]: ") is ("" or "Y"):
-                        old_file.unlink()
-                        response = get(latest_version['files'][0]['url'], stream=True)
-                        if response.status_code != 200:
-                            print(f"Failed to download the mod. Status code: {response.status_code}")
-                            return False
-                        with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:
-                            for chunk in response.iter_content(chunk_size=1024):
-                                if chunk:
-                                    file.write(chunk)
-                        print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
-                        config['mods'][mod_name] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': mod_name}
-                        if not write_config_file(config_file, config):
-                            return 1
-                    else:
-                        print("Canceling.")
-                        return 0
-                else:
-                    logger.error("Mod does not exist on Modrinth")
+            if latest_version == 404:
+                print("Mod does not exist on Modrinth.")
+                sys.exit(1)
+            elif latest_version:
+                if latest_version is None:
+                    print("No version found for the specified game version and loader.")
                     return 1
+                old_file = Path(mod_path, mods[mod_name]['file'])
+                additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size
+                if input(f"{args.install} will take up: {additional_storage} additional bytes, would you like to install? [Y/n]: ") is ("" or "Y"):
+                    old_file.unlink()
+                    response = get(latest_version['files'][0]['url'], stream=True)
+                    if response.status_code != 200:
+                        print(f"Failed to download the mod. Status code: {response.status_code}")
+                        return False
+                    with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:
+                        for chunk in response.iter_content(chunk_size=1024):
+                            if chunk:
+                                file.write(chunk)
+                    print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")
+                    config['mods'][mod_name] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': mod_name}
+                    if not write_config_file(config_file, config):
+                        return 1
+                else:
+                    print("Canceling.")
+                    return 0
             else:
                 print(f"Mod: {mod_name} at latest version!")
     elif args.install:

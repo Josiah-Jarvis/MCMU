@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0a1] - 2026-03-15
+
+### Removed
+
+* Removed print statement for parameters
+
 ## [1.3.0a0] - 2026-03-15
 
 This release brings a new feature! You can now search mods on Modrinth!

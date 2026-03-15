@@ -50,6 +50,12 @@ mcmu -i mod-name
 mcmu -l
 ```
 
+### Search mods
+
+```bash
+mcmu -s search_term
+```
+
 ## FAQ
 
 ### Why did you build this?
