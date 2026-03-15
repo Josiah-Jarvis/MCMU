@@ -6,7 +6,7 @@
 
 ## In Progress
 
-[ ] Fix downgrading mods
+[ ] Install mod dependencies
 
 ## Completed
 
