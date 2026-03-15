@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.0a0] - ?
+
+This release brings a new feature! You can now search mods on Modrinth!
+
+### Added
+
+* Functionality to search mods
+
+### Fixed
+
+* Fixed passing parameters for installing mods
+
+### Changed
+
+* Does'nt ask to download mod if it is already installed
+* Now most command lines options are mutually exclusive
+
 ## [1.2.1] - 2026-03-13
 
 ### Changed
