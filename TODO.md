@@ -3,9 +3,10 @@
 ## To Do
 
 [ ] Get rid of the config file (might have found a solution!)
-[ ] Fix downgrading mods
 
 ## In Progress
+
+[ ] Fix downgrading mods
 
 ## Completed
 
