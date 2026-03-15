@@ -7,10 +7,9 @@
 
 ## In Progress
 
-[ ] Add comments to the code
-
 ## Completed
 
+[x] Add comments to the code - 2026-03-16
 [x] Search mods from Modrinth - 2026-03-15
 [x] Add logging - 2026-03-11
 [x] Improve code structure - 2026-03-11

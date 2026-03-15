@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0] - 2026-03-15
+
+### Added
+
+* Comments to the code
+
 ## [1.3.0a1] - 2026-03-15
 
 ### Removed
