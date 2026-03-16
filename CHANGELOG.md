@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.0.dev0] - 2026-03-16
+
+### Added
+
+* Added a user agent header to reduce the likely hood Modrinth blocks the client: https://docs.modrinth.com/api/
+
+### Changed
+
+* Put API request code into separate file *ModrinthAPI.py*
+
 ## [1.3.0] - 2026-03-15
 
 ### Added

@@ -5,16 +5,17 @@ from copy import copy  # Import copy
 from json import load, dump, JSONDecodeError  # Import JSON functions
 from pathlib import Path  # Import for file functions
 from logging import getLogger, basicConfig  # Logging functionality
-from requests import get  # Get object from the API
+from requests import get  # Get files from the CDN
 from argparse import ArgumentParser  # Command line arguments class
+from .ModrinthAPI import ModrinthAPI  # Modrinth API code (Local import)
 
-__version__ = "1.3.0"
+__version__ = "1.4.0.dev0"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging config
 
-parser = ArgumentParser(prog="mcmu")
+parser = ArgumentParser(prog=f"MCMU {__version__}", description="Downloads minecraft Mods from Modrinth")
 group = parser.add_mutually_exclusive_group()  # Get mutually exclusive group set up
 group.add_argument("-u", "--update", help="Updates installed mods", action="store_true")
 group.add_argument("-r", "--remove", help="Removes an installed mod")
@@ -30,6 +31,8 @@ parser.add_argument("-g", "--game_version", default="26.1", help="The game versi
 args = parser.parse_args()  # Parser the arguments
 config_file = Path(args.minecraft_dir, "config/mcmu.json")  # Path to the config file
 
+ModAPI = ModrinthAPI(f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)")
+
 def check_update(mod_name: str, current_version: str) -> [bool, dict]:
     """Checks for mod update from Modrinth
 
@@ -43,17 +46,15 @@ def check_update(mod_name: str, current_version: str) -> [bool, dict]:
             False: Mod already at latest version
             Dict: Modrinth mod object
     """
-    parameters = {
-            "loaders": '["fabric"]',
-            "game_versions": f'["{args.game_version}"]',
-            "include_changelog": "false"
-    }
-    response = get(f"https://api.modrinth.com/v2/project/{mod_name}/version", params=parameters)  # Get the mod from Modrinth
-    if response.status_code == 404:  # Response 404 if mod not found: https://docs.modrinth.com/api/operations/getprojectversions/
-        return 404
-    project_info = response.json()  # Get the JSON from the request
+    response = ModAPI.project_version(mod_name, '["fabric"]', f'["{args.game_version}"]')
+    if response == 410:  # That means the API is deprecated: https://docs.modrinth.com/api/
+        logger.critical("API is deprecated, you probably have to update MCMU")
+        sys.exit(1)
+    elif response == 404:  # Response 404 if mod not found: https://docs.modrinth.com/api/operations/getprojectversions/
+        logger.error("Mod does not exist on Modrinth")
+        sys.exit(1)
     latest_version = None  # Set the latest_version to None to indicate no newer version found yet
-    for version in project_info:  # Check each mod version in the returned data
+    for version in response:  # Check each mod version in the returned data
         if latest_version is None or version["version_number"] > latest_version["version_number"]:  # Check to see if version newer
             latest_version = version  # If it is set latest_version to the newer version
     if latest_version is not None and latest_version["version_number"] != current_version:  # Return latest version if it is newer than the current version
@@ -90,15 +91,14 @@ def main():
         with open(config_file, "r") as fp:  # Open the config file
             config = load(fp)  # Read the config file
     except JSONDecodeError:
-        logger.critical("Config file not valid JSON.")  # Welp its not valid JSON
+        logger.critical("Config file not valid JSON.")  # Well its not valid JSON
         return 1
     except FileNotFoundError:  # Oops config file does not exist
         logger.warn("Config file does not exist.")
         with open(config_file, "w") as fp:  # Create the file since it does not exist
             logger.debug("Creating config file.")
             dump({"mods":{}}, fp, indent=4)
-        logger.info("Exiting, please re-run.")
-        return 1
+        config = {"mods":{}}
     except PermissionError:  # Can't we just have the permission :?
         logger.error("No permission to write to file.")
         return 1
@@ -191,15 +191,13 @@ def main():
         for mod in config['mods']:  # Iterate over all installed mods
             print(f"{config['mods'][mod]['name']}\n\tVersion: {config['mods'][mod]['version']}\n\tFile: {config['mods'][mod]['file']}")
     elif args.search:  # If we are searching for a mod
-        parameters = {
-            "query": args.search,
-            "facets": '[["categories:fabric"],["project_type:mod"]]'
-        }  # Set up params for the query
-        response = get("https://api.modrinth.com/v2/search", params=parameters)  # Query the API
-        if response.status_code == 400:  # Response of 400 means request was invalid: https://docs.modrinth.com/api/operations/searchprojects/
-            logger.error(f"Query failed with error: {response.text}")  # Print error
+        response = ModAPI.search(args.search, '[["categories:fabric"],["project_type:mod"]]')
+        if response == 410:  # That means the API is deprecated: https://docs.modrinth.com/api/
+            logger.critical("API is deprecated, you probably have to update MCMU")
+        elif response == 400:  # Response of 400 means request was invalid: https://docs.modrinth.com/api/operations/searchprojects/
+            logger.error(f"Request invalid")  # Print error
         else:
-            for mod in response.json()['hits']:  # Iterate over and list all the mods
+            for mod in response['hits']:  # Iterate over and list all the mods
                 print(f"{mod['title']}:\n\tDescription: {mod['description']}\n\tAuthor: {mod['author']}\n\tDownloads: {mod['downloads']}\n\tLatest Version: {mod['latest_version']}\n\n")
     else:
         parser.print_help()  # Prints help message if there is nothing to do
