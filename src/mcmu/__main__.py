@@ -2,34 +2,33 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from re import match
+from os import listdir
 from pathlib import Path  # Import for file functions
 from logging import getLogger, basicConfig  # Logging functionality
 from requests import get  # Get files from the CDN
 from argparse import ArgumentParser  # Command line arguments class
 from .ModrinthAPI import ModrinthAPI  # Modrinth API code (Local import)
-from .Mod import Mod
 
-__version__ = "2.0.0.dev1"
+__version__ = "2.0.0.dev2"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging config
 
-parser = ArgumentParser(prog=f"MCMU {__version__}", description="Downloads minecraft Mods from Modrinth")
+parser = ArgumentParser(prog=f"MCMU {__version__}", description="Downloads Minecraft mods from Modrinth")
 group = parser.add_mutually_exclusive_group()  # Get mutually exclusive group set up
 group.add_argument("-u", "--update", help="Updates installed mods", action="store_true")
 group.add_argument("-r", "--remove", help="Removes an installed mod")
 group.add_argument("-i", "--install", help="Installs a mod")
 group.add_argument("-l", "--list", help="List installed mods", action="store_true")
 group.add_argument("-s", "--search", help="Search packages on Modrinth")
-group.add_argument("-v", "--version", action="version", version=f"MCMU version: {__version__}")
 # Unix systems defaults to ~/.minecraft/ for the minecraft dir, I don't know about Windows or MacOS
 parser.add_argument("-m", "--minecraft_dir", default=Path(Path.home(), ".minecraft/"), help="Path to the Minecraft folder, defaults to '~/.minecraft/'")
 # Game version defaults to 1.21.11 as it is the latest Minecraft release
 parser.add_argument("-g", "--game_version", default="26.1", help="The game version to use to install mods, defaults to '26.1'")
 
 args = parser.parse_args()  # Parser the arguments
-config_file = Path(args.minecraft_dir, "config/mcmu.json")  # Path to the config file
 
 ModAPI = ModrinthAPI(f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)")
 
@@ -63,6 +62,20 @@ def check_update(mod_name: str, current_version: str) -> [bool, dict]:
     return False  # Return false for failure
 
 
+def list_mods(mod_path: Path):
+    mods = {}
+    for mod in listdir(mod_path):
+        pattern = r'^(.*?)_version_(.*)\.jar$'
+        m = match(pattern, mod)
+        mods[m.group(1)] = {
+            "name": m.group(1),
+            "version": m.group(2),
+            "file": mod
+        }
+
+    return mods
+
+
 def main():
     """Main function
 
@@ -71,14 +84,14 @@ def main():
         0: Success
     """
     mod_path = Path(args.minecraft_dir, "mods/")  # Path to folder where the mod jar's are stored
-    mods = Mod(mod_path).list_mods()
+    mods = list_mods(mod_path)
     if not mod_path.exists():
         logger.critical(f"Mods folder: {mod_path} does not exist. Please create it.\nExiting...")  # Fabric creates the mods/ folder on first run by they might not have run it yet
         return 1
     if args.update:
         for mod_name in mods:
             latest_version = check_update(mod_name, mods[mod_name]['version'])  # Check for update
-            if latest_version == 404:  # Thats weird, maybe the user tampered with the config file or the mod was deleted
+            if latest_version == 404:  # Thats weird
                 print("Mod does not exist on Modrinth.")
                 sys.exit(1)
             elif latest_version is None:  # If latest version is None no newer version was found
@@ -129,7 +142,7 @@ def main():
             logger.error("Mod does not exist on Modrinth")
             return 1
     elif args.remove:  # If were removing the mod
-        if args.remove not in mods:  # If the mod is not listed in the config file exit with error
+        if args.remove not in mods:  # If the mod is not installed
             logger.error("Mod not installed")
             return 1
         try:

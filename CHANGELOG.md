@@ -1,6 +1,16 @@
 # Changelog
 
-## **2.0.0.dev1** - 2026-03-17
+## [v2.0.0.dev2] - 2026-03-17
+
+### Changed
+
+* Now shows 100 search results instead of 10
+
+### Removed
+
+* Removed -v and --version
+
+## [v2.0.0.dev1] - 2026-03-17
 
 ### Changed
 
@@ -14,7 +24,7 @@
 
 * Fixed displaying mod name when upgrading
 
-## [1.4.0.dev0] - 2026-03-16
+## [v1.4.0.dev0] - 2026-03-16
 
 ### Added
 
@@ -24,19 +34,19 @@
 
 * Put API request code into separate file *ModrinthAPI.py*
 
-## [1.3.0] - 2026-03-15
+## [v1.3.0] - 2026-03-15
 
 ### Added
 
 * Comments to the code
 
-## [1.3.0a1] - 2026-03-15
+## [v1.3.0a1] - 2026-03-15
 
 ### Removed
 
 * Removed print statement for parameters
 
-## [1.3.0a0] - 2026-03-15
+## [v1.3.0a0] - 2026-03-15
 
 This release brings a new feature! You can now search mods on Modrinth!
 
@@ -53,19 +63,19 @@ This release brings a new feature! You can now search mods on Modrinth!
 * Does'nt ask to download mod if it is already installed
 * Now most command lines options are mutually exclusive
 
-## [1.2.1] - 2026-03-13
+## [v1.2.1] - 2026-03-13
 
 ### Changed
 
 * Change help message for the -g command line argument
 
-## [1.2.0] - 2026-03-13
+## [v1.2.0] - 2026-03-13
 
 Happy Pi days for reals this time
 
 No changes from [1.2.0rc0](#120rc0---2026-03-13)
 
-## [1.2.0rc0] - 2026-03-13
+## [v1.2.0rc0] - 2026-03-13
 
 If no serious bugs are found this release will become [1.2.0](#120---2026-03-13)
 
@@ -82,7 +92,7 @@ If no serious bugs are found this release will become [1.2.0](#120---2026-03-13)
 
 * Removed Mod class
 
-## [1.2.0a1] - 2026-03-13
+## [v1.2.0a1] - 2026-03-13
 
 ### Changed
 
@@ -93,7 +103,7 @@ If no serious bugs are found this release will become [1.2.0](#120---2026-03-13)
 
 * Removed Mod.install()
 
-## [1.2.0a0] - 2026-03-13
+## [v1.2.0a0] - 2026-03-13
 
 ### Added
 
@@ -106,19 +116,19 @@ If no serious bugs are found this release will become [1.2.0](#120---2026-03-13)
 * Now asks for permission to remove mod
 * Moved *minecraft_mod.py* code into *__main__.py*
 
-## [1.2.0.dev1] - 2026-03-13
+## [v1.2.0.dev1] - 2026-03-13
 
 ### Added
 
 * Added a message when a mod is removed
 
-## [1.2.0.dev0] - 2026-03-13
+## [v1.2.0.dev0] - 2026-03-13
 
 ### Changed
 
 * Made update messages pretty
 
-## [1.1.1] - 2026-03-13
+## [v1.1.1] - 2026-03-13
 
 Happy almost Pi Day! Here is the newest stable release.
 
@@ -251,3 +261,32 @@ This is the first release candidate for version [1.0.0+1.21.11].
 ## [0.1.0] - 2026-03-03
 
 - Initial Release
+
+[0.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.0
+[0.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.1
+[0.1.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.2
+[0.1.3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.3
+[0.1.4]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.4
+[0.2.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.2.0
+[0.2.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.2.1
+[0.2.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.2.2
+[1.0.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.0.0rc0
+[1.0.0rc1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.0.0rc1
+[1.0.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.0.0
+[1.1.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.1.0.dev0
+[1.1.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.1.0.dev1
+[1.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.1.0
+[1.1.1a0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/1.1.1a0
+[v1.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.1.1
+[v1.2.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.2.0.dev0
+[v1.2.0a0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.2.0a0
+[v1.2.0a1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.2.0a1
+[v1.2.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.2.0rc0
+[v1.2.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.2.0
+[v1.2.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.2.1
+[v1.3.0a0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.3.0a0
+[v1.3.0a1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.3.0a1
+[v1.3.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.3.0
+[v1.4.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v1.4.0.dev0
+[v2.0.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev0
+[v2.0.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev2

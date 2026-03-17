@@ -28,7 +28,8 @@ class ModrinthAPI:
         """
         parameters = {
             'query': query,
-            'facets': facets
+            'facets': facets,
+            'limit': "100"
         }
         response = get(url="https://api.modrinth.com/v2/search", params=parameters, headers=self.headers)
         if response.status_code != 200:
