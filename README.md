@@ -82,3 +82,7 @@ mcmu -g game_version -i mod-name
 ### How does it work?
 
 It works a lot like a package manager actually! It pulls the mods from a source (Modrinth) and installs them on the system. It keeps a list of the installed mods in a config file for easy access of the installed mods.
+
+### What happened to v1.4.0?
+
+It turned into v2.0.0.

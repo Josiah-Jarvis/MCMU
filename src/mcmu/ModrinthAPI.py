@@ -6,6 +6,7 @@
 
 from requests import get
 
+
 class ModrinthAPI:
     def __init__(self, UserAgent: str):
         self.headers = {
@@ -95,5 +96,3 @@ class ModrinthAPI:
             return response.status_code
         else:
             return response.json()
-
-

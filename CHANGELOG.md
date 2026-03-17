@@ -1,5 +1,19 @@
 # Changelog
 
+## **2.0.0.dev1** - 2026-03-17
+
+### Changed
+
+* Changed the name of the file when downloading
+
+### Removed
+
+* Removed the need for the config file
+
+### Fixed
+
+* Fixed displaying mod name when upgrading
+
 ## [1.4.0.dev0] - 2026-03-16
 
 ### Added
@@ -237,27 +251,3 @@ This is the first release candidate for version [1.0.0+1.21.11].
 ## [0.1.0] - 2026-03-03
 
 - Initial Release
-
-[0.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.0
-[0.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.1
-[0.1.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.2
-[0.1.3]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.3
-[0.1.4]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.1.4
-[0.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.0
-[0.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.1
-[0.2.2]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/0.2.2
-[1.0.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0rc0
-[1.0.0rc1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0rc1
-[1.0.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.0.0
-[1.1.0.dev0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev0
-[1.1.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0.dev1
-[1.1.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.0
-[1.1.1a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1a0
-[1.1.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.1.1
-[1.2.0.dev0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev0
-[1.2.0.dev1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0.dev1
-[1.2.0a0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a0
-[1.2.0a1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0a1
-[1.2.0rc0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0rc0
-[1.2.0]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.0
-[1.2.1]: https://github.com/Josiah-Jarvis/MCModUpdater/releases/tag/1.2.1

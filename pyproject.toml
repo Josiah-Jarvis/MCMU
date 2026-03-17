@@ -28,7 +28,6 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: Microsoft",
     "Operating System :: Microsoft :: Windows",
-    "Operating System :: Microsoft :: Windows :: Windows 10",
     "Operating System :: Microsoft :: Windows :: Windows 11",
     "Operating System :: POSIX",
     "Operating System :: POSIX :: Linux",
@@ -52,7 +51,7 @@ homepage = "https://github.com/Josiah-Jarvis/MCMU"
 source = "https://github.com/Josiah-Jarvis/MCMU/"
 download = "https://pypi.org/project/mcmu/#files"
 changelog = "https://github.com/Josiah-Jarvis/MCMU/blob/master/CHANGELOG.md"
-releasenotes = "https://github.com/Josiah-Jarvis/MCMU/compare/v1.3.0...v1.4.0.dev0" # Change before every release
+releasenotes = "https://github.com/Josiah-Jarvis/MCMU/compare/v1.4.0.dev0...v2.0.0.dev1" # Change before every release
 documentation = "https://github.com/Josiah-Jarvis/MCMU/blob/master/README.md"
 issues = "https://github.com/Josiah-Jarvis/MCMU/issues"
 

@@ -2,11 +2,10 @@
 
 ## To Do
 
-[ ] Get rid of the config file (might have found a solution!)
-
 ## In Progress
 
 [ ] Install mod dependencies
+[ ] Get rid of the config file (might have found a solution!)
 
 ## Completed
 

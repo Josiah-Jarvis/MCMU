@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from copy import copy  # Import copy
-from json import load, dump, JSONDecodeError  # Import JSON functions
+import sys
 from pathlib import Path  # Import for file functions
 from logging import getLogger, basicConfig  # Logging functionality
 from requests import get  # Get files from the CDN
 from argparse import ArgumentParser  # Command line arguments class
 from .ModrinthAPI import ModrinthAPI  # Modrinth API code (Local import)
+from .Mod import Mod
 
-__version__ = "1.4.0.dev0"
+__version__ = "2.0.0.dev1"
 __author__ = "Josiah Jarvis"
 
 logger = getLogger(__name__)
@@ -32,6 +32,7 @@ args = parser.parse_args()  # Parser the arguments
 config_file = Path(args.minecraft_dir, "config/mcmu.json")  # Path to the config file
 
 ModAPI = ModrinthAPI(f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)")
+
 
 def check_update(mod_name: str, current_version: str) -> [bool, dict]:
     """Checks for mod update from Modrinth
@@ -61,24 +62,6 @@ def check_update(mod_name: str, current_version: str) -> [bool, dict]:
         return latest_version
     return False  # Return false for failure
 
-def write_config_file(config_f: Path, config_d: dict):
-    """Writes the config file
-
-    Arguments:
-        config_f -- The config file
-        config_d -- The config data
-
-    Returns:
-        True: Success
-        False: Failure
-    """
-    try:
-        with open(config_f, "w") as fp:  # Open the config file
-            dump(config_d, fp, indent=4)  # Write the config file
-            return True
-    except PermissionError:  # Uh oh we do not have permission
-        logger.error("No permission to write to file.")
-        return False
 
 def main():
     """Main function
@@ -87,23 +70,8 @@ def main():
         1: Failure
         0: Success
     """
-    try:
-        with open(config_file, "r") as fp:  # Open the config file
-            config = load(fp)  # Read the config file
-    except JSONDecodeError:
-        logger.critical("Config file not valid JSON.")  # Well its not valid JSON
-        return 1
-    except FileNotFoundError:  # Oops config file does not exist
-        logger.warn("Config file does not exist.")
-        with open(config_file, "w") as fp:  # Create the file since it does not exist
-            logger.debug("Creating config file.")
-            dump({"mods":{}}, fp, indent=4)
-        config = {"mods":{}}
-    except PermissionError:  # Can't we just have the permission :?
-        logger.error("No permission to write to file.")
-        return 1
-    mods = copy(config['mods'])  # Get the mods data from the config file
     mod_path = Path(args.minecraft_dir, "mods/")  # Path to folder where the mod jar's are stored
+    mods = Mod(mod_path).list_mods()
     if not mod_path.exists():
         logger.critical(f"Mods folder: {mod_path} does not exist. Please create it.\nExiting...")  # Fabric creates the mods/ folder on first run by they might not have run it yet
         return 1
@@ -119,27 +87,24 @@ def main():
             elif latest_version:  # If latest version is a dict it should return True
                 old_file = Path(mod_path, mods[mod_name]['file'])  # Path to the old mod file
                 additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
-                if input(f"{args.install} will take up: {additional_storage} additional bytes, would you like to install? [Y/n]: ") is ("" or "Y"):  # Ask them if they want to install it
+                if input(f"{mods[mod_name]['name']} will take up: {additional_storage} additional bytes, would you like to install? [Y/n]: ") is ("" or "Y"):  # Ask them if they want to install it
                     old_file.unlink()  # Delete old file
                     response = get(latest_version['files'][0]['url'], stream=True)  # Get the new file
                     if response.status_code != 200:  # If its not 200 fail
                         print(f"Failed to download the mod. Status code: {response.status_code}")
                         return 1
-                    with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:  # IF everything good write to the file
+                    with open(f"{mod_path}/{args.install}_version_{latest_version['version_number']}.jar", 'wb') as file:  # IF everything good write to the file
                         for chunk in response.iter_content(chunk_size=1024):
                             if chunk:
                                 file.write(chunk)
-                    print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")  # Print the success
-                    config['mods'][mod_name] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': mod_name}
-                    if not write_config_file(config_file, config):  # Write the config file
-                        return 1  # Fail if writing failed
+                    print(f"Downloaded mod at {mod_path}/{args.install}_version_{latest_version['version_number']}.jar successfully.")  # Print the success
                 else:
                     print("Canceling.")
                     return 0
             else:
                 print(f"Mod: {mod_name} at latest version!")
     elif args.install:  # If were installing the mod
-        if args.install in config['mods']:  # If mod already installed exit
+        if args.install in mods:  # If mod already installed exit
             print(f"{args.install} already installed.")
             return 0
         latest_version = check_update(args.install, "0")  # Set the version to 0 so any version would be higher
@@ -152,14 +117,11 @@ def main():
                 if response.status_code != 200:
                     print(f"Failed to download the mod. Status code: {response.status_code}")
                     return False
-                with open(f"{mod_path}/{latest_version['files'][0]['filename']}", 'wb') as file:  # Write to the jar file
+                with open(f"{mod_path}/{args.install}_version_{latest_version['version_number']}.jar", 'wb') as file:  # Write to the jar file
                     for chunk in response.iter_content(chunk_size=1024):
                         if chunk:
                             file.write(chunk)
-                print(f"Downloaded {latest_version['files'][0]['filename']} successfully.")  # Print the success
-                config['mods'][args.install] = {'file': latest_version['files'][0]['filename'], 'version': latest_version['version_number'], 'name': args.install}
-                if not write_config_file(config_file, config):  # Write to the config file
-                    return 1
+                print(f"Downloaded mod at {mod_path}/{args.install}_version_{latest_version['version_number']}.jar successfully.")  # Print the success
             else:
                 print("Canceling.")
                 return 0
@@ -167,11 +129,11 @@ def main():
             logger.error("Mod does not exist on Modrinth")
             return 1
     elif args.remove:  # If were removing the mod
-        if args.remove not in config['mods']:  # If the mod is not listed in the config file exit with error
+        if args.remove not in mods:  # If the mod is not listed in the config file exit with error
             logger.error("Mod not installed")
             return 1
         try:
-            mod_file = Path(mod_path, config['mods'][args.remove]['file'])  # Path to the mod jar
+            mod_file = Path(mod_path, mods[args.remove]['file'])  # Path to the mod jar
             if input(f"Would you like to remove {args.remove}? This operation will clear {mod_file.stat().st_size} bytes. [Y/n]: ") is ("" or "Y"):  # Ask if they want to remove it
                 mod_file.unlink()  # Remove the file
             else:
@@ -182,24 +144,21 @@ def main():
         except PermissionError:  # No permission to delete the file
             logger.critical("No permission to delete mod file.")
             return 1
-        del config['mods'][args.remove]  # Remove the mods entry in the config file
-        if not write_config_file(config_file, config):  # Write to the config file
-            return 1
         print(f"Mod: {args.remove}, successfully removed")  # Print success
         return 0
     elif args.list:  # List installed mod
-        for mod in config['mods']:  # Iterate over all installed mods
-            print(f"{config['mods'][mod]['name']}\n\tVersion: {config['mods'][mod]['version']}\n\tFile: {config['mods'][mod]['file']}")
+        for mod in mods:  # Iterate over all installed mods
+            print(f"{mods[mod]['name']}\n\tVersion: {mods[mod]['version']}\n\tFile: {mods[mod]['file']}")
     elif args.search:  # If we are searching for a mod
         response = ModAPI.search(args.search, '[["categories:fabric"],["project_type:mod"]]')
         if response == 410:  # That means the API is deprecated: https://docs.modrinth.com/api/
             logger.critical("API is deprecated, you probably have to update MCMU")
         elif response == 400:  # Response of 400 means request was invalid: https://docs.modrinth.com/api/operations/searchprojects/
-            logger.error(f"Request invalid")  # Print error
+            logger.error("Request invalid")  # Print error
         else:
             for mod in response['hits']:  # Iterate over and list all the mods
                 print(f"{mod['title']}:\n\tDescription: {mod['description']}\n\tAuthor: {mod['author']}\n\tDownloads: {mod['downloads']}\n\tLatest Version: {mod['latest_version']}\n\n")
     else:
         parser.print_help()  # Prints help message if there is nothing to do
 
-    return 0 # Return 0 if all good
+    return 0  # Return 0 if all good
