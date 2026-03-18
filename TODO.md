@@ -2,6 +2,9 @@
 
 ## To Do
 
+[ ] Add support for installing a specific version of a mod
+[ ] Make it so you can list the dependency's of a mod
+
 ## In Progress
 
 ## Completed
