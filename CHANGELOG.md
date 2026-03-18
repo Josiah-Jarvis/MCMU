@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.0.0.dev3] - 2026-03-18
+
+### Added
+
+* Now installs a mods required dependency's
+
+### Changed
+
+* Changed help message to display version at bottom
+
 ## [v2.0.0.dev2] - 2026-03-17
 
 ### Changed

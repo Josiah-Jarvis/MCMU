@@ -4,10 +4,9 @@
 
 ## In Progress
 
-[ ] Install mod dependencies
-
 ## Completed
 
+[x] Install mod dependencies - 2026-03-18
 [x] Get rid of the config file (might have found a solution!) - 2026-03-17
 [x] Add comments to the code - 2026-03-16
 [x] Search mods from Modrinth - 2026-03-15
