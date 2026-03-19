@@ -7,4 +7,7 @@ upload: dist/mcmu*
 	python3 -m twine upload dist/* --config-file .pypirc
 
 requirements.txt: .venv/*
-	pip freeze > requirements.txt
+	.venv/bin/pip freeze > requirements.txt
+
+.venv:
+	python3 -m venv .venv
