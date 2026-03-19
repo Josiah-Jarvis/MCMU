@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.0.0rc0] - 2026-03-20
+
+### Added
+
+* Added ability to list a projects dependency's
+
+### Changed
+
+* Moved API code from *ModrinthAPI.py* into *__main__.py*
+
 ## [v2.0.0.dev3] - 2026-03-18
 
 ### Added
@@ -301,3 +311,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.0.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev0
 [v2.0.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev2
 [v2.0.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev3
+[v2.0.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0rc0
