@@ -2,6 +2,10 @@
 
 ## [v2.0.1.dev0+WaterBucket] - 2026-03-23
 
+### Changed
+
+* Separated different command codes into separate functions instead of all in *main()*
+* Now raises a DeprecationWarning and a UserWarning for when the API fails
 
 ## [v2.0.0] - 2026-03-20
 
