@@ -1,5 +1,9 @@
 # Changelog
 
+## [v2.0.0] - 2026-03-20
+
+Heres version 2.0.0! Hope it works.
+
 ## [v2.0.0rc0] - 2026-03-19
 
 ### Added
@@ -312,3 +316,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.0.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev2
 [v2.0.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev3
 [v2.0.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0rc0
+[v2.0.0rc1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0rc1
