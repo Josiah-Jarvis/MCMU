@@ -2,7 +2,7 @@
 
 ## [v2.0.0] - 2026-03-20
 
-Heres version 2.0.0! Hope it works.
+Here's version 2.0.0! Hope it works.
 
 ## [v2.0.0rc0] - 2026-03-19
 
