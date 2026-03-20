@@ -14,7 +14,6 @@ logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 
 parser = ArgumentParser(
-    prog="mcmu",
     description="Downloads Minecraft mods from Modrinth",
     epilog=f"Version: {get_version('mcmu')}"
 )
