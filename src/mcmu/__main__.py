@@ -75,7 +75,6 @@ def list_mods(mod_path: Path):
             "version": m.group(2),
             "file": mod
         }
-
     return mods
 
 
@@ -358,5 +357,4 @@ def main():
             print(f"{mod['title']}:\n\tDescription: {mod['description']}\n\tDownloads: {mod['downloads']}\n\n")
     else:
         parser.print_help()  # Prints help message if there is nothing to do
-
     return 0  # Return 0 if all good
