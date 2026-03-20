@@ -2,6 +2,10 @@
 
 ## [v2.0.1.dev0+WaterBucket] - 2026-03-23
 
+### Added
+
+* Now shows the defaults values for arguments in the help menu
+
 ### Changed
 
 * Separated different command codes into separate functions instead of all in *main()*
