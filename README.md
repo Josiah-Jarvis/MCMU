@@ -25,7 +25,7 @@ options:
   -d, --dependency DEPENDENCY
                         List a mods dependency's (default: None)
   -m, --minecraft_dir MINECRAFT_DIR
-                        Path to the Minecraft folder (default: /home/josiahjarvis/.minecraft)
+                        Path to the Minecraft folder (default: ~/.minecraft)
   -g, --game_version GAME_VERSION
                         The game version to use to install mods (default: 26.1)
 
