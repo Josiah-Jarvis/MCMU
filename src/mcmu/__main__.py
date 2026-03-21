@@ -6,13 +6,17 @@
 from re import match
 from os import listdir
 from pathlib import Path
-from logging import getLogger, basicConfig
+from logging import getLogger, basicConfig, INFO, DEBUG
 from requests import get
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib.metadata import version as get_version
 
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
+if __debug__:
+    logger.setLevel(DEBUG)
+else:
+    logger.setLevel(INFO)
 
 
 def cli() -> dict:
@@ -80,8 +84,7 @@ def check_update(mod_name: str, current_version: str, game_version: str) -> [boo
 
 
 def list_mods(mod_path: Path):
-    """Gets a list of installed mods
-    """
+    """Gets a list of installed mods"""
     mods = {}
     for mod in listdir(mod_path):
         m = match(r'^(.*?)_version_(.*)\.jar$', str(mod))
@@ -336,8 +339,9 @@ def main():
         1: Failure
     """
     args = cli()
-#    mod_path = Path(args.minecraft_dir, "mods/")  # Path to folder where the mod jar's are stored
+    logger.debug(args)
     mods = list_mods(args.minecraft_dir)
+    logger.debug(mods)
     if not args.minecraft_dir.exists():
         logger.critical("Mods folder: %s does not exist. Please create it.\nExiting...", args.minecraft_dir)
         return 1
