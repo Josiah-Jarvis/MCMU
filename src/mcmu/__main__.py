@@ -13,32 +13,34 @@ from importlib.metadata import version as get_version
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 
-parser = ArgumentParser(
-    description=__doc__,
-    epilog=f"Version: {get_version(__package__)}",
-    formatter_class=ArgumentDefaultsHelpFormatter
-)
-group = parser.add_mutually_exclusive_group()  # Group for arguments
-group.add_argument("-u", "--update", help="Updates a mod", action="store_true")
-group.add_argument("-r", "--remove", help="Remove a mod")
-group.add_argument("-i", "--install", help="Install a mod")
-group.add_argument("-l", "--list", help="List mods", action="store_true")
-group.add_argument("-s", "--search", help="Search mods on Modrinth")
-group.add_argument("-d", "--dependency", help="List a mods dependency's")
-parser.add_argument(
-    "-m",
-    "--minecraft_dir",
-    default=Path(Path.home(), ".minecraft/"),
-    help="Path to the Minecraft folder"
-)
-parser.add_argument(
-    "-g",
-    "--game_version",
-    default="26.1",
-    help="The game version to use to install mods"
-)
 
-args = parser.parse_args()  # Parser the arguments
+def cli() -> dict:
+    """Parses command line arguments"""
+    parser = ArgumentParser(
+        description=__doc__,
+        epilog=f"Version: {get_version(__package__)}",
+        formatter_class=ArgumentDefaultsHelpFormatter
+    )
+    group = parser.add_mutually_exclusive_group()  # Group for arguments
+    group.add_argument("-u", "--update", help="Updates a mod", action="store_true")
+    group.add_argument("-r", "--remove", help="Remove a mod")
+    group.add_argument("-i", "--install", help="Install a mod")
+    group.add_argument("-l", "--list", help="List mods", action="store_true")
+    group.add_argument("-s", "--search", help="Search mods on Modrinth")
+    group.add_argument("-d", "--dependency", help="List a mods dependency's")
+    parser.add_argument(
+        "-m",
+        "--minecraft_dir",
+        default=Path(Path.home(), ".minecraft/mods/"),
+        help="Path to the Minecraft mods folder"
+    )
+    parser.add_argument(
+        "-g",
+        "--game_version",
+        default="26.1",
+        help="The game version to use to install mods"
+    )
+    return parser.parse_args()  # Parser the arguments
 
 
 def ask(question: str) -> bool:
@@ -56,7 +58,7 @@ def ask(question: str) -> bool:
     return False
 
 
-def check_update(mod_name: str, current_version: str) -> [bool, dict]:
+def check_update(mod_name: str, current_version: str, game_version: str) -> [bool, dict]:
     """Checks for mod update from Modrinth
 
     Arguments:
@@ -68,7 +70,7 @@ def check_update(mod_name: str, current_version: str) -> [bool, dict]:
             False: Mod already at latest version
             Dict: Modrinth mod object
     """
-    response = ModAPI.project_version(mod_name, '["fabric"]', f'["{args.game_version}"]')
+    response = ModAPI.project_version(mod_name, '["fabric"]', f'["{game_version}"]')
     latest_version = None  # Set the latest_version to None to indicate no newer version found yet
     for version in response:  # Check each mod version in the returned data
         if latest_version is None or version["version_number"] > latest_version["version_number"]:  # Check to see if version newer
@@ -83,7 +85,7 @@ def list_mods(mod_path: Path):
     """
     mods = {}
     for mod in mod_path.glob('*.jar'):
-        m = match(r'^(.*?)_version_(.*)\.jar$', mod)
+        m = match(r'^(.*?)_version_(.*)\.jar$', str(mod))
         mods[m.group(1)] = {
             "name": m.group(1),
             "version": m.group(2),
@@ -235,7 +237,7 @@ def update_mods(mods: dict, mod_path: Path):
         mod_path -- The path to the mods
     """
     for mod_name in mods:
-        latest_version = check_update(mod_name, mods[mod_name]['version'])  # Check for update
+        latest_version = check_update(mod_name, mods[mod_name]['version'], args.game_version)  # Check for update
         if latest_version:  # If latest version is a dict it should be True
             old_file = Path(mod_path, mods[mod_name]['file'])  # Path to the old mod file
             additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
@@ -243,7 +245,7 @@ def update_mods(mods: dict, mod_path: Path):
                 for dependency in latest_version['dependencies']:
                     mod_data = ModAPI.project(dependency['project_id'])
                     if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
-                        dependency_latest_version = check_update(mod_data['slug'], 0)
+                        dependency_latest_version = check_update(mod_data['slug'], 0, args.game_version)
                         mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
                         ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
                         print(f"\tDownloaded required dependency at {mod_jar_file} successfully.")  # Print the success
@@ -267,7 +269,7 @@ def update_mods(mods: dict, mod_path: Path):
     return True
 
 
-def install_mod(mod: str, mods: dict, mod_path: Path):
+def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str):
     """Installs a mod
 
     Arguments:
@@ -275,16 +277,16 @@ def install_mod(mod: str, mods: dict, mod_path: Path):
         mods -- Dict of mods
         mod_path -- The path to the mods folder
     """
-    if args.install in mods:  # If mod already installed exit
+    if mod in mods:  # If mod already installed exit
         print(f"{mod} already installed.")
         return True
-    latest_version = check_update(mod, "0")  # Set the version to 0 so any version would be higher
+    latest_version = check_update(mod, "0", game_version)  # Set the version to 0 so any version would be higher
     if latest_version:  # Should be True if it is a dict
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
             for dependency in latest_version['dependencies']:
                 mod_data = ModAPI.project(dependency['project_id'])
                 if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
-                    dependency_latest_version = check_update(mod_data['slug'], 0)
+                    dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
                     mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
                     ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
                     print(f"\tDownloaded required/optional dependency at {mod_jar_file} successfully.")  # Print the success
@@ -334,19 +336,20 @@ def main():
         0: Success
         1: Failure
     """
-    mod_path = Path(args.minecraft_dir, "mods/")  # Path to folder where the mod jar's are stored
-    mods = list_mods(mod_path)
-    if not mod_path.exists():
-        logger.critical("Mods folder: %s does not exist. Please create it.\nExiting...", mod_path)  # Fabric creates the mods/ folder on first run by they might not have run it yet
+    args = cli()
+#    mod_path = Path(args.minecraft_dir, "mods/")  # Path to folder where the mod jar's are stored
+    mods = list_mods(args.minecraft_dir)
+    if not args.minecraft_dir.exists():
+        logger.critical("Mods folder: %s does not exist. Please create it.\nExiting...", args.minecraft_dir)
         return 1
     if args.update:
-        if not update_mods(mods, mod_path):
+        if not update_mods(mods, args.minecraft_dir):
             return 1
     elif args.install:  # If were installing the mod
-        if not install_mod(args.install, mods, mod_path):
+        if not install_mod(args.install, mods, args.minecraft_dir, args.game_version):
             return 1
     elif args.remove:  # If were removing the mod
-        if not remove_mod(args.remove, mods, mod_path):
+        if not remove_mod(args.remove, mods, args.minecraft_dir):
             return 1
     elif args.list:  # List installed mod
         for name, mod in mods.items():  # Iterate over all installed mods
@@ -360,5 +363,5 @@ def main():
         for mod in response['projects']:
             print(f"{mod['title']}:\n\tDescription: {mod['description']}\n\tDownloads: {mod['downloads']}\n\n")
     else:
-        parser.print_help()  # Prints help message if there is nothing to do
+        logger.error("No arguments were passed, try '%s --help'", __package__)
     return 0  # Return 0 if all good

@@ -11,6 +11,10 @@
 * Separated different command codes into separate functions instead of all in *main()*
 * Now raises a DeprecationWarning and a UserWarning for when the API fails
 
+### Removed
+
+* No longer shows help message if no args are passed
+
 ## [v2.0.0] - 2026-03-20
 
 Here's version 2.0.0! Hope it works.
