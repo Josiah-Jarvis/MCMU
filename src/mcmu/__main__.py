@@ -4,7 +4,6 @@
 """A script to download mods from Modrinth"""
 
 from re import match
-from os import listdir
 from pathlib import Path
 from logging import getLogger, basicConfig
 from requests import get
@@ -16,7 +15,7 @@ basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 
 parser = ArgumentParser(
     description=__doc__,
-    epilog=f"Version: {get_version('mcmu')}",
+    epilog=f"Version: {get_version(__package__)}",
     formatter_class=ArgumentDefaultsHelpFormatter
 )
 group = parser.add_mutually_exclusive_group()  # Group for arguments
@@ -83,7 +82,7 @@ def list_mods(mod_path: Path):
     """Gets a list of installed mods
     """
     mods = {}
-    for mod in listdir(mod_path):
+    for mod in mod_path.glob('*.jar'):
         m = match(r'^(.*?)_version_(.*)\.jar$', mod)
         mods[m.group(1)] = {
             "name": m.group(1),
@@ -94,11 +93,10 @@ def list_mods(mod_path: Path):
 
 
 class ModrinthAPI:
-    """Modrinth API class
-    """
+    """Modrinth API class"""
     def __init__(self):
         self.headers = {
-            'User-Agent': f"Josiah-Jarvis/MCMU/{get_version('mcmu')} (https://github.com/Josiah-Jarvis/MCMU)"
+            'User-Agent': f"Josiah-Jarvis/MCMU/{get_version(__package__)} (https://github.com/Josiah-Jarvis/MCMU)"
         }
 
     def query(self, endpoint: str, parameters: dict = None) -> dict:
@@ -132,11 +130,11 @@ class ModrinthAPI:
         return response.json()
 
     def search(self, query: str, facets: str) -> [dict]:
-        """Search's Mod on Modrinth: https://docs.modrinth.com/api/operations/searchprojects/
+        """Search's Mod on Modrinth
 
         Arguments:
             query -- The query string
-            facets -- Used to limit the search results see Modrinth API documentation
+            facets -- Used to limit the search results see
 
         Returns:
             dict: Response data
@@ -149,7 +147,7 @@ class ModrinthAPI:
         return self.query("search", parameters)
 
     def project(self, slug: str) -> [dict]:
-        """Get data about a project: https://docs.modrinth.com/api/operations/getproject/
+        """Get data about a project
 
         Arguments:
             slug -- The slug of the project
@@ -160,7 +158,7 @@ class ModrinthAPI:
         return self.query(f"project/{slug}")
 
     def project_dependencies(self, slug: str) -> [dict]:
-        """Get a list of a projects dependencies: https://docs.modrinth.com/api/operations/getdependencies/
+        """Get a list of a projects dependencies
 
         Arguments:
             slug -- The slug of the project
@@ -170,8 +168,8 @@ class ModrinthAPI:
         """
         return self.query(f"project/{slug}/dependencies")
 
-    def project_version(self, slug: str, loaders: str, game_version: str) -> [dict]:
-        """List a projects versions: https://docs.modrinth.com/api/operations/getprojectversions/
+    def project_version(self, slug: str, loaders: str, version: str) -> [dict]:
+        """List a projects versions
 
         Arguments:
             slug -- The slug of the project
@@ -183,7 +181,7 @@ class ModrinthAPI:
         """
         parameters = {
             'loaders': loaders,
-            'game_versions': game_version,
+            'game_versions': version,
             'include_changelog': 'false'
         }
         return self.query(f"project/{slug}/version", parameters)
@@ -213,16 +211,16 @@ class ModrinthAPI:
         Returns:
             True if success
         """
-        response = get(file, stream=True, timeout=10, headers=self.headers)  # Get mod jar file
+        response = get(file, stream=True, timeout=10, headers=self.headers)
         if response.status_code == 404:
             raise UserWarning("Version file failed to download")
         try:
-            with open(path, 'wb') as file:  # Write to the jar file
+            with open(path, 'wb') as jar_file:  # Write to the jar file
                 for chunk in response.iter_content(chunk_size=1024):
                     if chunk:
-                        file.write(chunk)
+                        jar_file.write(chunk)
         except PermissionError as exc:
-            raise PermissionError(f"No permission to write to file: {path}") from exc
+            raise PermissionError(f"No permission to write: {path}") from exc
         return True
 
 
@@ -244,19 +242,17 @@ def update_mods(mods: dict, mod_path: Path):
             if ask(f"{mods[mod_name]['name']} will take up: {additional_storage} additional bytes, would you like to install?"):
                 for dependency in latest_version['dependencies']:
                     mod_data = ModAPI.project(dependency['project_id'])
-                    if (mod_data['slug'] not in mods) and (dependency['dependency_type'] == "required"):
+                    if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
                         dependency_latest_version = check_update(mod_data['slug'], 0)
                         mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
                         ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
                         print(f"\tDownloaded required dependency at {mod_jar_file} successfully.")  # Print the success
-                    elif (mod_data['slug'] not in mods) and (dependency['dependency_type'] == "optional"):
-                        print(f"\tOptional dependency: {mod_data['slug']} not installed")
                     elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
                         print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
                         return True
                 mod_jar_file = Path(mod_path, f"{mod_name}_version_{latest_version['version_number']}.jar")
                 ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
-                print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
+                print(f"Downloaded mod at {mod_jar_file} successfully.")
                 print(f"Deleting old file: {old_file}")
                 try:
                     old_file.unlink()  # Delete old file
@@ -268,6 +264,7 @@ def update_mods(mods: dict, mod_path: Path):
                 return False
         else:
             print(f"Mod: {mod_name} at latest version!")
+    return True
 
 
 def install_mod(mod: str, mods: dict, mod_path: Path):
@@ -286,17 +283,13 @@ def install_mod(mod: str, mods: dict, mod_path: Path):
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
             for dependency in latest_version['dependencies']:
                 mod_data = ModAPI.project(dependency['project_id'])
-                if (mod_data['slug'] not in mods) and (dependency['dependency_type'] == "required"):
+                if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
                     dependency_latest_version = check_update(mod_data['slug'], 0)
                     mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
                     ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
-                    print(f"\tDownloaded required dependency at {mod_jar_file} successfully.")  # Print the success
-                elif (mod_data['slug'] not in mods) and (dependency['dependency_type'] == "optional"):
-                    dependency_latest_version = check_update(mod_data['slug'], 0)
-                    print(f"Optional dependency: {mod_data['slug']} not installed")
+                    print(f"\tDownloaded required/optional dependency at {mod_jar_file} successfully.")  # Print the success
                 elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
                     print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
-                    return False
             mod_jar_file = Path(mod_path, f"{mod}_version_{latest_version['version_number']}.jar")
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
@@ -306,6 +299,7 @@ def install_mod(mod: str, mods: dict, mod_path: Path):
     else:
         logger.error("Mod does not exist on Modrinth for that version and/or loader")
         return False
+    return True
 
 
 def remove_mod(mod: str, mods: dict, mod_path: Path):
