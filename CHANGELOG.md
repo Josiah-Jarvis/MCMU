@@ -14,6 +14,7 @@
 ### Removed
 
 * No longer shows help message if no args are passed
+* Removed the -m and -g short arguments
 
 ## [v2.0.0] - 2026-03-20
 
