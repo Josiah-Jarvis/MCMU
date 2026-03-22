@@ -231,7 +231,7 @@ class ModrinthAPI:
 ModAPI = ModrinthAPI()
 
 
-def update_mods(mods: dict, mod_path: Path, game_version):
+def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
     """Updates mods
 
     Arguments:
@@ -271,7 +271,7 @@ def update_mods(mods: dict, mod_path: Path, game_version):
     return True
 
 
-def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str):
+def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str) -> bool:
     """Installs a mod
 
     Arguments:
@@ -279,6 +279,26 @@ def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str):
         mods -- Dict of mods
         mod_path -- The path to the mods folder
     """
+    mod_version = mod.split("==")
+    if len(mod_version) > 1:
+        mod = mod_version
+        latest_version = ModAPI.get_project_version(mod[0], mod[1])
+        if game_version not in latest_version['game_versions']:
+            logger.error("%s version does not support this game version.", mod[1])
+        if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
+            for dependency in latest_version['dependencies']:
+                mod_data = ModAPI.project(dependency['project_id'])
+                if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
+                    dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
+                    mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
+                    ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
+                    print(f"\tDownloaded required/optional dependency at {mod_jar_file} successfully.")  # Print the success
+                elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
+                    print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
+            mod_jar_file = Path(mod_path, f"{mod[0]}_version_{latest_version['version_number']}.jar")
+            ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
+            print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
+            return True
     if mod in mods:  # If mod already installed exit
         print(f"{mod} already installed.")
         return True

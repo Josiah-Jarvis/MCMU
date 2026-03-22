@@ -10,6 +10,7 @@
 
 * Separated different command codes into separate functions instead of all in *main()*
 * Now raises a DeprecationWarning and a UserWarning for when the API fails
+* Can now install specific versions of a mod
 
 ### Removed
 

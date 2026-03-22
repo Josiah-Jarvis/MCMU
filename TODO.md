@@ -2,13 +2,12 @@
 
 ## To Do
 
-[ ] Add support for installing a specific version of a mod
-
 ## In Progress
 
 ## Completed
 
-[x] Make it so you can list the dependency's of a mod - 2026*03-19
+[x] Add support for installing a specific version of a mod - 2026-03-21
+[x] Make it so you can list the dependency's of a mod - 2026-03-19
 [x] Install mod dependencies - 2026-03-18
 [x] Get rid of the config file (might have found a solution!) - 2026-03-17
 [x] Add comments to the code - 2026-03-16
