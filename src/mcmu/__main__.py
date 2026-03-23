@@ -27,19 +27,19 @@ def cli() -> dict:
         formatter_class=ArgumentDefaultsHelpFormatter
     )
     group = parser.add_mutually_exclusive_group()  # Group for arguments
-    group.add_argument("-u", "--update", help="Update mods", action="store_true")
+    group.add_argument("-u", "--up", help="Update mods", action="store_true")
     group.add_argument("-r", "--remove", help="Remove a mod")
     group.add_argument("-i", "--install", help="Install a mod")
     group.add_argument("-l", "--list", help="List mods", action="store_true")
     group.add_argument("-s", "--search", help="Search mods on Modrinth")
     group.add_argument("-d", "--dependency", help="List a mods dependency's")
     parser.add_argument(
-        "--minecraft_dir",
+        "--minecraft-dir",
         default=Path(Path.home(), ".minecraft/mods/"),
         help="Path to the Minecraft mods folder"
     )
     parser.add_argument(
-        "--game_version",
+        "--game-version",
         default="26.1",
         help="The game version to use to install mods"
     )
@@ -47,18 +47,11 @@ def cli() -> dict:
 
 
 def ask(question: str) -> bool:
-    """Ask a question
-
-    Arguments:
-        question -- The question to ask
-
-    Returns:
-        True or False
-    """
+    """Ask a question"""
     answer = input(f"{question} [Y/n]: ").lower()
-    if answer in ("y", ""):
-        return True
-    return False
+    if answer in ("y", ""):  # Check if answer was Y, y or ""
+        return True  # Return 'yes'
+    return False  # Return 'no'
 
 
 def check_update(mod_name: str, current_version: str, game_version: str) -> [bool, dict]:
@@ -351,6 +344,13 @@ def remove_mod(mod: str, mods: dict, mod_path: Path):
     return True
 
 
+def setup(mod_dir: Path) -> bool:
+    """Sets up, mod folder"""
+    if not mod_dir.exists():
+        raise FileNotFoundError(f"Mod folder: {mod_dir} does not exist, please create it.\nExiting...")
+    return True
+
+
 def main():
     """Main function
 
@@ -362,10 +362,8 @@ def main():
     logger.debug(args)
     mods = list_mods(args.minecraft_dir)
     logger.debug(mods)
-    if not args.minecraft_dir.exists():
-        logger.critical("Mods folder: %s does not exist. Please create it.\nExiting...", args.minecraft_dir)
-        return 1
-    if args.update:
+    setup(args.minecraft_dir)
+    if args.up:
         if not update_mods(mods, args.minecraft_dir, args.game_version):
             return 1
     elif args.install:  # If were installing the mod
@@ -378,13 +376,26 @@ def main():
         for name, mod in mods.items():  # Iterate over all installed mods
             print(f"{name}\n\tVersion: {mod['version']}\n\tFile: {mod['file']}")
     elif args.search:  # If we are searching for a mod
-        response = ModAPI.search(args.search, '[["categories:fabric"],["project_type:mod"]]')
+        facets = '[["categories:fabric"],["project_type:mod"]]'
+        response = ModAPI.search(args.search, facets)
         for mod in response['hits']:  # Iterate over and list all the mods
-            print(f"{mod['title']}:\n\tDescription: {mod['description']}\n\tAuthor: {mod['author']}\n\tDownloads: {mod['downloads']}\n\tLatest Version: {mod['latest_version']}\n\n")
+            search = f"""{mod['title']}:
+    Description: {mod['description']}
+    Author: {mod['author']}
+    Downloads: {mod['downloads']}
+    Latest Version: {mod['latest_version']}
+
+"""
+            print(search)
     elif args.dependency:
         response = ModAPI.project_dependencies(args.dependency)
         for mod in response['projects']:
-            print(f"{mod['title']}:\n\tDescription: {mod['description']}\n\tDownloads: {mod['downloads']}\n\n")
+            dependency = f"""{mod['title']}:
+    Description: {mod['description']}
+    Downloads: {mod['downloads']}
+
+"""
+            print(dependency)
     else:
         logger.error("No arguments were passed, try '%s --help'", __package__)
     return 0  # Return 0 if all good

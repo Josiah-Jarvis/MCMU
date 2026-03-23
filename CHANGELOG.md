@@ -2,6 +2,8 @@
 
 ## [v2.0.1.dev0+WaterBucket] - 2026-03-23
 
+Here is the first snapshot for the WaterBucket update, enjoy!
+
 ### Added
 
 * Now shows the defaults values for arguments in the help menu
@@ -11,6 +13,9 @@
 * Separated different command codes into separate functions instead of all in *main()*
 * Now raises a DeprecationWarning and a UserWarning for when the API fails
 * Can now install specific versions of a mod
+* --update is --up
+* --game_version is now --game-version
+* --minecraft_dir is now --minecraft-dir
 
 ### Removed
 
