@@ -1,5 +1,20 @@
 # Changelog
 
+## [v2.0.1.dev1] - 2026-03-24
+
+### Fixed
+
+* Fixed not checking if mod installed before installing if version specified
+* Fixed FileNotFoundError: [Errno 2] No such file or directory: 'mods_folder'
+
+### Changed
+
+* Changed --minecraft-dir to --mod-dir
+
+### Added
+
+* Added the -p/--project option
+
 ## [v2.0.1.dev0] - 2026-03-23
 
 Here is the first snapshot for the WaterBucket update, enjoy!

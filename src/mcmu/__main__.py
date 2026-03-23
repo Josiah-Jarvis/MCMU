@@ -33,8 +33,9 @@ def cli() -> dict:
     group.add_argument("-l", "--list", help="List mods", action="store_true")
     group.add_argument("-s", "--search", help="Search mods on Modrinth")
     group.add_argument("-d", "--dependency", help="List a mods dependency's")
+    group.add_argument("-p", "--project", help="Get info about a project")
     parser.add_argument(
-        "--minecraft-dir",
+        "--mod_dir",
         default=Path(Path.home(), ".minecraft/mods/"),
         help="Path to the Minecraft mods folder"
     )
@@ -118,6 +119,7 @@ class ModrinthAPI:
             headers=self.headers,
             timeout=10
         )
+        logger.debug(response.text)
         if response.status_code == 410:
             raise DeprecationWarning("API deprecated")
         if response.status_code == 404:
@@ -272,6 +274,9 @@ def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str) -> bool
         mods -- Dict of mods
         mod_path -- The path to the mods folder
     """
+    if mod in mods:  # If mod already installed exit
+        print(f"{mod} already installed.")
+        return True
     mod_version = mod.split("==")
     if len(mod_version) > 1:
         mod = mod_version
@@ -292,9 +297,6 @@ def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str) -> bool
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
             return True
-    if mod in mods:  # If mod already installed exit
-        print(f"{mod} already installed.")
-        return True
     latest_version = check_update(mod, "0", game_version)  # Set the version to 0 so any version would be higher
     if latest_version:  # Should be True if it is a dict
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
@@ -344,13 +346,6 @@ def remove_mod(mod: str, mods: dict, mod_path: Path):
     return True
 
 
-def setup(mod_dir: Path) -> bool:
-    """Sets up, mod folder"""
-    if not mod_dir.exists():
-        raise FileNotFoundError(f"Mod folder: {mod_dir} does not exist, please create it.\nExiting...")
-    return True
-
-
 def main():
     """Main function
 
@@ -360,17 +355,19 @@ def main():
     """
     args = cli()
     logger.debug(args)
-    mods = list_mods(args.minecraft_dir)
+    try:
+        mods = list_mods(args.mod_dir)
+    except FileNotFoundError:
+        logger.error("Mod folder: %s does not exist", args.mods_folder)
     logger.debug(mods)
-    setup(args.minecraft_dir)
     if args.up:
-        if not update_mods(mods, args.minecraft_dir, args.game_version):
+        if not update_mods(mods, args.mod_dir, args.game_version):
             return 1
     elif args.install:  # If were installing the mod
-        if not install_mod(args.install, mods, args.minecraft_dir, args.game_version):
+        if not install_mod(args.install, mods, args.mod_dir, args.game_version):
             return 1
     elif args.remove:  # If were removing the mod
-        if not remove_mod(args.remove, mods, args.minecraft_dir):
+        if not remove_mod(args.remove, mods, args.mod_dir):
             return 1
     elif args.list:  # List installed mod
         for name, mod in mods.items():  # Iterate over all installed mods
@@ -396,6 +393,14 @@ def main():
 
 """
             print(dependency)
+    elif args.project:
+        response = ModAPI.project(args.project)
+        info = f"""{response['slug']}
+    Title: {response['title']}
+    Description: {response['description']}
+    Client Side: {response['client_side']}
+"""
+        print(info)
     else:
         logger.error("No arguments were passed, try '%s --help'", __package__)
     return 0  # Return 0 if all good
