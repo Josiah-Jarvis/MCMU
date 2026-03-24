@@ -354,3 +354,5 @@ _Initial release._
 [v2.0.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0.dev3
 [v2.0.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0rc0
 [v2.0.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0
+[v2.0.1.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev0
+[v2.0.1.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev1
