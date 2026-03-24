@@ -15,6 +15,10 @@
 
 * Added the -p/--project option
 
+### Removed
+
+* Removed -d/--dependency
+
 ## [v2.0.1.dev0] - 2026-03-23
 
 Here is the first snapshot for the WaterBucket update, enjoy!
