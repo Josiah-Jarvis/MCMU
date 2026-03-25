@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.0.dev0] - 2026-03-27
+
+### Fixed
+
+* Fixed when canceling the update of one mod it stops all others from updating
+
 ## [v2.0.1.dev1] - 2026-03-24
 
 ### Fixed

@@ -260,7 +260,6 @@ def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
                     return False
             else:
                 print("Canceling.")
-                return False
         else:
             print(f"Mod: {mod_name} at latest version!")
     return True
