@@ -2,6 +2,8 @@
 
 ## To Do
 
+[ ] Add support for disabling and enabling mods
+
 ## In Progress
 
 ## Completed

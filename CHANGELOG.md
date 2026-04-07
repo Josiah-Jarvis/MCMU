@@ -1,6 +1,12 @@
 # Changelog
 
-## [2.1.0.dev0] - 2026-03-27
+## [v2.1.0rc0] - 2026-04-07
+
+Here is the first release candidate for v2.1.0.
+
+### Changed
+
+- Updated default version to 26.1.1 from 26.1
 
 ### Fixed
 
@@ -366,3 +372,4 @@ _Initial release._
 [v2.0.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0
 [v2.0.1.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev0
 [v2.0.1.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev1
+[v2.1.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
