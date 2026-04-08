@@ -30,7 +30,7 @@ options:
   --game-version GAME_VERSION
                         The game version to use to install mods (default: 26.1.1)
 
-Version: 2.1.0
+Version: 2.1.1
 ```
 
 ### Update installed mods

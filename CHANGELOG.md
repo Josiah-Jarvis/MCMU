@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.1.1] - 2026-04-08
+
+### Fixed
+
+* Fixed printing debug messages
+
 ## [v2.1.0] - 2026-04-08
 
 WooHoo version 2.1.0 is now here!

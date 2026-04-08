@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -O
 # -*- coding: utf-8 -*-
 
 """A script to download mods from Modrinth"""
