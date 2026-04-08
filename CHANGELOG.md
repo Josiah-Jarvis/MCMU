@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.1.2] - 2026-04-08
+
+### Fixed
+
+* Fixed printing debug messages for real this time
+
 ## [v2.1.1] - 2026-04-08
 
 ### Fixed

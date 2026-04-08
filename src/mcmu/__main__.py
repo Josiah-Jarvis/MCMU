@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -O
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """A script to download mods from Modrinth"""
@@ -6,17 +6,13 @@
 from re import match
 from os import listdir
 from pathlib import Path
-from logging import getLogger, basicConfig, INFO, DEBUG
+from logging import getLogger, basicConfig
 from requests import get
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib.metadata import version as get_version
 
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
-if __debug__:
-    logger.setLevel(DEBUG)
-else:
-    logger.setLevel(INFO)
 
 
 def cli() -> dict:
