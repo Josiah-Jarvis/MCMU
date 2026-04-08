@@ -1,5 +1,9 @@
 # Changelog
 
+## [v2.1.0] - 2026-04-08
+
+WooHoo version 2.1.0 is now here!
+
 ## [v2.1.0rc0] - 2026-04-07
 
 Here is the first release candidate for v2.1.0.
@@ -373,3 +377,5 @@ _Initial release._
 [v2.0.1.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev0
 [v2.0.1.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev1
 [v2.1.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
+[v2.1.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
+[v2.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0

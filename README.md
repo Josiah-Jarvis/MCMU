@@ -10,13 +10,13 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -d DEPENDENCY] [-m MINECRAFT_DIR] [-g GAME_VERSION]
+usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -d DEPENDENCY | -p PROJECT] [--mod_dir MOD_DIR] [--game-version GAME_VERSION]
 
 A script to download mods from Modrinth
 
 options:
   -h, --help            show this help message and exit
-  -u, --update          Updates a mod (default: False)
+  -u, --up              Update mods (default: False)
   -r, --remove REMOVE   Remove a mod (default: None)
   -i, --install INSTALL
                         Install a mod (default: None)
@@ -24,13 +24,13 @@ options:
   -s, --search SEARCH   Search mods on Modrinth (default: None)
   -d, --dependency DEPENDENCY
                         List a mods dependency's (default: None)
-  -m, --minecraft_dir MINECRAFT_DIR
-                        Path to the Minecraft folder (default: ~/.minecraft)
-  -g, --game_version GAME_VERSION
-                        The game version to use to install mods (default: 26.1)
+  -p, --project PROJECT
+                        Get info about a project (default: None)
+  --mod_dir MOD_DIR     Path to the Minecraft mods folder (default: ~/.minecraft/mods)
+  --game-version GAME_VERSION
+                        The game version to use to install mods (default: 26.1.1)
 
-Version: *2.0.1*
-
+Version: 2.1.0a0
 ```
 
 ### Update installed mods
