@@ -32,7 +32,7 @@ Here is the first release candidate for v2.1.0.
 
 ### Changed
 
-- Updated default version to 26.1.1 from 26.1
+* Updated default version to 26.1.1 from 26.1
 
 ### Fixed
 
@@ -131,7 +131,7 @@ Here's version 2.0.0! Hope it works.
 
 ### Added
 
-* Added a user agent header to reduce the likely hood Modrinth blocks the client: https://docs.modrinth.com/api/
+* Added a user agent header to reduce the likely hood Modrinth blocks the client
 
 ### Changed
 
@@ -176,11 +176,11 @@ This release brings a new feature! You can now search mods on Modrinth!
 
 Happy Pi days for reals this time
 
-No changes from [1.2.0rc0](#120rc0---2026-03-13)
+No changes from [1.2.0rc0](#v120rc0---2026-03-13)
 
 ## [v1.2.0rc0] - 2026-03-13
 
-If no serious bugs are found this release will become [1.2.0](#120---2026-03-13)
+If no serious bugs are found this release will become [1.2.0](#v120---2026-03-13)
 
 ### Fixed
 
@@ -363,7 +363,7 @@ This is the first release candidate for version [1.0.0+1.21.11].
 
 ## [0.1.0] - 2026-03-03
 
-_Initial release._
+*Initial release.*
 
 [0.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.0
 [0.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/0.1.1
@@ -398,9 +398,8 @@ _Initial release._
 [v2.0.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.0
 [v2.0.1.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev0
 [v2.0.1.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.0.1.dev1
-[v2.1.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
-[v2.1.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
-[v2.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
-[v2.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
-[v2.1.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
-[v2.1.3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
+[v2.1.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0rc0
+[v2.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0
+[v2.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.1
+[v2.1.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.2
+[v2.1.3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.3

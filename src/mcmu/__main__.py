@@ -64,8 +64,10 @@ def check_update(mod_name: str, current_version: str, game_version: str) -> [boo
             False: Mod already at latest version
             Dict: Modrinth mod object
     """
-    response = ModAPI.project_version(mod_name, '["fabric"]', f'["{game_version}"]')
-    latest_version = None  # Set the latest_version to None to indicate no newer version found yet
+    response = ModAPI.project_version(
+        mod_name, '["fabric"]', f'["{game_version}"]'
+    )
+    latest_version = None  # None to indicate no newer version found yet
     for version in response:  # Check each mod version in the returned data
         if latest_version is None or version["version_number"] > latest_version["version_number"]:  # Check to see if version newer
             latest_version = version  # If it is set latest_version to the newer version
