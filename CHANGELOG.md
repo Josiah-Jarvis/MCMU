@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.1.3] - 2026-04-09
+
+### Fixed
+
+* Actually fixed it this time
+
+
+### Changed
+
+* Changed default minecraft version to 26.1.2
+
 ## [v2.1.2] - 2026-04-08
 
 ### Fixed

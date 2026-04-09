@@ -6,13 +6,14 @@
 from re import match
 from os import listdir
 from pathlib import Path
-from logging import getLogger, basicConfig
+from logging import getLogger, basicConfig, INFO
 from requests import get
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib.metadata import version as get_version
 
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
+logger.setLevel(INFO)
 
 
 def cli() -> dict:
@@ -37,7 +38,7 @@ def cli() -> dict:
     )
     parser.add_argument(
         "--game-version",
-        default="26.1.1",
+        default="26.1.2",
         help="The game version to use to install mods"
     )
     return parser.parse_args()  # Parser the arguments
