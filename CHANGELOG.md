@@ -401,3 +401,6 @@ _Initial release._
 [v2.1.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
 [v2.1.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
 [v2.1.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
+[v2.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
+[v2.1.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
+[v2.1.3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.0.dev0
