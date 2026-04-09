@@ -6,7 +6,6 @@
 
 * Actually fixed it this time
 
-
 ### Changed
 
 * Changed default minecraft version to 26.1.2

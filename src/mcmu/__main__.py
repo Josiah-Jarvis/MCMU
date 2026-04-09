@@ -116,7 +116,6 @@ class ModrinthAPI:
             headers=self.headers,
             timeout=10
         )
-        logger.debug(response.text)
         if response.status_code == 410:
             raise DeprecationWarning("API deprecated")
         if response.status_code == 404:
@@ -350,12 +349,10 @@ def main():
         1: Failure
     """
     args = cli()
-    logger.debug(args)
     try:
         mods = list_mods(args.mod_dir)
     except FileNotFoundError:
         logger.error("Mod folder: %s does not exist", args.mods_folder)
-    logger.debug(mods)
     if args.up:
         if not update_mods(mods, args.mod_dir, args.game_version):
             return 1
