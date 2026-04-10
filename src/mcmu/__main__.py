@@ -38,7 +38,7 @@ def cli() -> dict:
     )
     parser.add_argument(
         "--game-version",
-        default="26.1.2",
+        default="26.2",
         help="The game version to use to install mods"
     )
     return parser.parse_args()  # Parser the arguments

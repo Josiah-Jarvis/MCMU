@@ -77,23 +77,6 @@ I built this because I wanted to use Minecraft's default launcher but still be a
 
 Go to [Modrinth](https://modrinth.com) and search for you desired mod. Then get the part after the /mod/ in the url, that is the mod name.
 
-### Why can't I downgrade mods?
-
-As of now you can not downgrade most mods because the installer always checks for the latest version. For example if you have a mod that releases version 12 for Minecraft 1.21.11 but its latest version for Minecraft 1.21.10 is 11 then you can not downgrade that mod.
-
-A solution!
-
-Do:
-
-```bash
-mcmu -r mod-name
-mcmu -g game_version -i mod-name
-```
-
 ### How does it work?
 
 It works a lot like a package manager actually! It pulls the mods from a source (Modrinth) and installs them on the system. It keeps a list of the installed mods in a config file for easy access of the installed mods.
-
-### What happened to v1.4.0?
-
-It turned into v2.0.0.

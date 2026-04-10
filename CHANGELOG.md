@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.2.0.dev0] - 2026-06
+
+### Changed
+
+* Updated game version to 26.2
+
+### Removed
+
+* Removed support for Python 3.13
+
 ## [v2.1.3] - 2026-04-09
 
 ### Fixed
@@ -403,3 +413,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.1.1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.1
 [v2.1.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.2
 [v2.1.3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.3
+[v2.2.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev0
