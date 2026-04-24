@@ -51,6 +51,6 @@ homepage = "https://github.com/Josiah-Jarvis/MCMU"
 source = "https://github.com/Josiah-Jarvis/MCMU/"
 download = "https://pypi.org/project/mcmu/#files"
 changelog = "https://github.com/Josiah-Jarvis/MCMU/blob/master/CHANGELOG.md"
-releasenotes = "https://github.com/Josiah-Jarvis/MCMU/compare/v2.1.2...v2.1.3" # Change before every release
+releasenotes = "https://github.com/Josiah-Jarvis/MCMU/compare/v2.1.3...v2.2.0" # Change before every release
 documentation = "https://github.com/Josiah-Jarvis/MCMU/blob/master/README.md"
 issues = "https://github.com/Josiah-Jarvis/MCMU/issues"

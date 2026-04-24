@@ -3,21 +3,30 @@
 
 """A script to download mods from Modrinth"""
 
-from re import match
-from os import listdir
+from re import match, Match
+from os import listdir, getenv
 from pathlib import Path
-from logging import getLogger, basicConfig, INFO
+from logging import getLogger, basicConfig
 from requests import get
+from platform import system
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib.metadata import version as get_version
 
 logger = getLogger(__name__)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
-logger.setLevel(INFO)
 
 
 def cli() -> dict:
     """Parses command line arguments"""
+    if system() == "Linux":
+        mod_dir = Path(Path.home(), ".minecraft/mods/")
+    elif system() == "Darwin":
+        mod_dir = Path(Path.home(), "Library/Application Support/minecraft/mods/")
+    elif system() == "Windows":
+        mod_dir = Path(getenv('APPDATA'), ".minecraft\\mods\\")
+    else:
+        logger.warning("System %s not known.", system())
+        mod_dir = Path(Path.home(), ".minecraft/mods/")
     parser = ArgumentParser(
         description=__doc__,
         epilog=f"Version: {get_version(__package__)}",
@@ -29,11 +38,10 @@ def cli() -> dict:
     group.add_argument("-i", "--install", help="Install a mod")
     group.add_argument("-l", "--list", help="List mods", action="store_true")
     group.add_argument("-s", "--search", help="Search mods on Modrinth")
-    group.add_argument("-d", "--dependency", help="List a mods dependency's")
     group.add_argument("-p", "--project", help="Get info about a project")
     parser.add_argument(
-        "--mod_dir",
-        default=Path(Path.home(), ".minecraft/mods/"),
+        "--mod-dir",
+        default=mod_dir,
         help="Path to the Minecraft mods folder"
     )
     parser.add_argument(
@@ -76,16 +84,20 @@ def check_update(mod_name: str, current_version: str, game_version: str) -> [boo
     return False  # Return false for failure
 
 
-def list_mods(mod_path: Path):
+def list_mods(mod_path: Path) -> [Match, bool]:
     """Gets a list of installed mods"""
     mods = {}
     for mod in listdir(mod_path):
         m = match(r'^(.*?)_version_(.*)\.jar$', str(mod))
-        mods[m.group(1)] = {
-            "name": m.group(1),
-            "version": m.group(2),
-            "file": mod
-        }
+        try:
+            mods[m.group(1)] = {
+                "name": m.group(1),
+                "version": m.group(2),
+                "file": mod
+            }
+        except AttributeError as e:
+            logger.debug("Mod dir is empty, %s", e)
+            return []
     return mods
 
 
@@ -343,6 +355,13 @@ def remove_mod(mod: str, mods: dict, mod_path: Path):
     return True
 
 
+def print_dependency(project: str) -> str:
+    response = ModAPI.project_dependencies(project)
+    for mod in response['projects']:
+        dependency = f"""\t{mod['title']}"""
+        return dependency
+
+
 def main():
     """Main function
 
@@ -379,15 +398,6 @@ def main():
 
 """
             print(search)
-    elif args.dependency:
-        response = ModAPI.project_dependencies(args.dependency)
-        for mod in response['projects']:
-            dependency = f"""{mod['title']}:
-    Description: {mod['description']}
-    Downloads: {mod['downloads']}
-
-"""
-            print(dependency)
     elif args.project:
         response = ModAPI.project(args.project)
         info = f"""{response['slug']}
@@ -396,6 +406,8 @@ def main():
     Client Side: {response['client_side']}
 """
         print(info)
+        print("Dependency's:")
+        print(print_dependency(args.project))
     else:
         logger.error("No arguments were passed, try '%s --help'", __package__)
     return 0  # Return 0 if all good

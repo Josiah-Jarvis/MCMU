@@ -1,14 +1,21 @@
 # Changelog
 
-## [v2.2.0.dev0] - 2026-06-?
+## [v2.2.0.dev0] - 2026-04-24
 
 ### Changed
 
 * Updated game version to 26.2
+* Changed --mod_dir to --mod-dir
+* Now the default path to the mods folder is os dependent
 
 ### Removed
 
 * Removed support for Python 3.13
+* Removed -d/--dependency
+
+### Fixed
+
+* Fixed when --mod-dir has not .jar files (AttributeError: 'NoneType' object has no attribute 'group')
 
 ## [v2.1.3] - 2026-04-09
 
