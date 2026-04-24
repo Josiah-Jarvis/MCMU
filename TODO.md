@@ -2,12 +2,11 @@
 
 ## To Do
 
-[ ] Add support for disabling and enabling mods
-
 ## In Progress
 
 ## Completed
 
+[x] Add support for disabling and enabling mods - 2026-04-24
 [x] Add support for installing a specific version of a mod - 2026-03-21
 [x] Make it so you can list the dependency's of a mod - 2026-03-19
 [x] Install mod dependencies - 2026-03-18

@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.2.0.dev1] - 2026-04-
+
+### Added
+
+* Can now enable and disable mods
+* Added -e/--enable option
+* Added -d/--disable option
+
 ## [v2.2.0.dev0] - 2026-04-24
 
 ### Changed

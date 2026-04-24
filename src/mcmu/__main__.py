@@ -4,15 +4,16 @@
 """A script to download mods from Modrinth"""
 
 from re import match, Match
-from os import listdir, getenv
+from os import listdir, getenv, replace, mkdir
 from pathlib import Path
-from logging import getLogger, basicConfig
+from logging import getLogger, basicConfig, INFO
 from requests import get
 from platform import system
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib.metadata import version as get_version
 
 logger = getLogger(__name__)
+logger.setLevel(INFO)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 
 
@@ -39,6 +40,8 @@ def cli() -> dict:
     group.add_argument("-l", "--list", help="List mods", action="store_true")
     group.add_argument("-s", "--search", help="Search mods on Modrinth")
     group.add_argument("-p", "--project", help="Get info about a project")
+    group.add_argument("-e", "--enable", help="Enable a mod")
+    group.add_argument("-d", "--disable", help="Disable a mod")
     parser.add_argument(
         "--mod-dir",
         default=mod_dir,
@@ -87,6 +90,7 @@ def check_update(mod_name: str, current_version: str, game_version: str) -> [boo
 def list_mods(mod_path: Path) -> [Match, bool]:
     """Gets a list of installed mods"""
     mods = {}
+    mods_disabled = {}
     for mod in listdir(mod_path):
         m = match(r'^(.*?)_version_(.*)\.jar$', str(mod))
         try:
@@ -96,9 +100,23 @@ def list_mods(mod_path: Path) -> [Match, bool]:
                 "file": mod
             }
         except AttributeError as e:
-            logger.debug("Mod dir is empty, %s", e)
-            return []
-    return mods
+            print(e)
+            logger.info("Mod dir is empty, %s", e)
+    try:
+        for mod in listdir(Path(Path(mod_path), "mods_disabled/")):
+            m = match(r'^(.*?)_version_(.*)\.jar$', str(mod))
+            try:
+                mods_disabled[m.group(1)] = {
+                    "name": m.group(1),
+                    "version": m.group(2),
+                    "file": mod
+                }
+            except AttributeError as e:
+                logger.info("Mod dir is empty, %s", e)
+    except FileNotFoundError:
+        mkdir(Path(Path(mod_path), "mods_disabled/"))
+        mods_disabled = {}
+    return mods, mods_disabled
 
 
 class ModrinthAPI:
@@ -275,7 +293,7 @@ def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
     return True
 
 
-def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str) -> bool:
+def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str, mods_disabled) -> bool:
     """Installs a mod
 
     Arguments:
@@ -283,7 +301,7 @@ def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str) -> bool
         mods -- Dict of mods
         mod_path -- The path to the mods folder
     """
-    if mod in mods:  # If mod already installed exit
+    if (mod in mods) or (mod in mods_disabled):  # If mod already installed exit
         print(f"{mod} already installed.")
         return True
     mod_version = mod.split("==")
@@ -355,7 +373,24 @@ def remove_mod(mod: str, mods: dict, mod_path: Path):
     return True
 
 
-def print_dependency(project: str) -> str:
+def enable_mod(mod: str, mod_list: list, disabled_mods_list: list, mod_path: Path) -> bool:
+    if mod in disabled_mods_list:
+        if mod in mod_list:
+            return False
+        replace(Path(mod_path, "mods_disabled/", disabled_mods_list[mod]['file']), Path(mod_path, disabled_mods_list[mod]['file']))
+    return True
+
+
+def disable_mod(mod: str, mod_list: list, disabled_mods_list: list, mod_path: Path) -> bool:
+    if mod in mod_list:
+        if mod in disabled_mods_list:
+            return False
+        replace(Path(mod_path, mod_list[mod]['file']), Path(mod_path, "mods_disabled/", mod_list[mod]['file']))
+    return True
+
+
+def get_dependency(project: str) -> str:
+    """Gets a mods dependency's"""
     response = ModAPI.project_dependencies(project)
     for mod in response['projects']:
         dependency = f"""\t{mod['title']}"""
@@ -371,14 +406,14 @@ def main():
     """
     args = cli()
     try:
-        mods = list_mods(args.mod_dir)
+        mods, mods_disabled = list_mods(args.mod_dir)
     except FileNotFoundError:
-        logger.error("Mod folder: %s does not exist", args.mods_folder)
+        logger.error("Mod folder: %s does not exist", args.mod_folder)
     if args.up:
         if not update_mods(mods, args.mod_dir, args.game_version):
             return 1
     elif args.install:  # If were installing the mod
-        if not install_mod(args.install, mods, args.mod_dir, args.game_version):
+        if not install_mod(args.install, mods, args.mod_dir, args.game_version, mods_disabled):
             return 1
     elif args.remove:  # If were removing the mod
         if not remove_mod(args.remove, mods, args.mod_dir):
@@ -407,7 +442,17 @@ def main():
 """
         print(info)
         print("Dependency's:")
-        print(print_dependency(args.project))
+        print(get_dependency(args.project))
+    elif args.enable:
+        if enable_mod(args.enable, mods, mods_disabled, args.mod_dir):
+            logger.info("Successfully enabled mod: %s", args.enable)
+        else:
+            return 1
+    elif args.disable:
+        if disable_mod(args.disable, mods, mods_disabled, args.mod_dir):
+            logger.info("Successfully disabled mod: %s", args.disable)
+        else:
+            return 1
     else:
         logger.error("No arguments were passed, try '%s --help'", __package__)
     return 0  # Return 0 if all good

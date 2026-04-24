@@ -10,7 +10,7 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -d DEPENDENCY | -p PROJECT] [--mod_dir MOD_DIR] [--game-version GAME_VERSION]
+usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -p PROJECT | -e ENABLE | -d DISABLE] [--mod-dir MOD_DIR] [--game-version GAME_VERSION]
 
 A script to download mods from Modrinth
 
@@ -22,15 +22,17 @@ options:
                         Install a mod (default: None)
   -l, --list            List mods (default: False)
   -s, --search SEARCH   Search mods on Modrinth (default: None)
-  -d, --dependency DEPENDENCY
-                        List a mods dependency's (default: None)
   -p, --project PROJECT
                         Get info about a project (default: None)
-  --mod_dir MOD_DIR     Path to the Minecraft mods folder (default: ~/.minecraft/mods)
+  -e, --enable ENABLE   Enable a mod (default: None)
+  -d, --disable DISABLE
+                        Disable a mod (default: None)
+  --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: ~/.minecraft/mods)
   --game-version GAME_VERSION
-                        The game version to use to install mods (default: 26.1.1)
+                        The game version to use to install mods (default: 26.2)
 
-Version: 2.1.1
+Version: 2.2.0.dev1
+
 ```
 
 ### Update installed mods
@@ -65,7 +67,7 @@ mcmu -s search_term
 
 ## Support
 
-Supported operating systems are Debian and Fedora, it should work on Windows and MacOS to probably.
+Supported operating systems are Linux, MacOS, and Windows.
 
 ## FAQ
 
