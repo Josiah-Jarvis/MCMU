@@ -98,21 +98,11 @@ def ask(question: str) -> bool:
 
 
 def check_update(
-    mod_name: str,
-    current_version: str,
-    game_version: str
-) -> [bool, dict]:
-    """Checks for mod update from Modrinth
-
-    Arguments:
-        mod_name -- The name of the mod on Modrinth
-        current_version -- The current installed version of the mod
-
-    Returns:
-        Returns:
-            False: Mod already at latest version
-            Dict: Modrinth mod object
-    """
+    mod_name: str,  # The name of the mod on Modrinth
+    current_version: str,  # The current installed version of the mod
+    game_version: str  # Game version to look for
+) -> [bool, dict]:  # Modrinth mod object or False if already at latest version
+    """Checks for mod update from Modrinth"""
     response = ModAPI.project_version(
         mod_name, '["fabric"]', f'["{game_version}"]'
     )
@@ -164,21 +154,16 @@ class ModrinthAPI:
             'User-Agent': f"Josiah-Jarvis/MCMU/{get_version(__package__)} (https://github.com/Josiah-Jarvis/MCMU)"
         }
 
-    def query(self, endpoint: str, parameters: dict = None) -> dict:
+    def query(
+        self,
+        endpoint: str,  # The API endpoint
+        parameters: dict = None  # The parameters to pass the API (default: {None})
+    ) -> dict:  # API json
         """Query's the Modrinth API
-
-        Arguments:
-            endpoint -- The API endpoint
-
-        Keyword Arguments:
-            parameters -- The parameters to pass the API (default: {None})
 
         Raises:
             DeprecationWarning: If response is 410
             UserWarning: If response is 400 or 404
-
-        Returns:
-            API json
         """
         response = get(
             url=f"https://api.modrinth.com/v2/{endpoint}",
@@ -194,16 +179,12 @@ class ModrinthAPI:
             raise UserWarning("API request invalid")
         return response.json()
 
-    def search(self, query: str, facets: str) -> [dict]:
-        """Search's Mod on Modrinth
-
-        Arguments:
-            query -- The query string
-            facets -- Used to limit the search results see
-
-        Returns:
-            dict: Response data
-        """
+    def search(
+        self,
+        query: str,  # The query string
+        facets: str  # Used to limit the search results see
+    ) -> [dict]:  # Response data
+        """Search's Mod on Modrinth"""
         parameters = {
             'query': query,
             'facets': facets,
@@ -211,39 +192,27 @@ class ModrinthAPI:
         }
         return self.query("search", parameters)
 
-    def project(self, slug: str) -> [dict]:
-        """Get data about a project
-
-        Arguments:
-            slug -- The slug of the project
-
-        Returns:
-            dict: Project data
-        """
+    def project(
+        self,
+        slug: str  # The slug of the project
+    ) -> [dict]:  # Project data
+        """Get data about a project"""
         return self.query(f"project/{slug}")
 
-    def project_dependencies(self, slug: str) -> [dict]:
-        """Get a list of a projects dependencies
-
-        Arguments:
-            slug -- The slug of the project
-
-        Returns:
-            dict: Dependency information
-        """
+    def project_dependencies(
+        self,
+        slug: str  # The slug of the project
+    ) -> [dict]:  # Dependency information
+        """Get a list of a projects dependencies"""
         return self.query(f"project/{slug}/dependencies")
 
-    def project_version(self, slug: str, loaders: str, version: str) -> [dict]:
-        """List a projects versions
-
-        Arguments:
-            slug -- The slug of the project
-            loaders -- Loaders to filter for
-            game_version -- Game versions to filter for
-
-        Returns:
-            dict: Project version data
-        """
+    def project_version(
+        self,
+        slug: str,  # The slug of the project
+        loaders: str,  # Loaders to filter for
+        version: str  # Game versions to filter for
+    ) -> [dict]:  # Project version data
+        """List a projects versions"""
         parameters = {
             'loaders': loaders,
             'game_versions': version,
@@ -251,30 +220,22 @@ class ModrinthAPI:
         }
         return self.query(f"project/{slug}/version", parameters)
 
-    def get_project_version(self, slug: str, version_number: str) -> [dict]:
-        """Get a specific version from a mod
-
-        Arguments:
-            slug -- The name of the project
-            version_number -- The specific version of the project
-
-        Returns:
-            The query's json
-        """
+    def get_project_version(
+        self,
+        slug: str,  # The name of the project
+        version_number: str  # The specific version of the project
+    ) -> [dict]:  # The query's json
+        """Get a specific version from a mod"""
         return self.query(f"project/{slug}/version/{version_number}")
 
-    def get_file(self, file: str, path: Path):
+    def get_file(
+        self,
+        file: str,  # The file to download
+        path: Path  # The file to write to
+    ) -> bool:  # True if success
         """Gets file from the CDN
-
-        Arguments:
-            file -- The file to download
-            path -- The file to write to
-
         Raises:
             UserWarning: 404 code
-
-        Returns:
-            True if success
         """
         response = get(file, stream=True, timeout=10, headers=self.headers)
         if response.status_code == 404:
@@ -292,7 +253,11 @@ class ModrinthAPI:
 ModAPI = ModrinthAPI()
 
 
-def download_dependency_s(dependency_s: list, mods: list, mod_path: Path):
+def download_dependency_s(
+    dependency_s: list,  # List of mods dependency's
+    mods: list,  # List of installed mods
+    mod_path: Path  # Path to the mods folder
+):
     """Download a mods dependency's"""
     for dependency in dependency_s:
         mod_data = ModAPI.project(dependency['project_id'])
@@ -311,13 +276,12 @@ def download_dependency_s(dependency_s: list, mods: list, mod_path: Path):
             print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
 
 
-def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
-    """Updates mods
-
-    Arguments:
-        mods -- A dict of mods
-        mod_path -- The path to the mods
-    """
+def update_mods(
+    mods: dict,  # A dict of mods
+    mod_path: Path,  # The path to the mods
+    game_version  # The game version to install for
+) -> bool:
+    """Updates mods"""
     for mod_name in mods:
         latest_version = check_update(mod_name, mods[mod_name]['version'], game_version)  # Check for update
         if latest_version:  # If latest version is a dict it should be True
@@ -342,19 +306,13 @@ def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
 
 
 def install_mod(
-        mod: str,
-        mods: dict,
-        mod_path: Path,
-        game_version: str,
-        mods_disabled,
+        mod: str,  # The mod
+        mods: dict,  # Dict of mods
+        mod_path: Path,  # The path to the mods folder
+        game_version: str,  # Game version to install for
+        mods_disabled,  # List of disabled mods
 ) -> bool:
-    """Installs a mod
-
-    Arguments:
-        mod -- The mod
-        mods -- Dict of mods
-        mod_path -- The path to the mods folder
-    """
+    """Installs a mod"""
     if (mod in mods) or (mod in mods_disabled):  # If mod already installed exit
         print(f"{mod} already installed.")
         return True
@@ -386,14 +344,12 @@ def install_mod(
     return True
 
 
-def remove_mod(mod: str, mods: dict, mod_path: Path):
-    """Removes a mod
-
-    Arguments:
-        mod -- The mod
-        mods -- Dict of mods
-        mod_path -- Path to the mods
-    """
+def remove_mod(
+    mod: str,  # The mod
+    mods: dict,  # Dict of mods
+    mod_path: Path  # Path to the mods
+):
+    """Removes a mod"""
     if mod not in mods:  # If the mod is not installed
         logger.error("Mod not installed")
         return False
@@ -412,10 +368,10 @@ def remove_mod(mod: str, mods: dict, mod_path: Path):
 
 
 def enable_mod(
-    mod: str,
-    mod_list: list,
-    disabled_mods_list: list,
-    mod_path: Path
+    mod: str,  # Name of mod
+    mod_list: list,  # List of mods
+    disabled_mods_list: list,  # List of disabled mods
+    mod_path: Path  # Mod path
 ) -> bool:
     """Enable a mod"""
     if mod in disabled_mods_list:
@@ -433,10 +389,10 @@ def enable_mod(
 
 
 def disable_mod(
-    mod: str,
-    mod_list: list,
-    disabled_mods_list: list,
-    mod_path: Path
+    mod: str,  # Mod name
+    mod_list: list,  # List of mods
+    disabled_mods_list: list,  # List of disabled mods
+    mod_path: Path  # Mod path
 ) -> bool:
     """Disable a mod"""
     if mod in mod_list:
