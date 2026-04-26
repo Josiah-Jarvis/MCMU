@@ -156,8 +156,8 @@ class ModrinthAPI:
 
     def query(
         self,
-        endpoint: str,  # The API endpoint
-        parameters: dict = None  # The parameters to pass the API (default: {None})
+        endpoint: str = "https://api.modrinth.com/v2/",  # The API endpoint
+        parameters: dict = None  # The parameters to pass the API
     ) -> dict:  # API json
         """Query's the Modrinth API
 
@@ -329,7 +329,7 @@ def install_mod(
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
             return True
     latest_version = check_update(mod, "0", game_version)  # Set the version to 0 so any version would be higher
-    if latest_version:  # Should be True if it is a dict
+    if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
             download_dependency_s(latest_version['dependencies'], mods, mod_path)
             mod_jar_file = Path(mod_path, f"{mod}_version_{latest_version['version_number']}.jar")
