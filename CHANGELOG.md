@@ -7,6 +7,8 @@
 * Can now enable and disable mods
 * Added -e/--enable option
 * Added -d/--disable option
+* Added --enable-experimental-features
+* Now can get mod path and game version form environment variables
 
 ## [v2.2.0.dev0] - 2026-04-24
 
@@ -15,6 +17,7 @@
 * Updated game version to 26.2
 * Changed --mod_dir to --mod-dir
 * Now the default path to the mods folder is os dependent
+* --game-version default is now 26.1.2 again
 
 ### Removed
 

@@ -4,9 +4,9 @@
 """A script to download mods from Modrinth"""
 
 from re import match, Match
-from os import listdir, getenv, replace, mkdir
+from os import listdir, getenv, replace, mkdir, environ
 from pathlib import Path
-from logging import getLogger, basicConfig, INFO
+from logging import getLogger, basicConfig, INFO, DEBUG
 from requests import get
 from platform import system
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
@@ -19,15 +19,37 @@ basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 
 def cli() -> dict:
     """Parses command line arguments"""
-    if system() == "Linux":
-        mod_dir = Path(Path.home(), ".minecraft/mods/")
-    elif system() == "Darwin":
-        mod_dir = Path(Path.home(), "Library/Application Support/minecraft/mods/")
-    elif system() == "Windows":
-        mod_dir = Path(getenv('APPDATA'), ".minecraft\\mods\\")
+    try:
+        environ['MCMU_MOD_PATH']
+    except KeyError:
+        if system() == "Linux":
+            mod_dir = Path(Path.home(), ".minecraft/mods/")
+        elif system() == "Darwin":
+            mod_dir = Path(
+                Path.home(), "Library/Application Support/minecraft/mods/"
+            )
+        elif system() == "Windows":
+            mod_dir = Path(getenv('APPDATA'), ".minecraft\\mods\\")
+        else:
+            logger.warning("System %s not known.", system())
+            mod_dir = Path(Path.home(), ".minecraft/mods/")
     else:
-        logger.warning("System %s not known.", system())
-        mod_dir = Path(Path.home(), ".minecraft/mods/")
+        mod_dir = environ['MCMU_MOD_PATH']
+        logger.info(
+            "Mod dir set to %s because of environment variable.",
+            mod_dir
+        )
+    try:
+        environ['MCMU_GAME_VERSION']
+    except KeyError:
+        game_version = "26.1.2"
+    else:
+        game_version = environ['MCMU_GAME_VERSION']
+        logger.info(
+            "Game version set to %s because of environment variable.",
+            game_version
+        )
+
     parser = ArgumentParser(
         description=__doc__,
         epilog=f"Version: {get_version(__package__)}",
@@ -49,8 +71,20 @@ def cli() -> dict:
     )
     parser.add_argument(
         "--game-version",
-        default="26.2",
+        default=game_version,
         help="The game version to use to install mods"
+    )
+    parser.add_argument(
+        "--enable-experimental-features",
+        default="false",
+        help="Enable experimental features",
+        action="store_true"
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase logging level",
+        action="store_true"
     )
     return parser.parse_args()  # Parser the arguments
 
@@ -63,7 +97,11 @@ def ask(question: str) -> bool:
     return False  # Return 'no'
 
 
-def check_update(mod_name: str, current_version: str, game_version: str) -> [bool, dict]:
+def check_update(
+    mod_name: str,
+    current_version: str,
+    game_version: str
+) -> [bool, dict]:
     """Checks for mod update from Modrinth
 
     Arguments:
@@ -78,11 +116,11 @@ def check_update(mod_name: str, current_version: str, game_version: str) -> [boo
     response = ModAPI.project_version(
         mod_name, '["fabric"]', f'["{game_version}"]'
     )
-    latest_version = None  # None to indicate no newer version found yet
+    latest_version = {}  # None to indicate no newer version found yet
     for version in response:  # Check each mod version in the returned data
-        if latest_version is None or version["version_number"] > latest_version["version_number"]:  # Check to see if version newer
-            latest_version = version  # If it is set latest_version to the newer version
-    if latest_version is not None and latest_version["version_number"] != current_version:  # Return latest version if it is newer than the current version
+        if latest_version == {} or version["version_number"] > latest_version["version_number"]:  # Check to see if version newer
+            latest_version = version  # Set to latest version
+    if latest_version != {} and latest_version["version_number"] != current_version:  # Return latest version if it is newer than the current version
         return latest_version
     return False  # Return false for failure
 
@@ -254,6 +292,25 @@ class ModrinthAPI:
 ModAPI = ModrinthAPI()
 
 
+def download_dependency_s(dependency_s: list, mods: list, mod_path: Path):
+    """Download a mods dependency's"""
+    for dependency in dependency_s:
+        mod_data = ModAPI.project(dependency['project_id'])
+        if (mod_data['slug'] not in mods) and (dependency['dependency_type'] == "required"):
+            dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
+            mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
+            ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
+            print(f"\tDownloaded required dependency at {mod_jar_file} successfully.")  # Print the success
+        elif (mod_data['slug'] not in mods) and (dependency['dependency_type'] == "optional"):
+            if ask(f"Would you like to install optional dependency: {mod_data['slug']}?"):
+                dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
+                mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
+                ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
+                print(f"\tDownloaded optional dependency at {mod_jar_file} successfully.")  # Print the success
+        elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
+            print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
+
+
 def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
     """Updates mods
 
@@ -267,16 +324,7 @@ def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
             old_file = Path(mod_path, mods[mod_name]['file'])  # Path to the old mod file
             additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
             if ask(f"{mods[mod_name]['name']} will take up: {additional_storage} additional bytes, would you like to install?"):
-                for dependency in latest_version['dependencies']:
-                    mod_data = ModAPI.project(dependency['project_id'])
-                    if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
-                        dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
-                        mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
-                        ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
-                        print(f"\tDownloaded required dependency at {mod_jar_file} successfully.")  # Print the success
-                    elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
-                        print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
-                        return True
+                download_dependency_s(latest_version['dependencies'], mods, mod_path)
                 mod_jar_file = Path(mod_path, f"{mod_name}_version_{latest_version['version_number']}.jar")
                 ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
                 print(f"Downloaded mod at {mod_jar_file} successfully.")
@@ -293,7 +341,13 @@ def update_mods(mods: dict, mod_path: Path, game_version) -> bool:
     return True
 
 
-def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str, mods_disabled) -> bool:
+def install_mod(
+        mod: str,
+        mods: dict,
+        mod_path: Path,
+        game_version: str,
+        mods_disabled,
+) -> bool:
     """Installs a mod
 
     Arguments:
@@ -311,15 +365,7 @@ def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str, mods_di
         if game_version not in latest_version['game_versions']:
             logger.error("%s version does not support this game version.", mod[1])
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
-            for dependency in latest_version['dependencies']:
-                mod_data = ModAPI.project(dependency['project_id'])
-                if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
-                    dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
-                    mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
-                    ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
-                    print(f"\tDownloaded required/optional dependency at {mod_jar_file} successfully.")  # Print the success
-                elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
-                    print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
+            download_dependency_s(latest_version['dependencies'], mods, mod_path)
             mod_jar_file = Path(mod_path, f"{mod[0]}_version_{latest_version['version_number']}.jar")
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
@@ -327,23 +373,15 @@ def install_mod(mod: str, mods: dict, mod_path: Path, game_version: str, mods_di
     latest_version = check_update(mod, "0", game_version)  # Set the version to 0 so any version would be higher
     if latest_version:  # Should be True if it is a dict
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
-            for dependency in latest_version['dependencies']:
-                mod_data = ModAPI.project(dependency['project_id'])
-                if (mod_data['slug'] not in mods) and (dependency['dependency_type'] in ("required", "optional")):
-                    dependency_latest_version = check_update(mod_data['slug'], 0, game_version)
-                    mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
-                    ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
-                    print(f"\tDownloaded required/optional dependency at {mod_jar_file} successfully.")  # Print the success
-                elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
-                    print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
+            download_dependency_s(latest_version['dependencies'], mods, mod_path)
             mod_jar_file = Path(mod_path, f"{mod}_version_{latest_version['version_number']}.jar")
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
-            print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
+            print(f"Downloaded mod at {mod_jar_file} successfully.")  # Success
         else:
             print("Canceling.")
             return True
     else:
-        logger.error("Mod does not exist on Modrinth for that version and/or loader")
+        logger.error("Mod does not exist for that version and loader")
         return False
     return True
 
@@ -373,19 +411,44 @@ def remove_mod(mod: str, mods: dict, mod_path: Path):
     return True
 
 
-def enable_mod(mod: str, mod_list: list, disabled_mods_list: list, mod_path: Path) -> bool:
+def enable_mod(
+    mod: str,
+    mod_list: list,
+    disabled_mods_list: list,
+    mod_path: Path
+) -> bool:
+    """Enable a mod"""
     if mod in disabled_mods_list:
         if mod in mod_list:
             return False
-        replace(Path(mod_path, "mods_disabled/", disabled_mods_list[mod]['file']), Path(mod_path, disabled_mods_list[mod]['file']))
+        replace(
+            Path(
+                mod_path,
+                "mods_disabled/",
+                disabled_mods_list[mod]['file']
+            ),
+            Path(mod_path, disabled_mods_list[mod]['file'])
+        )
     return True
 
 
-def disable_mod(mod: str, mod_list: list, disabled_mods_list: list, mod_path: Path) -> bool:
+def disable_mod(
+    mod: str,
+    mod_list: list,
+    disabled_mods_list: list,
+    mod_path: Path
+) -> bool:
+    """Disable a mod"""
     if mod in mod_list:
         if mod in disabled_mods_list:
             return False
-        replace(Path(mod_path, mod_list[mod]['file']), Path(mod_path, "mods_disabled/", mod_list[mod]['file']))
+        replace(
+            Path(mod_path, mod_list[mod]['file']),
+            Path(
+                mod_path, "mods_disabled/",
+                mod_list[mod]['file']
+            )
+        )
     return True
 
 
@@ -405,6 +468,8 @@ def main():
         1: Failure
     """
     args = cli()
+    if args.verbose:
+        logger.setLevel(DEBUG)
     try:
         mods, mods_disabled = list_mods(args.mod_dir)
     except FileNotFoundError:
@@ -413,14 +478,19 @@ def main():
         if not update_mods(mods, args.mod_dir, args.game_version):
             return 1
     elif args.install:  # If were installing the mod
-        if not install_mod(args.install, mods, args.mod_dir, args.game_version, mods_disabled):
+        if not install_mod(
+            args.install, mods, args.mod_dir, args.game_version,
+            mods_disabled
+        ):
             return 1
     elif args.remove:  # If were removing the mod
         if not remove_mod(args.remove, mods, args.mod_dir):
             return 1
     elif args.list:  # List installed mod
         for name, mod in mods.items():  # Iterate over all installed mods
-            print(f"{name}\n\tVersion: {mod['version']}\n\tFile: {mod['file']}")
+            print(
+                f"{name}\n\tVersion: {mod['version']}\n\tFile: {mod['file']}"
+            )
     elif args.search:  # If we are searching for a mod
         facets = '[["categories:fabric"],["project_type:mod"]]'
         response = ModAPI.search(args.search, facets)
@@ -456,3 +526,10 @@ def main():
     else:
         logger.error("No arguments were passed, try '%s --help'", __package__)
     return 0  # Return 0 if all good
+
+
+if __name__ == "__main__":
+    def get_version():
+        return "Terminal Test Edition"
+
+    main()
