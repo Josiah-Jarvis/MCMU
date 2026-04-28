@@ -8,8 +8,6 @@ from pathlib import Path
 from platform import system
 from importlib.metadata import version, PackageNotFoundError
 
-from .api import ModrinthAPI
-
 try:
     __version__ = version("mcmu")
 except PackageNotFoundError:
@@ -18,8 +16,6 @@ except PackageNotFoundError:
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
-
-ModAPI = ModrinthAPI()
 
 try:
     MOD_DIR = environ['MCMU_MOD_PATH']

@@ -11,8 +11,11 @@ from logging import DEBUG
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from . import __version__, logger, ModAPI, GAME_VERSION, MOD_DIR
+from . import __version__, logger, GAME_VERSION, MOD_DIR
+from .api import ModrinthAPI
 from .mods import Mod, ModDisabledError, ModEnabledError
+
+ModAPI = ModrinthAPI()
 
 
 def cli_update(args, mods) -> int:
@@ -25,8 +28,9 @@ def cli_update(args, mods) -> int:
 def cli_remove(args, mods) -> int:
     """CLI function to remove mod"""
     try:
-        mods[args.mod].delete()
-        logger.info("Mod: %s successfully deleted.", args.mod)
+        if ask(f"Would you like to remove {mods[args.mod]}? This operation will clear {mods[args.mod].file.stat().st_size} bytes."):
+            mods[args.mod].delete()
+            logger.info("Mod: %s successfully deleted.", args.mod)
     except PermissionError:
         logger.error(
             "No permission to delete: '%s'", mods[args.mod].file_name
@@ -130,9 +134,26 @@ def cli() -> dict:
         epilog=f"Version: {__version__}",
         formatter_class=ArgumentDefaultsHelpFormatter
     )
+    parser.add_argument(
+        "--mod-dir",
+        default=MOD_DIR,
+        help="Path to the Minecraft mods folder"
+    )
+    parser.add_argument(
+        "--game-version",
+        default=GAME_VERSION,
+        help="The game version to use to install mods"
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase logging level",
+        default=0,
+        action="count"
+    )
     subparsers = parser.add_subparsers(
-        title="Command",
-        description="Command to run",
+        title="Operation",
+        description="The function to run",
         dest="command",
         required=True,
         help="Action to run"
@@ -160,25 +181,12 @@ def cli() -> dict:
     disable_parser.add_argument("mod", help="The mod to disable")
     disable_parser.set_defaults(func=cli_disable)
     backup_parser = subparsers.add_parser("backup", help="Backup mods folder")
-    backup_parser.add_argument("type", help="The type of archive to make", choices=['zip', 'tar', 'gztar', 'bztar', 'xztar', 'zstdtar'])
+    backup_parser.add_argument(
+        "type",
+        help="The type of archive to make",
+        choices=['zip', 'tar', 'gztar', 'bztar', 'xztar', 'zstdtar']
+    )
     backup_parser.set_defaults(func=cli_backup)
-    parser.add_argument(
-        "--mod-dir",
-        default=MOD_DIR,
-        help="Path to the Minecraft mods folder"
-    )
-    parser.add_argument(
-        "--game-version",
-        default=GAME_VERSION,
-        help="The game version to use to install mods"
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        help="Increase logging level",
-        default=0,
-        action="count"
-    )
     args = parser.parse_args()
     print(args)
     if args.verbose > 0:
@@ -247,13 +255,13 @@ def download_dependency_s(
                 dependency_latest_version = check_update(mod_data['slug'], 0)
                 mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
                 ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
-                print(f"\tDownloaded required dependency at {mod_jar_file} successfully.")  # Print the success
+                print(f"\tDownloaded {mod_jar_file} successfully.")
             elif dependency['dependency_type'] == "optional":
                 if ask(f"Would you like to install optional dependency: {mod_data['slug']}?"):
                     dependency_latest_version = check_update(mod_data['slug'], 0)
                     mod_jar_file = Path(mod_path, f"{mod_data['slug']}_version_{dependency_latest_version['version_number']}.jar")
                     ModAPI.get_file(dependency_latest_version['files'][0]['url'], mod_jar_file)
-                    print(f"\tDownloaded optional dependency at {mod_jar_file} successfully.")  # Print the success
+                    print(f"\tDownloaded {mod_jar_file} successfully.")  # Print the success
         elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
             print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
 

@@ -4,8 +4,7 @@
 
 ### Changed
 
-* Fixed minor bug with the -l, --list option
-* Made argument group required
+* Changed argument group into sub parser commands
 
 ## [v2.2.0.dev2] - 2026-04-28
 

@@ -4,14 +4,14 @@
 
 from pathlib import Path
 from requests import get
-from importlib.metadata import version as get_version
+from . import __version__
 
 
 class ModrinthAPI:
     """Modrinth API class"""
     def __init__(self):
         self.headers = {
-            'User-Agent': f"Josiah-Jarvis/MCMU/{get_version(__package__)} (https://github.com/Josiah-Jarvis/MCMU)"
+            'User-Agent': f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)"
         }
 
     def query(
