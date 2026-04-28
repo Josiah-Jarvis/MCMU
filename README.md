@@ -10,7 +10,7 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -p PROJECT | -e ENABLE | -d DISABLE | -b {zip,tar,gztar,bztar,xztar,zstdtar}] [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [-v]
+usage: mcmu [-h] (-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -p PROJECT | -e ENABLE | -d DISABLE | -b {zip,tar,gztar,bztar,xztar,zstdtar}) [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [-v]
 
 A script to download mods from Modrinth
 

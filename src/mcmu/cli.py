@@ -15,6 +15,114 @@ from . import __version__, logger, ModAPI, GAME_VERSION, MOD_DIR
 from .mods import Mod, ModDisabledError, ModEnabledError
 
 
+def cli_update(args, mods) -> int:
+    """CLI function to update mod"""
+    if not update_mods(mods, args.mod_dir):
+        return 1
+    return 0
+
+
+def cli_remove(args, mods) -> int:
+    """CLI function to remove mod"""
+    try:
+        mods[args.mod].delete()
+        logger.info("Mod: %s successfully deleted.", args.mod)
+    except PermissionError:
+        logger.error(
+            "No permission to delete: '%s'", mods[args.mod].file_name
+        )
+        return 1
+    except FileNotFoundError:
+        logger.warning(
+            "Mod file: '%s' does not exist.", mods[args.mod].file_name
+        )
+        return 1
+    return 0
+
+
+def cli_install(args, mods) -> int:
+    """CLI function to install mod"""
+    if not install_mod(args.mod, mods, args.mod_dir):
+        return 1
+    return 0
+
+
+def cli_list(args, mods) -> int:
+    """CLI function to list mod"""
+    for name, mod in mods.items():  # Iterate over all installed mods
+        print(
+            f"{name}\n\tVersion: {mod.version}\n\tFile: {mod.file_name}"
+        )
+    return 0
+
+
+def cli_search(args, mods) -> int:
+    """CLI function to search mods"""
+    facets = '[["categories:fabric"],["project_type:mod"]]'
+    response = ModAPI.search(args.term, facets)
+    for mod in response['hits']:  # Iterate over and list all the mods
+        search = f"""{mod['title']}:
+    Description: {mod['description']}
+    Author: {mod['author']}
+    Downloads: {mod['downloads']}
+    Latest Version: {mod['latest_version']}
+
+"""
+        print(search)
+    return 0
+
+
+def cli_info(args, mods) -> int:
+    """CLI function to get info on a mod"""
+    response = ModAPI.project(args.mod)
+    info = f"""{response['slug']}
+    Title: {response['title']}
+    Description: {response['description']}
+    Client Side: {response['client_side']}
+"""
+    print(info)
+    print("Dependency's:")
+    print(get_dependency(args.mod))
+    return 0
+
+
+def cli_enable(args, mods) -> int:
+    """CLI function to enable mod"""
+    try:
+        mods[args.mod].enable()
+        logger.info("Successfully enabled mod: %s", args.mod)
+    except ModEnabledError:
+        logger.info("Mod: %s already enabled.", args.mod)
+        return 1
+    return 0
+
+
+def cli_disable(args, mods) -> int:
+    """CLI function to disable mod"""
+    try:
+        mods[args.mod].disable()
+        logger.info("Successfully disabled mod: %s", args.mod)
+    except ModDisabledError:
+        logger.info("Mod: %s already disabled.", args.mod)
+        return 1
+    return 0
+
+
+def cli_backup(args, mods) -> int:
+    """CLI function to backup mod"""
+    make_archive(
+        base_name=Path(
+            args.mod_dir,
+            "mods-backup",
+            datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+        ),
+        format=args.type,
+        root_dir=args.mod_dir
+    )
+    logger.info("Successfully backed up mods folder.")
+    return 0
+
+
 def cli() -> dict:
     """Parses command line arguments"""
     parser = ArgumentParser(
@@ -22,21 +130,38 @@ def cli() -> dict:
         epilog=f"Version: {__version__}",
         formatter_class=ArgumentDefaultsHelpFormatter
     )
-    group = parser.add_mutually_exclusive_group(required=True)  # Group for arguments
-    group.add_argument("-u", "--up", help="Update mods", action="store_true")
-    group.add_argument("-r", "--remove", help="Remove a mod")
-    group.add_argument("-i", "--install", help="Install a mod")
-    group.add_argument("-l", "--list", help="List mods", action="store_true")
-    group.add_argument("-s", "--search", help="Search mods on Modrinth")
-    group.add_argument("-p", "--project", help="Get info about a project")
-    group.add_argument("-e", "--enable", help="Enable a mod")
-    group.add_argument("-d", "--disable", help="Disable a mod")
-    group.add_argument(
-        "-b",
-        "--backup",
-        help="Backup the mods directory",
-        choices=['zip', 'tar', 'gztar', 'bztar', 'xztar', 'zstdtar']
+    subparsers = parser.add_subparsers(
+        title="Command",
+        description="Command to run",
+        dest="command",
+        required=True,
+        help="Action to run"
     )
+    update_parser = subparsers.add_parser("update", help="Update mods")
+    update_parser.set_defaults(func=cli_update)
+    remove_parser = subparsers.add_parser("remove", help="Remove a mod")
+    remove_parser.add_argument("mod", help="The mod to remove")
+    remove_parser.set_defaults(func=cli_remove)
+    install_parser = subparsers.add_parser("install", help="Install a mod")
+    install_parser.add_argument("mod", help="Install a mod")
+    install_parser.set_defaults(func=cli_install)
+    list_parser = subparsers.add_parser("list", help="List mods")
+    list_parser.set_defaults(func=cli_list)
+    search_parser = subparsers.add_parser("search", help="Search mods")
+    search_parser.add_argument("term", help="The term to search for")
+    search_parser.set_defaults(func=cli_search)
+    info_parser = subparsers.add_parser("info", help="Get info on a mod")
+    info_parser.add_argument("mod", help="Get info on a mod")
+    info_parser.set_defaults(func=cli_info)
+    enable_parser = subparsers.add_parser("enable", help="Enable a mod")
+    enable_parser.add_argument("mod", help="The mod to enable")
+    enable_parser.set_defaults(func=cli_enable)
+    disable_parser = subparsers.add_parser("disable", help="Disable a mod")
+    disable_parser.add_argument("mod", help="The mod to disable")
+    disable_parser.set_defaults(func=cli_disable)
+    backup_parser = subparsers.add_parser("backup", help="Backup mods folder")
+    backup_parser.add_argument("type", help="The type of archive to make", choices=['zip', 'tar', 'gztar', 'bztar', 'xztar', 'zstdtar'])
+    backup_parser.set_defaults(func=cli_backup)
     parser.add_argument(
         "--mod-dir",
         default=MOD_DIR,
@@ -54,7 +179,16 @@ def cli() -> dict:
         default=0,
         action="count"
     )
-    return parser.parse_args()  # Parser the arguments
+    args = parser.parse_args()
+    print(args)
+    if args.verbose > 0:
+        logger.setLevel(DEBUG)
+    try:
+        mods = list_mods(args.mod_dir)
+    except FileNotFoundError:
+        logger.error("Mod folder: %s does not exist", args.mod_dir)
+        return 1
+    return args.func(args, mods)  # Parser the arguments
 
 
 def ask(question: str) -> bool:
@@ -135,9 +269,19 @@ def update_mods(
             old_file = Path(mod_path, mods[mod_name].file_name)  # Path to the old mod file
             additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
             if ask(f"{mods[mod_name].name} will take up: {additional_storage} additional bytes, would you like to install?"):
-                download_dependency_s(latest_version['dependencies'], mods, mod_path)
-                mod_jar_file = Path(mod_path, f"{mod_name}_version_{latest_version['version_number']}.jar")
-                ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
+                download_dependency_s(
+                    latest_version['dependencies'],
+                    mods,
+                    mod_path
+                )
+                mod_jar_file = Path(
+                    mod_path,
+                    f"{mod_name}_version_{latest_version['version_number']}.jar"
+                )
+                ModAPI.get_file(
+                    latest_version['files'][0]['url'],
+                    mod_jar_file
+                )
                 print(f"Downloaded mod at {mod_jar_file} successfully.")
                 print(f"Deleting old file: {old_file}")
                 try:
@@ -166,18 +310,35 @@ def install_mod(
         mod = mod_version
         latest_version = ModAPI.get_project_version(mod[0], mod[1])
         if GAME_VERSION not in latest_version['game_versions']:
-            logger.error("%s version does not support this game version.", mod[1])
+            logger.error(
+                "%s version does not support this game version.",
+                mod[1]
+            )
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
-            download_dependency_s(latest_version['dependencies'], mods, mod_path)
-            mod_jar_file = Path(mod_path, f"{mod[0]}_version_{latest_version['version_number']}.jar")
+            download_dependency_s(
+                latest_version['dependencies'],
+                mods,
+                mod_path
+            )
+            mod_jar_file = Path(
+                mod_path,
+                f"{mod[0]}_version_{latest_version['version_number']}.jar"
+            )
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
             return True
     latest_version = check_update(mod, "0")  # Set the version to 0 so any version would be higher
     if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
-            download_dependency_s(latest_version['dependencies'], mods, mod_path)
-            mod_jar_file = Path(mod_path, f"{mod}_version_{latest_version['version_number']}.jar")
+            download_dependency_s(
+                latest_version['dependencies'],
+                mods,
+                mod_path
+            )
+            mod_jar_file = Path(
+                mod_path,
+                f"{mod}_version_{latest_version['version_number']}.jar"
+            )
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Success
         else:
@@ -195,89 +356,3 @@ def get_dependency(project: str) -> str:
     for mod in response['projects']:
         dependency = f"""\t{mod['title']}"""
         return dependency
-
-
-def main():
-    """Main function
-
-    Returns:
-        0: Success
-        1: Failure
-    """
-    args = cli()
-    if args.verbose > 0:
-        logger.setLevel(DEBUG)
-    try:
-        mods = list_mods(args.mod_dir)
-    except FileNotFoundError:
-        logger.error("Mod folder: %s does not exist", args.mod_folder)
-    if args.up:
-        if not update_mods(mods, args.mod_dir):
-            return 1
-    elif args.install:  # If were installing the mod
-        if not install_mod(args.install, mods, args.mod_dir):
-            return 1
-    elif args.remove:  # If were removing the mod
-        try:
-            mods[args.remove].delete()
-            logger.info("Mod: %s successfully deleted.", args.remove)
-        except PermissionError:
-            logger.error("No permission to delete: '%s'", mods[args.remove].file_name)
-            return 1
-        except FileNotFoundError:
-            logger.warning("Mod file: '%s' does not exist.", mods[args.remove].file_name)
-            return 1
-    elif args.list:  # List installed mod
-        for name, mod in mods.items():  # Iterate over all installed mods
-            print(
-                f"{name}\n\tVersion: {mod.version}\n\tFile: {mod.file_name}"
-            )
-    elif args.search:  # If we are searching for a mod
-        facets = '[["categories:fabric"],["project_type:mod"]]'
-        response = ModAPI.search(args.search, facets)
-        for mod in response['hits']:  # Iterate over and list all the mods
-            search = f"""{mod['title']}:
-    Description: {mod['description']}
-    Author: {mod['author']}
-    Downloads: {mod['downloads']}
-    Latest Version: {mod['latest_version']}
-
-"""
-            print(search)
-    elif args.project:
-        response = ModAPI.project(args.project)
-        info = f"""{response['slug']}
-    Title: {response['title']}
-    Description: {response['description']}
-    Client Side: {response['client_side']}
-"""
-        print(info)
-        print("Dependency's:")
-        print(get_dependency(args.project))
-    elif args.enable:
-        try:
-            mods[args.enable].enable()
-            logger.info("Successfully enabled mod: %s", args.enable)
-        except ModEnabledError:
-            logger.info("Mod: %s already enabled.", args.enable)
-    elif args.disable:
-        try:
-            mods[args.disable].disable()
-            logger.info("Successfully disabled mod: %s", args.disable)
-        except ModDisabledError:
-            logger.info("Mod: %s already disabled.", args.disable)
-    elif args.backup:
-        make_archive(
-            base_name=Path(
-                args.mod_dir,
-                "mods-backup",
-                datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-            ),
-            format=args.backup,
-            root_dir=args.mod_dir
-        )
-        logger.info("Successfully backed up mods folder.")
-    else:
-        logger.error("No arguments were passed, try '%s --help'", __package__)
-
-    return 0  # Return 0 if all good

@@ -1,8 +1,6 @@
 # Changelog
 
-## [v2.2.0rc0] - 2026-04-
-
-If no problems are found this will become [v2.2.0].
+## [v2.2.0.dev3] - 2026-04-
 
 ### Changed
 
