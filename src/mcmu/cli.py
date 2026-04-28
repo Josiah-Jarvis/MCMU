@@ -145,17 +145,20 @@ def cli() -> dict:
         help="The game version to use to install mods"
     )
     parser.add_argument(
-        "-v",
         "--verbose",
         help="Increase logging level",
-        default=0,
-        action="count"
+        action="store_true"
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        help="Display the version",
+        action="version",
+        version=__version__
     )
     subparsers = parser.add_subparsers(
-        title="Operation",
         description="The function to run",
         dest="command",
-        required=True,
         help="Action to run"
     )
     update_parser = subparsers.add_parser("update", help="Update mods")
@@ -188,14 +191,16 @@ def cli() -> dict:
     )
     backup_parser.set_defaults(func=cli_backup)
     args = parser.parse_args()
-    print(args)
-    if args.verbose > 0:
+    if args.verbose:
         logger.setLevel(DEBUG)
     try:
         mods = list_mods(args.mod_dir)
     except FileNotFoundError:
         logger.error("Mod folder: %s does not exist", args.mod_dir)
         return 1
+    if args.command is None:
+        parser.print_help()
+        return 0
     return args.func(args, mods)  # Parser the arguments
 
 

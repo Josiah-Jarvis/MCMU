@@ -6,6 +6,10 @@
 
 * Changed argument group into sub parser commands
 
+### Added
+
+* Added -v/--version option
+
 ## [v2.2.0.dev2] - 2026-04-28
 
 ### Added
