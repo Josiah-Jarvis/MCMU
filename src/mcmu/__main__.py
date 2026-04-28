@@ -208,7 +208,7 @@ def install_mod(
         latest_version = ModAPI.get_project_version(mod[0], mod[1])
         if game_version not in latest_version['game_versions']:
             logger.error("%s version does not support this game version.", mod[1])
-        if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
+        if ask(f"{mod[0]} will take up: {latesat_version['files'][0]['size']} bytes, would you like to install?"):
             download_dependency_s(latest_version['dependencies'], mods, mod_path, game_version)
             mod_jar_file = Path(mod_path, f"{mod[0]}_version_{latest_version['version_number']}.jar")
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)

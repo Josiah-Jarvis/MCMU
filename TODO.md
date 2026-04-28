@@ -3,6 +3,7 @@
 ## To Do
 
 [ ] Add support for multiple mod loaders
+[ ] Make a better search system
 
 ## In Progress
 
