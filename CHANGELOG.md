@@ -1,6 +1,6 @@
 # Changelog
 
-## [v2.2.0.dev1] - 2026-04-
+## [v2.2.0.dev1] - 2026-04-27
 
 ### Added
 
@@ -9,6 +9,10 @@
 * Added -d/--disable option
 * Added --enable-experimental-features
 * Now can get mod path and game version form environment variables
+
+### Changed
+
+* Split up code into multiple files
 
 ## [v2.2.0.dev0] - 2026-04-24
 

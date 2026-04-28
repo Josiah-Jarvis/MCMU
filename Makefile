@@ -1,7 +1,7 @@
 .PHONY: build
 .PHONY: upload
 
-build: src/mcmu/__main__.py
+build: src/mcmu/
 	python3 -m build
 
 upload: dist/mcmu*
