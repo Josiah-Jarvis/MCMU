@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.2.0.dev2] - 2026-05-01
+
+### Changed
+
+* Disabled mods now become '.jar.disabled' instead of going into the 'mods_disabled/' folder
+
 ## [v2.2.0.dev1] - 2026-04-27
 
 ### Added
@@ -436,3 +442,5 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.1.2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.2
 [v2.1.3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.1.3
 [v2.2.0.dev0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev0
+[v2.2.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev1
+[v2.2.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev2
