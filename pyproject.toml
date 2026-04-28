@@ -44,7 +44,7 @@ classifiers = [
 ]
 
 [project.scripts]
-mcmu = "mcmu:cli.cli()"
+mcmu = "mcmu:__main__.cli()"
 
 [project.urls]
 homepage = "https://github.com/Josiah-Jarvis/MCMU"

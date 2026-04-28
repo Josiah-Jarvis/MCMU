@@ -5,6 +5,7 @@
 
 from re import match
 from os import listdir
+import sys
 from shutil import make_archive
 from pathlib import Path
 from logging import DEBUG
@@ -369,3 +370,7 @@ def get_dependency(project: str) -> str:
     for mod in response['projects']:
         dependency = f"""\t{mod['title']}"""
         return dependency
+
+
+if __name__ == "__main__":
+    sys.exit(cli())
