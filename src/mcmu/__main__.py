@@ -5,9 +5,11 @@
 
 from re import match
 from os import listdir, getenv, replace, environ
+from shutil import make_archive
 from pathlib import Path
 from logging import DEBUG
 from platform import system
+from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from importlib.metadata import version as get_version
 
@@ -63,6 +65,12 @@ def cli() -> dict:
     group.add_argument("-p", "--project", help="Get info about a project")
     group.add_argument("-e", "--enable", help="Enable a mod")
     group.add_argument("-d", "--disable", help="Disable a mod")
+    group.add_argument(
+        "-b",
+        "--backup",
+        help="Backup the mods directory",
+        choices=['zip', 'tar', 'gztar', 'bztar', 'xztar', 'zstdtar']
+    )
     parser.add_argument(
         "--mod-dir",
         default=mod_dir,
@@ -74,16 +82,11 @@ def cli() -> dict:
         help="The game version to use to install mods"
     )
     parser.add_argument(
-        "--enable-experimental-features",
-        default="false",
-        help="Enable experimental features",
-        action="store_true"
-    )
-    parser.add_argument(
         "-v",
         "--verbose",
         help="Increase logging level",
-        action="store_true"
+        default=0,
+        action="count"
     )
     return parser.parse_args()  # Parser the arguments
 
@@ -127,8 +130,7 @@ def list_mods(mod_path: Path) -> dict[Mod]:
                 mod_folder=mod_path
             )
         except AttributeError as e:
-            print(e)
-            logger.info("Mod dir is empty, %s", e)
+            logger.info("Unknown file in mod dir: %s", e)
 
     return mods
 
@@ -139,7 +141,8 @@ ModAPI = ModrinthAPI()
 def download_dependency_s(
     dependency_s: list,  # List of mods dependency's
     mods: list,  # List of installed mods
-    mod_path: Path  # Path to the mods folder
+    mod_path: Path,  # Path to the mods folder
+    game_version  # The game version to install for
 ):
     """Download a mods dependency's"""
     for dependency in dependency_s:
@@ -172,7 +175,7 @@ def update_mods(
             old_file = Path(mod_path, mods[mod_name].file_name)  # Path to the old mod file
             additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
             if ask(f"{mods[mod_name].name} will take up: {additional_storage} additional bytes, would you like to install?"):
-                download_dependency_s(latest_version['dependencies'], mods, mod_path)
+                download_dependency_s(latest_version['dependencies'], mods, mod_path, game_version)
                 mod_jar_file = Path(mod_path, f"{mod_name}_version_{latest_version['version_number']}.jar")
                 ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
                 print(f"Downloaded mod at {mod_jar_file} successfully.")
@@ -206,7 +209,7 @@ def install_mod(
         if game_version not in latest_version['game_versions']:
             logger.error("%s version does not support this game version.", mod[1])
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
-            download_dependency_s(latest_version['dependencies'], mods, mod_path)
+            download_dependency_s(latest_version['dependencies'], mods, mod_path, game_version)
             mod_jar_file = Path(mod_path, f"{mod[0]}_version_{latest_version['version_number']}.jar")
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Print the success
@@ -214,7 +217,7 @@ def install_mod(
     latest_version = check_update(mod, "0", game_version)  # Set the version to 0 so any version would be higher
     if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod} will take up: {latest_version['files'][0]['size']} bytes, would you like to install?"):
-            download_dependency_s(latest_version['dependencies'], mods, mod_path)
+            download_dependency_s(latest_version['dependencies'], mods, mod_path, game_version)
             mod_jar_file = Path(mod_path, f"{mod}_version_{latest_version['version_number']}.jar")
             ModAPI.get_file(latest_version['files'][0]['url'], mod_jar_file)
             print(f"Downloaded mod at {mod_jar_file} successfully.")  # Success
@@ -307,7 +310,7 @@ def main():
         1: Failure
     """
     args = cli()
-    if args.verbose:
+    if args.verbose > 0:
         logger.setLevel(DEBUG)
     try:
         mods = list_mods(args.mod_dir)
@@ -370,6 +373,17 @@ def main():
             logger.info("Successfully disabled mod: %s", args.disable)
         except ModDisabled:
             logger.info("Mod: %s already disabled.", args.disable)
+    elif args.backup:
+        make_archive(
+            base_name=Path(
+                args.mod_dir,
+                "mods-backup",
+                datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+            ),
+            format=args.backup,
+            root_dir=args.mod_dir
+        )
+        logger.info("Successfully backed up mods folder.")
     else:
         logger.error("No arguments were passed, try '%s --help'", __package__)
 

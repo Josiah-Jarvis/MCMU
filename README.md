@@ -10,7 +10,7 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -p PROJECT | -e ENABLE | -d DISABLE] [--mod-dir MOD_DIR] [--game-version GAME_VERSION]
+usage: mcmu [-h] [-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -p PROJECT | -e ENABLE | -d DISABLE | -b {zip,tar,gztar,bztar,xztar,zstdtar}] [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [-v]
 
 A script to download mods from Modrinth
 
@@ -27,42 +27,14 @@ options:
   -e, --enable ENABLE   Enable a mod (default: None)
   -d, --disable DISABLE
                         Disable a mod (default: None)
-  --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: ~/.minecraft/mods)
+  -b, --backup {zip,tar,gztar,bztar,xztar,zstdtar}
+                        Backup the mods directory (default: None)
+  --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: /home/josiahjarvis/.minecraft/mods)
   --game-version GAME_VERSION
-                        The game version to use to install mods (default: 26.2)
+                        The game version to use to install mods (default: 26.1.2)
+  -v, --verbose         Increase logging level (default: 0)
 
-Version: 2.2.0.dev1
-
-```
-
-### Update installed mods
-
-```bash
-mcmu -u
-```
-
-### Remove a mod
-
-```bash
-mcmu -r mod-name
-```
-
-### Install a mod
-
-```bash
-mcmu -i mod-name
-```
-
-### List mods
-
-```bash
-mcmu -l
-```
-
-### Search mods
-
-```bash
-mcmu -s search_term
+Version: 2.2.0
 ```
 
 ## Support
@@ -81,4 +53,4 @@ Go to [Modrinth](https://modrinth.com) and search for you desired mod. Then get 
 
 ### How does it work?
 
-It works a lot like a package manager actually! It pulls the mods from a source (Modrinth) and installs them on the system. It keeps a list of the installed mods in a config file for easy access of the installed mods.
+It works a lot like a package manager actually! It pulls the mods from a source (Modrinth) and installs them on the system.

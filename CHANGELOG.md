@@ -2,9 +2,17 @@
 
 ## [v2.2.0.dev2] - 2026-05-01
 
+### Added
+
+* Can now back up mods folder into an archive
+
 ### Changed
 
 * Disabled mods now become '.jar.disabled' instead of going into the 'mods_disabled/' folder
+
+### Removed
+
+* Removed '--enable-experimental-features' option
 
 ## [v2.2.0.dev1] - 2026-04-27
 
