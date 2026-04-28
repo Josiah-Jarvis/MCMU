@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mcmu"
-version = "2.2.0.dev2"
+version = "2.2.0rc0"
 requires-python = ">=3.14"
 authors = [
     {name="Josiah Jarvis"}
@@ -44,7 +44,7 @@ classifiers = [
 ]
 
 [project.scripts]
-mcmu = "mcmu:__main__.main()"
+mcmu = "mcmu:cli.main()"
 
 [project.urls]
 homepage = "https://github.com/Josiah-Jarvis/MCMU"

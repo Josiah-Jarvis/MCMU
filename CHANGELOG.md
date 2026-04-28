@@ -1,6 +1,15 @@
 # Changelog
 
-## [v2.2.0.dev2] - 2026-05-01
+## [v2.2.0rc0] - 2026-04-
+
+If no problems are found this will become [v2.2.0].
+
+### Changed
+
+* Fixed minor bug with the -l, --list option
+* Made argument group required
+
+## [v2.2.0.dev2] - 2026-04-28
 
 ### Added
 
