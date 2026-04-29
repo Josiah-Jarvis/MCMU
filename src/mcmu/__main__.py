@@ -5,7 +5,6 @@
 
 from re import match
 from os import listdir
-import sys
 from shutil import make_archive
 from pathlib import Path
 from logging import DEBUG
@@ -32,6 +31,9 @@ def cli_remove(args, mods) -> int:
         if ask(f"Would you like to remove {mods[args.mod]}? This operation will clear {mods[args.mod].file.stat().st_size} bytes."):
             mods[args.mod].delete()
             logger.info("Mod: %s successfully deleted.", args.mod)
+    except KeyError:
+        logger.error("Mod: '%s' not installed.", args.mod)
+        return 1
     except PermissionError:
         logger.error(
             "No permission to delete: '%s'", mods[args.mod].file_name
@@ -373,4 +375,4 @@ def get_dependency(project: str) -> str:
 
 
 if __name__ == "__main__":
-    sys.exit(cli())
+    exit(cli())

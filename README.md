@@ -10,29 +10,32 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] (-u | -r REMOVE | -i INSTALL | -l | -s SEARCH | -p PROJECT | -e ENABLE | -d DISABLE | -b {zip,tar,gztar,bztar,xztar,zstdtar}) [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [-v]
+usage: mcmu [-h] [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [--verbose] [-v] {update,remove,install,list,search,info,enable,disable,backup} ...
 
 A script to download mods from Modrinth
 
 options:
   -h, --help            show this help message and exit
-  -u, --up              Update mods (default: False)
-  -r, --remove REMOVE   Remove a mod (default: None)
-  -i, --install INSTALL
-                        Install a mod (default: None)
-  -l, --list            List mods (default: False)
-  -s, --search SEARCH   Search mods on Modrinth (default: None)
-  -p, --project PROJECT
-                        Get info about a project (default: None)
-  -e, --enable ENABLE   Enable a mod (default: None)
-  -d, --disable DISABLE
-                        Disable a mod (default: None)
-  -b, --backup {zip,tar,gztar,bztar,xztar,zstdtar}
-                        Backup the mods directory (default: None)
   --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: /home/josiahjarvis/.minecraft/mods)
   --game-version GAME_VERSION
                         The game version to use to install mods (default: 26.1.2)
-  -v, --verbose         Increase logging level (default: 0)
+  --verbose             Increase logging level (default: False)
+  -v, --version         Display the version
+
+subcommands:
+  The function to run
+
+  {update,remove,install,list,search,info,enable,disable,backup}
+                        Action to run
+    update              Update mods
+    remove              Remove a mod
+    install             Install a mod
+    list                List mods
+    search              Search mods
+    info                Get info on a mod
+    enable              Enable a mod
+    disable             Disable a mod
+    backup              Backup mods folder
 
 Version: 2.2.0
 ```
