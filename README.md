@@ -2,7 +2,7 @@
 
 A utility to update and install Minecraft mods for java edition. Only works for Fabric Loader (currently).
 
-!IMPORTANT!
+**!IMPORTANT!**
 
 Your .minecraft/mods/ folder must be empty before you use this program. Unintended things might happen if it is not empty.
 
@@ -12,11 +12,11 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 $ mcmu --help
 usage: mcmu [-h] [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [--verbose] [-v] {update,remove,install,list,search,info,enable,disable,backup} ...
 
-A script to download mods from Modrinth
+A robust script to install, update, and manage Minecraft mods from Modrinth
 
 options:
   -h, --help            show this help message and exit
-  --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: /home/josiahjarvis/.minecraft/mods)
+  --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: ~/.minecraft/mods)
   --game-version GAME_VERSION
                         The game version to use to install mods (default: 26.1.2)
   --verbose             Increase logging level (default: False)
@@ -52,7 +52,7 @@ I built this because I wanted to use Minecraft's default launcher but still be a
 
 ### Where do I get the mod name from?
 
-Go to [Modrinth](https://modrinth.com) and search for you desired mod. Then get the part after the /mod/ in the url, that is the mod name.
+Go to [Modrinth](https://modrinth.com) and search for you desired mod. Then get the part after the /mod/ in the url, that is the mod name to use (don't include the last forward slash).
 
 ### How does it work?
 

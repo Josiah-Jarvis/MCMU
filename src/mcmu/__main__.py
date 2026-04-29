@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""A script to download mods from Modrinth"""
+"""A robust script to install, update, and manage Minecraft mods from Modrinth"""
 
 from re import match
 from os import listdir
@@ -30,18 +30,18 @@ def cli_remove(args, mods) -> int:
     try:
         if ask(f"Would you like to remove {mods[args.mod]}? This operation will clear {mods[args.mod].file.stat().st_size} bytes."):
             mods[args.mod].delete()
-            logger.info("Mod: %s successfully deleted.", args.mod)
+            logger.info("Mod '%s' successfully deleted", args.mod)
     except KeyError:
-        logger.error("Mod: '%s' not installed.", args.mod)
+        logger.error("Mod '%s' not installed", args.mod)
         return 1
     except PermissionError:
         logger.error(
-            "No permission to delete: '%s'", mods[args.mod].file_name
+            "No permission to delete '%s'", mods[args.mod].file_name
         )
         return 1
     except FileNotFoundError:
         logger.warning(
-            "Mod file: '%s' does not exist.", mods[args.mod].file_name
+            "Mod file '%s' does not exist.", mods[args.mod].file_name
         )
         return 1
     return 0
@@ -49,7 +49,11 @@ def cli_remove(args, mods) -> int:
 
 def cli_install(args, mods) -> int:
     """CLI function to install mod"""
-    if not install_mod(args.mod, mods, args.mod_dir):
+    try:
+        if not install_mod(args.mod, mods, args.mod_dir):
+            return 1
+    except UserWarning:
+        logger.error("Mod '%s' does not exist on Modrinth", args.mod)
         return 1
     return 0
 
@@ -81,25 +85,31 @@ def cli_search(args, mods) -> int:
 
 def cli_info(args, mods) -> int:
     """CLI function to get info on a mod"""
-    response = ModAPI.project(args.mod)
-    info = f"""{response['slug']}
+    try:
+        response = ModAPI.project(args.mod)
+        info = f"""{response['slug']}
     Title: {response['title']}
     Description: {response['description']}
     Client Side: {response['client_side']}
 """
-    print(info)
-    print("Dependency's:")
-    print(get_dependency(args.mod))
-    return 0
+        print(info)
+        print("Dependency's:")
+        print(get_dependency(args.mod))
+        return 0
+    except UserWarning:
+        logger.error("Mod '%s' does not exist on Modrinth", args.mod)
+        return 1
 
 
 def cli_enable(args, mods) -> int:
     """CLI function to enable mod"""
     try:
         mods[args.mod].enable()
-        logger.info("Successfully enabled mod: %s", args.mod)
+        logger.info("Successfully enabled mod '%s'", args.mod)
+    except KeyError:
+        logger.error("Mod '%s' not installed so can't enable", args.mod)
     except ModEnabledError:
-        logger.info("Mod: %s already enabled.", args.mod)
+        logger.info("Mod '%s' already enabled", args.mod)
         return 1
     return 0
 
@@ -108,9 +118,11 @@ def cli_disable(args, mods) -> int:
     """CLI function to disable mod"""
     try:
         mods[args.mod].disable()
-        logger.info("Successfully disabled mod: %s", args.mod)
+        logger.info("Successfully disabled mod '%s'", args.mod)
+    except KeyError:
+        logger.error("Mod '%s' not installed so can't disable", args.mod)
     except ModDisabledError:
-        logger.info("Mod: %s already disabled.", args.mod)
+        logger.info("Mod '%s' already disabled", args.mod)
         return 1
     return 0
 
@@ -126,7 +138,7 @@ def cli_backup(args, mods) -> int:
         format=args.type,
         root_dir=args.mod_dir
     )
-    logger.info("Successfully backed up mods folder.")
+    logger.info("Successfully backed up mods folder")
     return 0
 
 
@@ -244,8 +256,8 @@ def list_mods(mod_path: Path) -> dict[Mod]:
                 file_name=mod,
                 mod_folder=mod_path
             )
-        except AttributeError as e:
-            logger.info("Unknown file in mod dir: %s", e)
+        except AttributeError:
+            logger.debug("Unknown file in mod dir '%s'", mod)
 
     return mods
 

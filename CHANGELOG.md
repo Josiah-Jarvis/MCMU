@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.2.0rc0] - 2026-05-01
+
+If no problems are found this will become version 2.2.0.
+
+## Fixed
+
+* Fixed errors with install and info related to mods not existing on Modrinth.
+* Fixed errors with enable and disable related to mods not being installed.
+
 ## [v2.2.0.dev3] - 2026-04-29
 
 ### Changed

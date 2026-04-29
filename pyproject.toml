@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mcmu"
-version = "2.2.0.dev3"
+version = "2.2.0rc0"
 requires-python = ">=3.14"
 authors = [
     {name="Josiah Jarvis"}
@@ -15,7 +15,7 @@ maintainers = [
 description = "A utility to update Minecraft java edition mods from Modrinth"
 readme = "README.md"
 license = "MIT"
-keywords = ["Minecraft", "Mods", "Fabric", "Java"]
+keywords = ["Minecraft", "Mods", "Fabric", "Java", "Modrinth"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
