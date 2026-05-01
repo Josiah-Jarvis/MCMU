@@ -11,7 +11,7 @@ from importlib.metadata import version, PackageNotFoundError
 try:
     __version__ = version("mcmu")
 except PackageNotFoundError:
-    __version__ = "vDev"
+    __version__ = "Version  Not Found"
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)

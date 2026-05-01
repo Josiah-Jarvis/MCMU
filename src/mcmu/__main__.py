@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""A robust script to install, update, and manage Minecraft mods from Modrinth"""
+"""A robust package to install, update, and manage Minecraft mods from Modrinth"""
 
 from re import match
 from os import listdir
@@ -211,7 +211,7 @@ def cli() -> dict:
     try:
         mods = list_mods(args.mod_dir)
     except FileNotFoundError:
-        logger.error("Mod folder: %s does not exist", args.mod_dir)
+        logger.error("Mod folder '%s' does not exist", args.mod_dir)
         return 1
     if args.command is None:
         parser.print_help()
@@ -320,7 +320,7 @@ def update_mods(
             else:
                 print("Canceling.")
         else:
-            print(f"Mod: {mod_name} at latest version!")
+            print(f"Mod '{mod_name}' at latest version!")
     return True
 
 

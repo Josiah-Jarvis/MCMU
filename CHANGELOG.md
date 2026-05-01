@@ -4,6 +4,11 @@
 
 If no problems are found this will become version 2.2.0.
 
+## Changed
+
+* Updated documentation to v2.2.0
+* Updated all log messages
+
 ## Fixed
 
 * Fixed errors with install and info related to mods not existing on Modrinth.
@@ -472,3 +477,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.2.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev1
 [v2.2.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev2
 [v2.2.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0.dev3
+[v2.2.0rc0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0rc0

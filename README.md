@@ -12,7 +12,7 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 $ mcmu --help
 usage: mcmu [-h] [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [--verbose] [-v] {update,remove,install,list,search,info,enable,disable,backup} ...
 
-A robust script to install, update, and manage Minecraft mods from Modrinth
+A robust package to install, update, and manage Minecraft mods from Modrinth
 
 options:
   -h, --help            show this help message and exit
