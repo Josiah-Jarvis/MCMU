@@ -1,5 +1,39 @@
 # Changelog
 
+## [v2.2.0] - 2026-05-02
+
+Version 2.2.0.
+
+### Added
+
+* Can now enable and disable mods
+* Added enable command
+* Added disable command
+* Now can get mod path and game version form environment variables
+* Can now back up mods folder into an archive
+* Added -v/--version option
+
+### Changed
+
+* Changed --mod_dir to --mod-dir
+* Now the default path to the mods folder is os dependent
+* Split up code into multiple files
+* Disabled mods now become '.jar.disabled' instead of going into the 'mods_disabled/' folder
+* Changed argument group into sub parser commands
+* Updated documentation to v2.2.0
+* Updated all log messages
+
+### Removed
+
+* Removed support for Python 3.13
+* Removed -d/--dependency
+
+### Fixed
+
+* Fixed when --mod-dir has not .jar files (AttributeError: 'NoneType' object has no attribute 'group')
+* Fixed errors with install and info related to mods not existing on Modrinth.
+* Fixed errors with enable and disable related to mods not being installed.
+
 ## [v2.2.0rc0] - 2026-05-01
 
 If no problems are found this will become version 2.2.0.
