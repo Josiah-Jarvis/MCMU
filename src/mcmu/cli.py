@@ -9,8 +9,8 @@ from logging import DEBUG
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from .. import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
-from ..shared import update_mods, install_mod, list_mods, ModAPI, ask
+from . import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
+from .shared import update_mods, install_mod, list_mods, ModAPI, ask
 
 
 class CLI:

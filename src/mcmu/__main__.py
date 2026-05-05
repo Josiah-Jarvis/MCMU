@@ -3,7 +3,7 @@
 
 """Main helper script (python3 -m mcmu)"""
 
-from .ui.cli import CLI
+from .cli import CLI
 
 
 def main():
