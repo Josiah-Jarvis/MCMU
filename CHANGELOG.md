@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.3.0.dev1] - 2026-05-?
+
+### Added
+
+* Added -y/--yes command line argument
+
+### Fixed
+
+* Fixed only printing last dependency with 'mcmu info PROJECT'
+
 ## [v2.2.0] - 2026-05-02
 
 Version 2.2.0.

@@ -2,11 +2,12 @@
 
 ## To Do
 
-[ ] Add support for multiple mod loaders
 [ ] Make a better search system
 [ ] Check the sha1/sha512 of a downloaded mod
 
 ## In Progress
+
+[ ] Add support for multiple mod loaders
 
 ## Completed
 

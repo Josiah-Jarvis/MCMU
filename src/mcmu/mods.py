@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 """A Mod class"""
 
@@ -6,26 +7,27 @@ from os import replace
 from pathlib import Path
 
 
-class ModEnabledError(Exception):
-    """Enable mod exception"""
-
-
-class ModDisabledError(Exception):
-    """Disable mod exception"""
-
-
 class Mod:
     """Mod class"""
-    def __init__(self, name, version, file_name, mod_folder):
+    def __init__(
+        self,
+        name: str,
+        version: str,
+        file_name: Path,
+        mod_folder: Path
+    ):
         self.name = name
         self.version = version
         self.file_name = file_name
         self.mod_folder = mod_folder
         self.file = Path(mod_folder, file_name)
+        self.enabled = True
+        if file_name.endswith(".disabled"):
+            self.enabled = False
 
     def enable(self):
         """Enable the mod"""
-        if str(self.file_name).endswith(".disabled"):
+        if not self.enabled:
             replace(
                 Path(
                     self.mod_folder,
@@ -37,11 +39,11 @@ class Mod:
                 )
             )
         else:
-            raise ModEnabledError(f"Mod: {self.name} already enabled.")
+            raise UserWarning(f"Mod: {self.name} already enabled.")
 
     def disable(self):
         """Disable mod"""
-        if str(self.file_name).endswith(".jar"):
+        if self.enabled:
             replace(
                 Path(
                     self.mod_folder,
@@ -53,7 +55,7 @@ class Mod:
                 )
             )
         else:
-            raise ModDisabledError(f"Mod: {self.name} already disabled.")
+            raise UserWarning(f"Mod: {self.name} already disabled.")
 
     def delete(self):
         """Delete a mod"""

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 """Package wide code"""
 
@@ -20,7 +21,7 @@ basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 try:
     MOD_DIR = environ['MCMU_MOD_PATH']
     logger.info(
-        "Mod dir set to %s because of environment variable.",
+        "Mod dir set to '%s' because of environment variable.",
         MOD_DIR
     )
 except KeyError:
@@ -39,7 +40,7 @@ except KeyError:
 try:
     GAME_VERSION = environ['MCMU_GAME_VERSION']
     logger.info(
-        "Game version set to %s because of environment variable.",
+        "Game version set to '%s' because of environment variable.",
         GAME_VERSION
     )
 except KeyError:
