@@ -167,21 +167,6 @@ class CLI:
             formatter_class=ArgumentDefaultsHelpFormatter
         )
         parser.add_argument(
-            "--mod-dir",
-            default=MOD_DIR,
-            help="Path to the Minecraft mods folder"
-        )
-        parser.add_argument(
-            "--game-version",
-            default=GAME_VERSION,
-            help="The game version to use to install mods"
-        )
-        parser.add_argument(
-            "--verbose",
-            help="Increase logging level",
-            action="store_true"
-        )
-        parser.add_argument(
             "-v",
             "--version",
             help="Display the version",
@@ -195,7 +180,11 @@ class CLI:
             action="store_true"
         )
         parser.add_argument(
-            "-l",
+            "--verbose",
+            help="Increase logging level",
+            action="store_true"
+        )
+        parser.add_argument(
             "--loader",
             help="The mod loader to target for",
             default=MOD_LOADER,
@@ -212,6 +201,16 @@ class CLI:
                 'spigot',
                 'sponge'
             ]
+        )
+        parser.add_argument(
+            "--mod-dir",
+            default=MOD_DIR,
+            help="Path to the Minecraft mods folder"
+        )
+        parser.add_argument(
+            "--game-version",
+            default=GAME_VERSION,
+            help="The game version to use to install mods"
         )
         subparsers = parser.add_subparsers(
             description="The function to run",

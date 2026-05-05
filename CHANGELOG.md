@@ -7,10 +7,15 @@
 * Added -y/--yes command line argument
 * Added support for multiple mod loaders
 * Added environment variable MCMU_MOD_LOADER
+* aDDED --LOADER command line argument
 
 ### Fixed
 
 * Fixed only printing last dependency with 'mcmu info PROJECT'
+
+### Changed
+
+* Changed ordering of arguments in help message
 
 ## [v2.2.0] - 2026-05-02
 
