@@ -21,7 +21,7 @@ basicConfig(format="%(levelname)s: %(message)s")  # Set logging format
 try:
     MOD_DIR = environ['MCMU_MOD_PATH']
     logger.info(
-        "Mod dir set to '%s' because of environment variable.",
+        "Mod dir set to '%s' because of environment variable",
         MOD_DIR
     )
 except KeyError:
@@ -40,10 +40,20 @@ except KeyError:
 try:
     GAME_VERSION = environ['MCMU_GAME_VERSION']
     logger.info(
-        "Game version set to '%s' because of environment variable.",
+        "Game version set to '%s' because of environment variable",
         GAME_VERSION
     )
 except KeyError:
     GAME_VERSION = "26.1.2"
+
+try:
+    MOD_LOADER = environ['MCMU_MOD_LOADER']
+    logger.info(
+        "Mod loader set to '%s' because of environment variable",
+        MOD_LOADER
+    )
+except KeyError:
+    MOD_LOADER = "fabric"
+
 
 __all__ = [GAME_VERSION, MOD_DIR]

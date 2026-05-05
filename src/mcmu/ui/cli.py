@@ -9,7 +9,7 @@ from logging import DEBUG
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from .. import __version__, logger, GAME_VERSION, MOD_DIR
+from .. import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
 from ..shared import update_mods, install_mod, list_mods, ModAPI, ask
 
 
@@ -24,8 +24,9 @@ class CLI:
         """CLI function to update mod"""
         if not update_mods(
             self.mods,
-            self.args.mod_dirs,
+            self.args.mod_dir,
             self.args.game_version,
+            self.args.loader,
             self.args.yes
         ):
             return 1
@@ -62,6 +63,7 @@ class CLI:
                 self.mods,
                 self.args.mod_dir,
                 self.args.game_version,
+                self.args.loader,
                 self.args.yes
             ):
                 return 1
@@ -80,7 +82,7 @@ class CLI:
 
     def search(self) -> int:
         """CLI function to search mods"""
-        facets = '[["categories:fabric"],["project_type:mod"]]'
+        facets = f"[[\"categories:{self.args.loader}\"],[\"project_type:mod\"]]"
         response = ModAPI.search(self.args.term, facets)
         for mod in response['hits']:  # Iterate over and list all the mods
             search = f"""{mod['title']}:
@@ -161,7 +163,7 @@ class CLI:
         """Parses command line arguments"""
         parser = ArgumentParser(
             description="A robust package to install, update, and manage Minecraft mods",
-            epilog=f"Version: {__version__}",
+            epilog="Try 'mcmu COMMAND --help'",
             formatter_class=ArgumentDefaultsHelpFormatter
         )
         parser.add_argument(
@@ -189,14 +191,31 @@ class CLI:
         parser.add_argument(
             "-y",
             "--yes",
-            help="Assumes yes for questions.",
+            help="Assumes yes for questions",
             action="store_true"
+        )
+        parser.add_argument(
+            "-l",
+            "--loader",
+            help="The mod loader to target for",
+            default=MOD_LOADER,
+            choices=[
+                'fabric',
+                'forge',
+                'neoforge',
+                'babric',
+                'quilt',
+                'bukkit',
+                'folia',
+                'paper',
+                'purpur',
+                'spigot',
+                'sponge'
+            ]
         )
         subparsers = parser.add_subparsers(
             description="The function to run",
             dest="command",
-            help="Action to run",
-            epilog=f"Try '{parser.prog} COMMAND --help'"
         )
         update_parser = subparsers.add_parser("update", help="Update mods")
         update_parser.set_defaults(func=self.update)

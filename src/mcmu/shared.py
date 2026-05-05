@@ -8,7 +8,7 @@ from re import match
 from os import listdir
 from pathlib import Path
 
-from . import logger, GAME_VERSION
+from . import logger, GAME_VERSION, MOD_LOADER
 from .mods import Mod
 from .api import ModrinthAPI
 
@@ -28,11 +28,12 @@ def ask(question: str, no_ask: bool = False) -> bool:
 
 def get_latest_version(
     mod_name: str,  # The name of the mod on Modrinth
+    mod_loader: str,  # The mod loader to get for
     game_version: str = GAME_VERSION
 ) -> dict:  # Modrinth mod object or False if already at latest version
     """Checks for mod update from Modrinth"""
     response = ModAPI.project_version(
-        mod_name, '["fabric"]', f'["{game_version}"]'
+        mod_name, f"[\"{mod_loader}\"]", f'["{game_version}"]'
     )
     latest_version = response[0]  # Set to first version in list
     for version in response:  # Check each mod version in the returned data
@@ -63,6 +64,7 @@ def download_dependency_s(
     dependency_s: list,  # List of mods dependency's
     mods: list,  # List of installed mods
     mod_path: Path,  # Path to the mods folder
+    mod_loader: str = MOD_LOADER,
     game_version: str = GAME_VERSION
 ):
     """Download a mods dependency's"""
@@ -72,6 +74,7 @@ def download_dependency_s(
             if dependency['dependency_type'] == "required":
                 latest_version = get_latest_version(
                     mod_data['slug'],
+                    mod_loader,
                     game_version
                 )
                 jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
@@ -84,6 +87,7 @@ def download_dependency_s(
                 if ask(f"Would you like to install optional dependency: {mod_data['slug']}?"):
                     latest_version = get_latest_version(
                         mod_data['slug'],
+                        mod_loader,
                         game_version
                     )
                     jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
@@ -100,12 +104,14 @@ def update_mods(
     mods: dict,  # A dict of mods
     mod_path: Path,  # The path to the mods
     game_version: str = GAME_VERSION,
+    mod_loader: str = MOD_LOADER,
     no_ask: bool = False
 ) -> bool:
     """Updates mods"""
     for mod_name in mods:
         latest_version = get_latest_version(
             mod_name,
+            mod_loader,
             game_version
         )  # Check for update
         if not latest_version["version_number"] > mods[mod_name].version:
@@ -121,6 +127,7 @@ def update_mods(
                     latest_version['dependencies'],
                     mods,
                     mod_path,
+                    mod_loader,
                     game_version
                 )
                 jar_file = Path(
@@ -150,6 +157,7 @@ def install_mod(
         mods: dict,  # Dict of mods
         mod_path: Path,  # The path to the mods folder
         game_version: str = GAME_VERSION,
+        mod_loader: str = MOD_LOADER,
         no_ask: bool = False
 ) -> bool:
     """Installs a mod"""
@@ -169,6 +177,7 @@ def install_mod(
                 latest_version['dependencies'],
                 mods,
                 mod_path,
+                mod_loader,
                 game_version
             )
             jar_file = Path(
@@ -178,13 +187,14 @@ def install_mod(
             ModAPI.get_file(latest_version['files'][0]['url'], jar_file)
             print(f"Downloaded mod at {jar_file} successfully.")
             return True
-    latest_version = get_latest_version(mod[0], game_version)
+    latest_version = get_latest_version(mod[0], mod_loader, game_version)
     if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?", no_ask):
             download_dependency_s(
                 latest_version['dependencies'],
                 mods,
                 mod_path,
+                mod_loader,
                 game_version
             )
             jar_file = Path(

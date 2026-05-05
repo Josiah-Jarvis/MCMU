@@ -5,6 +5,8 @@
 ### Added
 
 * Added -y/--yes command line argument
+* Added support for multiple mod loaders
+* Added environment variable MCMU_MOD_LOADER
 
 ### Fixed
 
