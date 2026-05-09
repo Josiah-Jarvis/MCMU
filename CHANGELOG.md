@@ -7,15 +7,18 @@
 * Added -y/--yes command line argument
 * Added support for multiple mod loaders
 * Added environment variable MCMU_MOD_LOADER
-* aDDED --LOADER command line argument
+* Added --loader command line argument
+* Added --beta command line argument
 
 ### Fixed
 
 * Fixed only printing last dependency with 'mcmu info PROJECT'
+* Fixed printing mod() object address instead of mod name when removing a mod
 
 ### Changed
 
 * Changed ordering of arguments in help message
+* Now on install/update only downloads latest stable unless told to download beta/alpha
 
 ## [v2.2.0] - 2026-05-02
 

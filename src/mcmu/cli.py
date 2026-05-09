@@ -27,7 +27,8 @@ class CLI:
             self.args.mod_dir,
             self.args.game_version,
             self.args.loader,
-            self.args.yes
+            self.args.yes,
+            self.args.beta
         ):
             return 1
         return 0
@@ -35,7 +36,7 @@ class CLI:
     def remove(self) -> int:
         """CLI function to remove mod"""
         try:
-            if ask(f"Would you like to remove {self.mods[self.args.mod]}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes.", self.args.yes):
+            if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes.", self.args.yes):
                 self.mods[self.args.mod].delete()
                 logger.info("Mod '%s' successfully deleted", self.args.mod)
         except KeyError:
@@ -64,7 +65,8 @@ class CLI:
                 self.args.mod_dir,
                 self.args.game_version,
                 self.args.loader,
-                self.args.yes
+                self.args.yes,
+                self.args.beta
             ):
                 return 1
         except UserWarning:
@@ -201,6 +203,11 @@ class CLI:
                 'spigot',
                 'sponge'
             ]
+        )
+        parser.add_argument(
+            "--beta",
+            help="Download beta/alpha releases for a mod",
+            action="store_true"
         )
         parser.add_argument(
             "--mod-dir",

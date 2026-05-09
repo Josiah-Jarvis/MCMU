@@ -29,16 +29,22 @@ def ask(question: str, no_ask: bool = False) -> bool:
 def get_latest_version(
     mod_name: str,  # The name of the mod on Modrinth
     mod_loader: str,  # The mod loader to get for
-    game_version: str = GAME_VERSION
+    game_version: str,
+    unstable: bool
 ) -> dict:  # Modrinth mod object or False if already at latest version
     """Checks for mod update from Modrinth"""
+    if unstable:
+        unstable = ['release', 'beta', 'alpha']
+    else:
+        unstable = ['release']
     response = ModAPI.project_version(
         mod_name, f"[\"{mod_loader}\"]", f'["{game_version}"]'
     )
-    latest_version = response[0]  # Set to first version in list
+    latest_version = {'version_number': "0"}  # Set to first version in list
     for version in response:  # Check each mod version in the returned data
-        if version["version_number"] > latest_version["version_number"]:
-            latest_version = version  # Set to latest version if newer
+        if version['version_type'] in unstable:
+            if version["version_number"] > latest_version["version_number"]:
+                latest_version = version  # Set to latest version if newer
     return latest_version  # Return the latest version
 
 
@@ -65,7 +71,8 @@ def download_dependency_s(
     mods: list,  # List of installed mods
     mod_path: Path,  # Path to the mods folder
     mod_loader: str = MOD_LOADER,
-    game_version: str = GAME_VERSION
+    game_version: str = GAME_VERSION,
+    unstable: bool = False
 ):
     """Download a mods dependency's"""
     for dependency in dependency_s:
@@ -75,7 +82,8 @@ def download_dependency_s(
                 latest_version = get_latest_version(
                     mod_data['slug'],
                     mod_loader,
-                    game_version
+                    game_version,
+                    unstable
                 )
                 jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
                 ModAPI.get_file(
@@ -88,7 +96,8 @@ def download_dependency_s(
                     latest_version = get_latest_version(
                         mod_data['slug'],
                         mod_loader,
-                        game_version
+                        game_version,
+                        unstable
                     )
                     jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
                     ModAPI.get_file(
@@ -105,14 +114,16 @@ def update_mods(
     mod_path: Path,  # The path to the mods
     game_version: str = GAME_VERSION,
     mod_loader: str = MOD_LOADER,
-    no_ask: bool = False
+    no_ask: bool = False,
+    unstable: bool = True
 ) -> bool:
     """Updates mods"""
     for mod_name in mods:
         latest_version = get_latest_version(
             mod_name,
             mod_loader,
-            game_version
+            game_version,
+            unstable
         )  # Check for update
         if not latest_version["version_number"] > mods[mod_name].version:
             latest_version = False
@@ -128,7 +139,8 @@ def update_mods(
                     mods,
                     mod_path,
                     mod_loader,
-                    game_version
+                    game_version,
+                    unstable
                 )
                 jar_file = Path(
                     mod_path,
@@ -158,7 +170,8 @@ def install_mod(
         mod_path: Path,  # The path to the mods folder
         game_version: str = GAME_VERSION,
         mod_loader: str = MOD_LOADER,
-        no_ask: bool = False
+        no_ask: bool = False,
+        unstable: bool = True
 ) -> bool:
     """Installs a mod"""
     if mod in mods:  # If mod already installed exit
@@ -178,7 +191,8 @@ def install_mod(
                 mods,
                 mod_path,
                 mod_loader,
-                game_version
+                game_version,
+                unstable
             )
             jar_file = Path(
                 mod_path,
@@ -187,7 +201,7 @@ def install_mod(
             ModAPI.get_file(latest_version['files'][0]['url'], jar_file)
             print(f"Downloaded mod at {jar_file} successfully.")
             return True
-    latest_version = get_latest_version(mod[0], mod_loader, game_version)
+    latest_version = get_latest_version(mod[0], mod_loader, game_version, unstable)
     if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?", no_ask):
             download_dependency_s(
