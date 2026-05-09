@@ -3,14 +3,14 @@
 ## To Do
 
 [ ] Make a better search system
-[ ] Check the sha1/sha512 of a downloaded mod
 
 ## In Progress
 
-[ ] Add support for multiple mod loaders
+[ ] Check the sha1/sha512 of a downloaded mod
 
 ## Completed
 
+[x] Add support for multiple mod loaders - 2026-05-09
 [x] Add support for disabling and enabling mods - 2026-04-24
 [x] Add support for installing a specific version of a mod - 2026-03-21
 [x] Make it so you can list the dependency's of a mod - 2026-03-19
