@@ -8,8 +8,12 @@ from .cli import CLI
 
 def main():
     """Main function"""
-    cli = CLI()
-    return cli.cli()
+    try:
+        cli = CLI()
+        return cli.cli()
+    except KeyboardInterrupt:
+        print("^C pressed. Exiting...")
+        return 5
 
 
 if __name__ == "__main__":

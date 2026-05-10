@@ -4,7 +4,11 @@
 
 ### Added
 
+* Now checks sha1 and sha512 hashes of downloaded files for better security
 
+### Fixed
+
+* Fixed failing on CTL+C
 
 ## [v2.3.0.dev1] - 2026-05-9
 

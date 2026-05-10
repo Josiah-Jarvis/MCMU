@@ -3,6 +3,7 @@
 
 """ModrinthAPI class"""
 
+from hashlib import sha1, sha512
 from pathlib import Path
 from requests import get
 from . import __version__
@@ -92,7 +93,8 @@ class ModrinthAPI:
     def get_file(
         self,
         file: str,  # The file to download
-        path: Path  # The file to write to
+        path: Path,  # The file to write to
+        hashs: list  # The  hashs
     ) -> bool:  # True if success
         """Gets file from the CDN
         Raises:
@@ -102,10 +104,16 @@ class ModrinthAPI:
         if response.status_code == 404:
             raise UserWarning("Version file failed to download")
         try:
+            hash_sha1 = sha1()
+            hash_sha512 = sha512()
             with open(path, 'wb') as jar_file:  # Write to the jar file
                 for chunk in response.iter_content(chunk_size=1024):
                     if chunk:
                         jar_file.write(chunk)
+                        hash_sha1.update(chunk)
+                        hash_sha512.update(chunk)
+            if (hash_sha1.hexdigest() == hashs['sha1']) or (hash_sha512.hexdigest() == hashs['sha512']):
+                return True
+            raise UserWarning("Hash's do not match")
         except PermissionError as exc:
             raise PermissionError(f"No permission to write: {path}") from exc
-        return True
