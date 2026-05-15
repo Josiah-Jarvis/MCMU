@@ -6,10 +6,9 @@
 
 ## In Progress
 
-[ ] Check the sha1/sha512 of a downloaded mod
-
 ## Completed
 
+[x] Check the sha1/sha512 of a downloaded mod - 2026-05-10
 [x] Add support for multiple mod loaders - 2026-05-09
 [x] Add support for disabling and enabling mods - 2026-04-24
 [x] Add support for installing a specific version of a mod - 2026-03-21
