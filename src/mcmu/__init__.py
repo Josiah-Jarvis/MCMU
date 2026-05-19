@@ -25,16 +25,13 @@ try:
         MOD_DIR
     )
 except KeyError:
-    if system() == "Linux":
-        MOD_DIR = Path(Path.home(), ".minecraft/mods/")
-    elif system() == "Darwin":
+    if system() == "Darwin":
         MOD_DIR = Path(
             Path.home(), "Library/Application Support/minecraft/mods/"
         )
     elif system() == "Windows":
         MOD_DIR = Path(getenv('APPDATA'), ".minecraft\\mods\\")
-    else:
-        logger.warning("System %s not known.", system())
+    else:  # Should be linux or other unix like systems
         MOD_DIR = Path(Path.home(), ".minecraft/mods/")
 
 try:
@@ -44,7 +41,7 @@ try:
         GAME_VERSION
     )
 except KeyError:
-    GAME_VERSION = "26.1.2"
+    GAME_VERSION = "26.2"
 
 try:
     MOD_LOADER = environ['MCMU_MOD_LOADER']
@@ -56,4 +53,4 @@ except KeyError:
     MOD_LOADER = "fabric"
 
 
-__all__ = [GAME_VERSION, MOD_DIR]
+__all__ = [GAME_VERSION, MOD_DIR, MOD_LOADER]

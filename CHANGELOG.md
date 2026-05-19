@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.3.0.dev3] - 2026-05-?
+
+### Changed
+
+* Changed system recognition code to now go MacOS, Windows, Linux
+* Bump default Minecraft game version to 26.2 in preparation for the Chaos Cubed update
+
 ## [v2.3.0.dev2] - 2026-05-15
 
 ### Added
