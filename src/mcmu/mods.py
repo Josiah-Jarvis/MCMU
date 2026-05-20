@@ -38,8 +38,6 @@ class Mod:
                     f"{self.name}_version_{self.version}.jar"
                 )
             )
-        else:
-            raise UserWarning(f"Mod: {self.name} already enabled.")
 
     def disable(self):
         """Disable mod"""
@@ -54,8 +52,6 @@ class Mod:
                     f"{self.name}_version_{self.version}.jar.disabled"
                 )
             )
-        else:
-            raise UserWarning(f"Mod: {self.name} already disabled.")
 
     def delete(self):
         """Delete a mod"""

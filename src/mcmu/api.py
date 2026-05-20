@@ -13,7 +13,7 @@ class ModrinthAPI:
     """Modrinth API class"""
     def __init__(self):
         self.headers = {
-            'User-Agent': f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)"
+            'User-Agent': f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)",
         }
 
     def query(
@@ -34,7 +34,7 @@ class ModrinthAPI:
             timeout=10
         )
         if response.status_code == 410:
-            raise DeprecationWarning("API deprecated")
+            raise DeprecationWarning("Modrinth API deprecated")
         if response.status_code == 404:
             raise UserWarning(f"Mod: {endpoint} not found")
         if response.status_code == 400:
@@ -94,7 +94,7 @@ class ModrinthAPI:
         self,
         file: str,  # The file to download
         path: Path,  # The file to write to
-        hashs: list  # The  hashs
+        hash_list: list  # The  hashs
     ) -> bool:  # True if success
         """Gets file from the CDN
         Raises:
@@ -112,7 +112,7 @@ class ModrinthAPI:
                         jar_file.write(chunk)
                         hash_sha1.update(chunk)
                         hash_sha512.update(chunk)
-            if (hash_sha1.hexdigest() == hashs['sha1']) or (hash_sha512.hexdigest() == hashs['sha512']):
+            if (hash_sha1.hexdigest() == hash_list['sha1']) and (hash_sha512.hexdigest() == hash_list['sha512']):
                 return True
             raise UserWarning("Hash's do not match")
         except PermissionError as exc:

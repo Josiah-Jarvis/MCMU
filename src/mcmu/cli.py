@@ -7,7 +7,7 @@ from shutil import make_archive
 from pathlib import Path
 from logging import DEBUG
 from datetime import datetime
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser
 
 from . import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
 from .shared import update_mods, install_mod, list_mods, ModAPI, ask
@@ -127,9 +127,6 @@ class CLI:
                 "Mod '%s' not installed so can't enable",
                 self.args.mod
             )
-        except UserWarning:
-            logger.info("Mod '%s' already enabled", self.args.mod)
-            return 1
         return 0
 
     def disable(self) -> int:
@@ -142,9 +139,6 @@ class CLI:
                 "Mod '%s' not installed so can't disable",
                 self.args.mod
             )
-        except UserWarning:
-            logger.info("Mod '%s' already disabled", self.args.mod)
-            return 1
         return 0
 
     def backup(self) -> int:
@@ -165,8 +159,7 @@ class CLI:
         """Parses command line arguments"""
         parser = ArgumentParser(
             description="A robust package to install, update, and manage Minecraft mods",
-            epilog="Try 'mcmu COMMAND --help'",
-            formatter_class=ArgumentDefaultsHelpFormatter
+            epilog="Try 'mcmu COMMAND --help'"
         )
         parser.add_argument(
             "-v",
@@ -252,7 +245,7 @@ class CLI:
         backup_parser.add_argument(
             "type",
             help="The type of archive to make",
-            choices=['zip', 'tar', 'gztar', 'bztar', 'xztar', 'zstdtar']
+            choices=['zip', 'tar', 'gztar']
         )
         backup_parser.set_defaults(func=self.backup)
         self.args = parser.parse_args()  # Parse the arguments

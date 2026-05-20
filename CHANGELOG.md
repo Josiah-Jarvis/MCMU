@@ -2,10 +2,17 @@
 
 ## [v2.3.0.dev3] - 2026-05-?
 
+### Fixed
+
+* Fixed only checking sha1 or sha512, now checks both
+
 ### Changed
 
 * Changed system recognition code to now go MacOS, Windows, Linux
 * Bump default Minecraft game version to 26.2 in preparation for the Chaos Cubed update
+* No longer raises UserWarning when mod already enabled/disabled
+* No longer prints default arguments for mcmu --help
+* Now only allows .tar/.tar.gz/.zip archives to be made
 
 ## [v2.3.0.dev2] - 2026-05-15
 

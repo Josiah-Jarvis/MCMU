@@ -20,8 +20,7 @@ def ask(question: str, no_ask: bool = False) -> bool:
     if no_ask:
         print(f"{question} [Y/n]: Y")
         return True
-    answer = input(f"{question} [Y/n]: ").lower()
-    if answer in ("y", ""):  # Check if answer was Y, y or ""
+    if input(f"{question} [Y/n]: ").lower() in ("y", ""):  # Check if y or ""
         return True  # Return 'yes'
     return False  # Return 'no'
 
