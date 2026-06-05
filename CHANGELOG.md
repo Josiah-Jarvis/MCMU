@@ -1,5 +1,9 @@
 # Changelog
 
+## [v2.3.0rc1] - 2026-06-05
+
+First release candidate for version 2.3.0. Version 2.3.0 will be released June 16th.
+
 ## [v2.3.0.dev3] - 2026-05-19
 
 ### Fixed

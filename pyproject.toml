@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mcmu"
-version = "2.3.0.dev3"
+version = "2.3.0rc1"
 requires-python = ">=3.14"
 authors = [
     {name="Josiah Jarvis"}
