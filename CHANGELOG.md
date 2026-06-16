@@ -1,5 +1,33 @@
 # Changelog
 
+## [v2.3.0] - 2026-06-16
+
+### Added
+
+* Added -y/--yes command line argument
+* Added support for multiple mod loaders
+* Added environment variable MCMU_MOD_LOADER
+* Added --loader command line argument
+* Added --beta command line argument
+* Now checks sha1 and sha512 hashes of downloaded files for better security
+
+### Fixed
+
+* Fixed only printing last dependency with 'mcmu info PROJECT'
+* Fixed printing mod() object address instead of mod name when removing a mod
+* Fixed failing on CTL+C
+* Fixed only checking sha1 or sha512, now checks both
+
+### Changed
+
+* Changed ordering of arguments in help message
+* Now on install/update only downloads latest stable unless told to download beta/alpha
+* Changed system recognition code to now go MacOS, Windows, Linux
+* Bump default Minecraft game version to 26.2 in preparation for the Chaos Cubed update
+* No longer raises UserWarning when mod already enabled/disabled
+* No longer prints default arguments for mcmu --help
+* Now only allows .tar/.tar.gz/.zip archives to be made
+
 ## [v2.3.0rc1] - 2026-06-05
 
 First release candidate for version 2.3.0. Version 2.3.0 will be released June 16th.

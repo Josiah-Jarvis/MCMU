@@ -10,23 +10,27 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [--mod-dir MOD_DIR] [--game-version GAME_VERSION] [--verbose] [-v] {update,remove,install,list,search,info,enable,disable,backup} ...
+usage: mcmu [-h] [-v] [-y] [--verbose] [--loader {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}] [--beta] [--mod-dir MOD_DIR] [--game-version GAME_VERSION]
+            {update,remove,install,list,search,info,enable,disable,backup} ...
 
-A robust package to install, update, and manage Minecraft mods from Modrinth
+A robust package to install, update, and manage Minecraft mods
 
 options:
   -h, --help            show this help message and exit
-  --mod-dir MOD_DIR     Path to the Minecraft mods folder (default: ~/.minecraft/mods)
-  --game-version GAME_VERSION
-                        The game version to use to install mods (default: 26.1.2)
-  --verbose             Increase logging level (default: False)
   -v, --version         Display the version
+  -y, --yes             Assumes yes for questions
+  --verbose             Increase logging level
+  --loader {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}
+                        The mod loader to target for
+  --beta                Download beta/alpha releases for a mod
+  --mod-dir MOD_DIR     Path to the Minecraft mods folder
+  --game-version GAME_VERSION
+                        The game version to use to install mods
 
 subcommands:
   The function to run
 
   {update,remove,install,list,search,info,enable,disable,backup}
-                        Action to run
     update              Update mods
     remove              Remove a mod
     install             Install a mod
@@ -37,7 +41,7 @@ subcommands:
     disable             Disable a mod
     backup              Backup mods folder
 
-Version: 2.2.0
+Try 'mcmu COMMAND --help'
 ```
 
 ## Support

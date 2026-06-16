@@ -3,7 +3,6 @@
 
 """Shared helper scripts for MCMU"""
 
-
 from re import match
 from os import listdir
 from pathlib import Path
