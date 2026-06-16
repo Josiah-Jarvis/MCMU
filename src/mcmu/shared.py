@@ -14,11 +14,8 @@ from .api import ModrinthAPI
 ModAPI = ModrinthAPI()
 
 
-def ask(question: str, no_ask: bool = False) -> bool:
+def ask(question: str) -> bool:
     """Ask a question"""
-    if no_ask:
-        print(f"{question} [Y/n]: Y")
-        return True
     if input(f"{question} [Y/n]: ").lower() in ("y", ""):  # Check if y or ""
         return True  # Return 'yes'
     return False  # Return 'no'
@@ -28,19 +25,15 @@ def get_latest_version(
     mod_name: str,  # The name of the mod on Modrinth
     mod_loader: str,  # The mod loader to get for
     game_version: str,
-    unstable: bool
+    channel: list  # The channel to get mods from
 ) -> dict:  # Modrinth mod object or False if already at latest version
     """Checks for mod update from Modrinth"""
-    if unstable:
-        unstable = ['release', 'beta', 'alpha']
-    else:
-        unstable = ['release']
     response = ModAPI.project_version(
         mod_name, f"[\"{mod_loader}\"]", f'["{game_version}"]'
     )
     latest_version = {'version_number': "0"}
     for version in response:  # Check each mod version in the returned data
-        if version['version_type'] in unstable:
+        if version['version_type'] in channel:
             if version["version_number"] > latest_version["version_number"]:
                 latest_version = version  # Set to latest version if newer
     return latest_version  # Return the latest version
@@ -70,7 +63,7 @@ def download_dependency_s(
     mod_path: Path,  # Path to the mods folder
     mod_loader: str = MOD_LOADER,
     game_version: str = GAME_VERSION,
-    unstable: bool = False
+    channel: list = "release"
 ):
     """Download a mods dependency's"""
     for dependency in dependency_s:
@@ -81,7 +74,7 @@ def download_dependency_s(
                     mod_data['slug'],
                     mod_loader,
                     game_version,
-                    unstable
+                    channel
                 )
                 jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
                 ModAPI.get_file(
@@ -96,7 +89,7 @@ def download_dependency_s(
                         mod_data['slug'],
                         mod_loader,
                         game_version,
-                        unstable
+                        channel
                     )
                     jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
                     ModAPI.get_file(
@@ -114,8 +107,7 @@ def update_mods(
     mod_path: Path,  # The path to the mods
     game_version: str = GAME_VERSION,
     mod_loader: str = MOD_LOADER,
-    no_ask: bool = False,
-    unstable: bool = True
+    channel: list = "release"
 ) -> bool:
     """Updates mods"""
     for mod_name in mods:
@@ -123,7 +115,7 @@ def update_mods(
             mod_name,
             mod_loader,
             game_version,
-            unstable
+            channel
         )  # Check for update
         if not latest_version["version_number"] > mods[mod_name].version:
             latest_version = False
@@ -133,14 +125,14 @@ def update_mods(
                 mods[mod_name].file_name
             )  # Path to the old mod file
             additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
-            if ask(f"{mods[mod_name].name} will take up: {additional_storage} additional bytes. Would you like to install?", no_ask):
+            if ask(f"{mods[mod_name].name} will take up: {additional_storage} additional bytes. Would you like to install?"):
                 download_dependency_s(
                     latest_version['dependencies'],
                     mods,
                     mod_path,
                     mod_loader,
                     game_version,
-                    unstable
+                    channel
                 )
                 jar_file = Path(
                     mod_path,
@@ -171,8 +163,7 @@ def install_mod(
         mod_path: Path,  # The path to the mods folder
         game_version: str = GAME_VERSION,
         mod_loader: str = MOD_LOADER,
-        no_ask: bool = False,
-        unstable: bool = True
+        channel: list = "release"
 ) -> bool:
     """Installs a mod"""
     if mod in mods:  # If mod already installed exit
@@ -192,14 +183,14 @@ def install_mod(
                 mod[1]
             )
             return False
-        if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?", no_ask):
+        if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?"):
             download_dependency_s(
                 latest_version['dependencies'],
                 mods,
                 mod_path,
                 mod_loader,
                 game_version,
-                unstable
+                channel
             )
             jar_file = Path(
                 mod_path,
@@ -216,7 +207,7 @@ def install_mod(
         mod[0],
         mod_loader,
         game_version,
-        unstable
+        channel
     )
     if latest_version["version_number"] == "0":
         latest_version = False
@@ -224,7 +215,7 @@ def install_mod(
         if game_version not in latest_version['game_versions']:
             latest_version = False
     if latest_version:  # Should be True if it is a dict with items
-        if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?", no_ask):
+        if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?"):
             download_dependency_s(
                 latest_version['dependencies'],
                 mods,

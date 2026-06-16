@@ -1,5 +1,20 @@
 # Changelog
 
+## [v2.4.0.dev1] - 2026-06-?
+
+### Added
+
+* Added the -c/--channel command line argument
+
+### Changed
+
+* The command line argument --loader can now be referred to as -l
+
+### Removed
+
+* Removed the --beta option
+* Removed -y/--yes command line argument because I did not like its implementation
+
 ## [v2.3.0] - 2026-06-16
 
 ### Added

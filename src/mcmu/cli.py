@@ -19,6 +19,7 @@ class CLI:
         """Init"""
         self.args = {}
         self.mods = {}
+        self.channel = ["release"]
 
     def update(self) -> int:
         """CLI function to update mod"""
@@ -27,8 +28,7 @@ class CLI:
             self.args.mod_dir,
             self.args.game_version,
             self.args.loader,
-            self.args.yes,
-            self.args.beta
+            self.args.channel
         ):
             return 1
         return 0
@@ -36,7 +36,7 @@ class CLI:
     def remove(self) -> int:
         """CLI function to remove mod"""
         try:
-            if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes.", self.args.yes):
+            if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes."):
                 self.mods[self.args.mod].delete()
                 logger.info("Mod '%s' successfully deleted", self.args.mod)
         except KeyError:
@@ -65,8 +65,7 @@ class CLI:
                 self.args.mod_dir,
                 self.args.game_version,
                 self.args.loader,
-                self.args.yes,
-                self.args.beta
+                self.args.channel
             ):
                 return 1
         except UserWarning:
@@ -169,19 +168,13 @@ class CLI:
             version=__version__
         )
         parser.add_argument(
-            "-y",
-            "--yes",
-            help="Assumes yes for questions",
-            action="store_true"
-        )
-        parser.add_argument(
             "--verbose",
             help="Increase logging level",
             action="store_true"
         )
         parser.add_argument(
+            "-l",
             "--loader",
-            help="The mod loader to target for",
             default=MOD_LOADER,
             choices=[
                 'fabric',
@@ -195,12 +188,15 @@ class CLI:
                 'purpur',
                 'spigot',
                 'sponge'
-            ]
+            ],
+            help="The mod loader to target for"
         )
         parser.add_argument(
-            "--beta",
-            help="Download beta/alpha releases for a mod",
-            action="store_true"
+            "-c",
+            "--channel",
+            default="release",
+            choices=["release", "beta", "alpha"],
+            help="The channel to get mods from"
         )
         parser.add_argument(
             "--mod-dir",
@@ -259,4 +255,10 @@ class CLI:
         if self.args.command is None:
             parser.print_help()
             return 0
+
+        if self.args.channel == "beta":
+            self.channel = ["release", "beta"]
+        elif self.args.channel == "alpha":
+            self.channel = ["release", "beta", "alpha"]
+
         return self.args.func()  # Run the function
