@@ -13,7 +13,7 @@ def main():
         return cli.cli()
     except KeyboardInterrupt:
         print("^C pressed. Exiting...")
-        return 5
+        return 130
 
 
 if __name__ == "__main__":

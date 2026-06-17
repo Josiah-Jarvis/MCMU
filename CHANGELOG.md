@@ -9,11 +9,13 @@
 ### Changed
 
 * The command line argument --loader can now be referred to as -l
+* Changed exit code of CTRL+C to 130 [https://www.thelinuxvault.net/blog/list-of-exit-codes-on-linux/#exit-code-130-terminated-by-ctrlc](https://www.thelinuxvault.net/blog/list-of-exit-codes-on-linux/#exit-code-130-terminated-by-ctrlc)
 
 ### Removed
 
 * Removed the --beta option
 * Removed -y/--yes command line argument because I did not like its implementation
+* Removed the backup command
 
 ## [v2.3.0] - 2026-06-16
 

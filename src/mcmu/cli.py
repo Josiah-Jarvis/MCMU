@@ -2,11 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """CLI UI"""
-
-from shutil import make_archive
-from pathlib import Path
 from logging import DEBUG
-from datetime import datetime
 from argparse import ArgumentParser
 
 from . import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
@@ -28,7 +24,7 @@ class CLI:
             self.args.mod_dir,
             self.args.game_version,
             self.args.loader,
-            self.args.channel
+            self.channel
         ):
             return 1
         return 0
@@ -65,7 +61,7 @@ class CLI:
                 self.args.mod_dir,
                 self.args.game_version,
                 self.args.loader,
-                self.args.channel
+                self.channel
             ):
                 return 1
         except UserWarning:
@@ -138,20 +134,6 @@ class CLI:
                 "Mod '%s' not installed so can't disable",
                 self.args.mod
             )
-        return 0
-
-    def backup(self) -> int:
-        """CLI function to backup mod"""
-        make_archive(
-            base_name=Path(
-                self.args.mod_dir,
-                "mods-backup",
-                datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-            ),
-            format=self.args.type,
-            root_dir=self.args.mod_dir
-        )
-        logger.info("Successfully backed up mods folder")
         return 0
 
     def cli(self) -> dict:
@@ -234,16 +216,6 @@ class CLI:
         disable_parser = subparsers.add_parser("disable", help="Disable a mod")
         disable_parser.add_argument("mod", help="The mod to disable")
         disable_parser.set_defaults(func=self.disable)
-        backup_parser = subparsers.add_parser(
-            "backup",
-            help="Backup mods folder"
-        )
-        backup_parser.add_argument(
-            "type",
-            help="The type of archive to make",
-            choices=['zip', 'tar', 'gztar']
-        )
-        backup_parser.set_defaults(func=self.backup)
         self.args = parser.parse_args()  # Parse the arguments
         if self.args.verbose:
             logger.setLevel(DEBUG)

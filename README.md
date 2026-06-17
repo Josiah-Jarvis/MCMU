@@ -10,19 +10,19 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-v] [-y] [--verbose] [--loader {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}] [--beta] [--mod-dir MOD_DIR] [--game-version GAME_VERSION]
-            {update,remove,install,list,search,info,enable,disable,backup} ...
+usage: mcmu [-h] [-v] [--verbose] [-l {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}] [-c {release,beta,alpha}] [--mod-dir MOD_DIR] [--game-version GAME_VERSION]
+            {update,remove,install,list,search,info,enable,disable} ...
 
 A robust package to install, update, and manage Minecraft mods
 
 options:
   -h, --help            show this help message and exit
   -v, --version         Display the version
-  -y, --yes             Assumes yes for questions
   --verbose             Increase logging level
-  --loader {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}
+  -l, --loader {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}
                         The mod loader to target for
-  --beta                Download beta/alpha releases for a mod
+  -c, --channel {release,beta,alpha}
+                        The channel to get mods from
   --mod-dir MOD_DIR     Path to the Minecraft mods folder
   --game-version GAME_VERSION
                         The game version to use to install mods
@@ -30,7 +30,7 @@ options:
 subcommands:
   The function to run
 
-  {update,remove,install,list,search,info,enable,disable,backup}
+  {update,remove,install,list,search,info,enable,disable}
     update              Update mods
     remove              Remove a mod
     install             Install a mod
@@ -39,7 +39,6 @@ subcommands:
     info                Get info on a mod
     enable              Enable a mod
     disable             Disable a mod
-    backup              Backup mods folder
 
 Try 'mcmu COMMAND --help'
 ```
