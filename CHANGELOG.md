@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.4.0.dev2] - 2026-06-?
+
+### Changed
+
+* Updated README.md
+* Updated Makefile
+
 ## [v2.4.0.dev1] - 2026-06-17
 
 ### Added

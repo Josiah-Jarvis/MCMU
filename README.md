@@ -1,6 +1,6 @@
 # MCModUpdater (MCMU)
 
-A utility to update and install Minecraft mods for java edition. Only works for Fabric Loader (currently).
+A utility to update and install Minecraft mods for java edition.
 
 **!IMPORTANT!**
 

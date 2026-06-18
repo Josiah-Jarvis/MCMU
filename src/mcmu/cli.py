@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """CLI UI"""
+
 from logging import DEBUG
 from argparse import ArgumentParser
 

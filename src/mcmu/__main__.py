@@ -6,7 +6,7 @@
 from .cli import CLI
 
 
-def main():
+def main() -> int:
     """Main function"""
     try:
         cli = CLI()

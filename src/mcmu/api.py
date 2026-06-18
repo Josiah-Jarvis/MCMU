@@ -98,7 +98,8 @@ class ModrinthAPI:
     ) -> bool:  # True if success
         """Gets file from the CDN
         Raises:
-            UserWarning: 404 code
+            UserWarning: 404 code, hash's do not match
+            PermissionError: No permission to write to file
         """
         response = get(file, stream=True, timeout=10, headers=self.headers)
         if response.status_code == 404:

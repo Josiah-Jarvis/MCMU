@@ -2,11 +2,15 @@
 .PHONY: upload
 .PHONY: check
 
-build: src/mcmu/
-	python3 -m build
+.venv: requirements.txt
+	python3 -m venv .venv # Create venv
+	.venv/bin/pip install -r requirements.txt  # Install requirements
 
-upload: dist/mcmu*
-	python3 -m twine upload dist/* --config-file .pypirc
+build: .venv pyproject.toml README.md src/mcmu/*
+	.venv/bin/python3 -m build  # Build package
 
-check: src/mcmu/*
-	bandit src/mcmu/*
+upload: .venv .pypirc dist/mcmu/*
+	.venv/bin/python3 -m twine upload dist/* --config-file .pypirc
+
+check: .venv src/mcmu/*
+	.venv/bin/bandit src/mcmu/*  # Check code
