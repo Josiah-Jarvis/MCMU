@@ -2,9 +2,9 @@
 
 ## To Do
 
-[ ] Make a better search system
-
 ## In Progress
+
+[ ] Make a better search system
 
 ## Completed
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [v2.4.0.dev3] - 2026-06-19
+
+### Added
+
+* Added search --category CLI argument
+* Added search --versions CLI argument
+* Added search --server-side CLI argument
+* Added search --client-side CLI argument
+* Added search --open-source CLI argument
+
+### Changed
+
+* Changed search system
+
 ## [v2.4.0.dev2] - 2026-06-18
 
 ### Changed
@@ -615,3 +629,9 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.2.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.2.0
 [v2.3.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.3.0.dev1
 [v2.3.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.3.0.dev2
+[v2.3.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.3.0.dev3
+[v2.3.0rc1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.3.0rc1
+[v2.3.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.3.0
+[v2.4.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev1
+[v2.4.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev2
+[v2.4.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev3

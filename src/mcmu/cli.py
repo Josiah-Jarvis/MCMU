@@ -8,6 +8,7 @@ from argparse import ArgumentParser
 
 from . import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
 from .shared import update_mods, install_mod, list_mods, ModAPI, ask
+from .CLIDefaults import get_categories, get_game_versions, get_loaders
 
 
 class CLI:
@@ -80,7 +81,25 @@ class CLI:
 
     def search(self) -> int:
         """CLI function to search mods"""
-        facets = f"[[\"categories:{self.args.loader}\"],[\"project_type:mod\"]]"
+        facets = f"[[\"categories:{self.args.loader}\"]"
+        facets += ",[\"project_type:mod\"]"
+        if len(self.args.category):
+            for category in self.args.category:
+                facets += f",[\"categories:{category}\"]"
+        if len(self.args.versions):
+            facets += ",["
+            for version in self.args.versions:
+                facets += f"\"versions:{version}\","
+            facets = facets[:-1]
+            facets += "]"
+        if self.args.server_side:
+            facets += ",[\"server_side:required\"]"
+        if self.args.client_side:
+            facets += ",[\"client_side:required\"]"
+        if self.args.open_source:
+            facets += ",[\"open_source\"]"
+        facets += "]"
+        print(facets)
         response = ModAPI.search(self.args.term, facets)
         for mod in response['hits']:  # Iterate over and list all the mods
             search = f"""{mod['title']}:
@@ -159,19 +178,7 @@ class CLI:
             "-l",
             "--loader",
             default=MOD_LOADER,
-            choices=[
-                'fabric',
-                'forge',
-                'neoforge',
-                'babric',
-                'quilt',
-                'bukkit',
-                'folia',
-                'paper',
-                'purpur',
-                'spigot',
-                'sponge'
-            ],
+            choices=get_loaders(),
             help="The mod loader to target for"
         )
         parser.add_argument(
@@ -207,6 +214,23 @@ class CLI:
         list_parser.set_defaults(func=self.list)
         search_parser = subparsers.add_parser("search", help="Search mods")
         search_parser.add_argument("term", help="The term to search for")
+        search_parser.add_argument(
+            "--category",
+            action="append",
+            choices=get_categories(),
+            default=[],
+            help="Category(s) to filter for"
+        )
+        search_parser.add_argument(
+            "--versions",
+            action="append",
+            choices=get_game_versions(),
+            default=[],
+            help="Version(s) to filter for"
+        )
+        search_parser.add_argument("--server-side", action="store_true", help="Filter by server side support")
+        search_parser.add_argument("--client-side", action="store_true", help="Filter by client side support")
+        search_parser.add_argument("--open-source", action="store_true", help="Filter by open source")
         search_parser.set_defaults(func=self.search)
         info_parser = subparsers.add_parser("info", help="Get info on a mod")
         info_parser.add_argument("mod", help="Get info on a mod")
