@@ -10,8 +10,7 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-v] [--verbose] [-l {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}] [-c {release,beta,alpha}] [--mod-dir MOD_DIR] [--game-version GAME_VERSION]
-            {update,remove,install,list,search,info,enable,disable} ...
+usage: mcmu [-h] [-v] [--verbose] [--mod-dir MOD_DIR] {update,remove,install,list,search,info,enable,disable} ...
 
 A robust package to install, update, and manage Minecraft mods
 
@@ -19,13 +18,7 @@ options:
   -h, --help            show this help message and exit
   -v, --version         Display the version
   --verbose             Increase logging level
-  -l, --loader {fabric,forge,neoforge,babric,quilt,bukkit,folia,paper,purpur,spigot,sponge}
-                        The mod loader to target for
-  -c, --channel {release,beta,alpha}
-                        The channel to get mods from
   --mod-dir MOD_DIR     Path to the Minecraft mods folder
-  --game-version GAME_VERSION
-                        The game version to use to install mods
 
 subcommands:
   The function to run

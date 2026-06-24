@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mcmu"
-version = "2.4.0.dev3"
+version = "2.4.0.dev4"
 requires-python = ">=3.14"
 authors = [
     {name="Josiah Jarvis"}
@@ -29,11 +29,13 @@ classifiers = [
     "Operating System :: Microsoft :: Windows",
     "Operating System :: Microsoft :: Windows :: Windows 11",
     "Operating System :: POSIX :: Linux",
+    "Programming Language :: Java",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: 3.15",
+    "Programming Language :: Python :: 3.16",
     "Topic :: Games/Entertainment",
     "Topic :: System :: Installation/Setup",
     "Topic :: System :: Software Distribution",

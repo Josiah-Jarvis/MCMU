@@ -44,13 +44,18 @@ class ModrinthAPI:
     def search(
         self,
         query: str,  # The query string
-        facets: str  # Used to limit the search results see
+        index: str,  # The filter
+        offset: int,  # The offset
+        facets: str,  # Used to limit the search results see
+        limit: int  # The max number of results
     ) -> [dict]:  # Response data
         """Search's Mod on Modrinth"""
         parameters = {
             'query': query,
             'facets': facets,
-            'limit': "100"
+            'index': index,
+            'offset': offset,
+            'limit': limit
         }
         return self.query("search", parameters)
 
@@ -105,8 +110,8 @@ class ModrinthAPI:
         if response.status_code == 404:
             raise UserWarning("Version file failed to download")
         try:
-            hash_sha1 = sha1()
-            hash_sha512 = sha512()
+            hash_sha1 = sha1(usedforsecurity=False)
+            hash_sha512 = sha512(usedforsecurity=False)
             with open(path, 'wb') as jar_file:  # Write to the jar file
                 for chunk in response.iter_content(chunk_size=1024):
                     if chunk:

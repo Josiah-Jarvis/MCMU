@@ -4,14 +4,98 @@
 """Shared helper scripts for MCMU"""
 
 from re import match
-from os import listdir
+from os import listdir, getenv, environ
 from pathlib import Path
+from platform import system
 
-from . import logger, GAME_VERSION, MOD_LOADER
+
+from . import logger
 from .mods import Mod
 from .api import ModrinthAPI
 
 ModAPI = ModrinthAPI()
+
+
+def get_categories() -> list:
+    """Get a list of categories"""
+    response = ModAPI.query("tag/category")
+    categories = []
+    for category in response:
+        if category['project_type'] == "mod":
+            categories.append(category['name'])
+    return categories
+
+
+def get_loaders() -> list:
+    """Get a list of loaders"""
+    response = ModAPI.query("tag/loader")
+    loaders = []
+    for loader in response:
+        if "mod" in loader['supported_project_types']:
+            loaders.append(loader['name'])
+    return loaders
+
+
+def get_game_versions() -> list:
+    """Get a list of game versions"""
+    response = ModAPI.query("tag/game_version")
+    versions = []
+    for version in response:
+        versions.append(version['version'])
+    return versions
+
+
+modrinth_categories = get_categories()
+modrinth_loaders = get_loaders()
+modrinth_game_versions = get_game_versions()
+
+try:
+    MOD_DIR = environ['MCMU_MOD_PATH']
+    logger.info(
+        "Mod dir set to '%s' because of environment variable",
+        MOD_DIR
+    )
+except KeyError:
+    if system() == "Darwin":
+        MOD_DIR = Path(
+            Path.home(), "Library/Application Support/minecraft/mods/"
+        )
+    elif system() == "Windows":
+        MOD_DIR = Path(getenv('APPDATA'), ".minecraft\\mods\\")
+    else:  # Should be linux or other unix like systems
+        MOD_DIR = Path(Path.home(), ".minecraft/mods/")
+
+try:
+    GAME_VERSION = environ['MCMU_GAME_VERSION']
+    if GAME_VERSION in modrinth_game_versions:
+        logger.info(
+            "Game version set to '%s' because of environment variable",
+            GAME_VERSION
+        )
+    else:
+        logger.error(
+            "Game version '%s' not a valid game version, setting to default...",
+            GAME_VERSION
+        )
+        raise ValueError("Game version not a valid game version")
+except (KeyError, ValueError):
+    GAME_VERSION = "26.2"
+
+try:
+    MOD_LOADER = environ['MCMU_MOD_LOADER']
+    if MOD_LOADER in modrinth_loaders:
+        logger.info(
+            "Mod loader set to '%s' because of environment variable",
+            MOD_LOADER
+        )
+    else:
+        logger.error(
+            "Mod loader '%s' not a valid mod loader, setting to default...",
+            MOD_LOADER
+        )
+        raise ValueError("Mod loader not a valid mod loader")
+except (KeyError, ValueError):
+    MOD_LOADER = "fabric"
 
 
 def ask(question: str) -> bool:
@@ -240,3 +324,13 @@ def install_mod(
         logger.error("Mod does not exist for that version and loader")
         return False
     return True
+
+
+__all__ = [
+    "modrinth_categories",
+    "modrinth_loaders",
+    "modrinth_game_versions",
+    "GAME_VERSION",
+    "MOD_DIR",
+    "MOD_LOADER"
+]

@@ -3,12 +3,10 @@
 
 """CLI UI"""
 
-from logging import DEBUG
 from argparse import ArgumentParser
 
-from . import __version__, logger, GAME_VERSION, MOD_DIR, MOD_LOADER
-from .shared import update_mods, install_mod, list_mods, ModAPI, ask
-from .CLIDefaults import get_categories, get_game_versions, get_loaders
+from . import __version__, logger
+from .shared import update_mods, install_mod, list_mods, ModAPI, ask, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER
 
 
 class CLI:
@@ -73,10 +71,17 @@ class CLI:
 
     def list(self) -> int:
         """CLI function to list mod"""
+        if self.args.enabled:
+            filter_for = ["enabled"]
+        elif self.args.disabled:
+            filter_for = ["disabled"]
+        else:
+            filter_for = ["enabled", "disabled"]
         for name, mod in self.mods.items():  # Iterate over all installed mods
-            print(
-                f"{name}\n\tVersion: {mod.version}\n\tFile: {mod.file_name}"
-            )
+            if (mod.enabled and "enabled" in filter_for) or (not mod.enabled and "disabled" in filter_for):
+                print(
+                    f"{name}\n\tVersion: {mod.version}\n\tFile: {mod.file_name}"
+                )
         return 0
 
     def search(self) -> int:
@@ -93,14 +98,19 @@ class CLI:
             facets = facets[:-1]
             facets += "]"
         if self.args.server_side:
-            facets += ",[\"server_side:required\"]"
+            facets += f",[\"server_side:{self.args.server_side}\"]"
         if self.args.client_side:
-            facets += ",[\"client_side:required\"]"
+            facets += f",[\"client_side:{self.args.client_side}\"]"
         if self.args.open_source:
-            facets += ",[\"open_source\"]"
+            facets += ",[\"open_source:true\"]"
         facets += "]"
-        print(facets)
-        response = ModAPI.search(self.args.term, facets)
+        response = ModAPI.search(
+            self.args.term,
+            self.args.sorting,
+            self.args.offset,
+            facets,
+            self.args.limit
+        )
         for mod in response['hits']:  # Iterate over and list all the mods
             search = f"""{mod['title']}:
     Description: {mod['description']}
@@ -170,67 +180,127 @@ class CLI:
             version=__version__
         )
         parser.add_argument(
-            "--verbose",
-            help="Increase logging level",
-            action="store_true"
-        )
-        parser.add_argument(
-            "-l",
-            "--loader",
-            default=MOD_LOADER,
-            choices=get_loaders(),
-            help="The mod loader to target for"
-        )
-        parser.add_argument(
-            "-c",
-            "--channel",
-            default="release",
-            choices=["release", "beta", "alpha"],
-            help="The channel to get mods from"
-        )
-        parser.add_argument(
             "--mod-dir",
             default=MOD_DIR,
             help="Path to the Minecraft mods folder"
-        )
-        parser.add_argument(
-            "--game-version",
-            default=GAME_VERSION,
-            help="The game version to use to install mods"
         )
         subparsers = parser.add_subparsers(
             description="The function to run",
             dest="command",
         )
         update_parser = subparsers.add_parser("update", help="Update mods")
+        update_parser.add_argument(
+            "--channel",
+            default="release",
+            choices=["release", "beta", "alpha"],
+            help="The channel to get mods from"
+        )
+        update_parser.add_argument(
+            "--loader",
+            default=MOD_LOADER,
+            choices=modrinth_loaders,
+            help="The mod loader to target for"
+        )
+        update_parser.add_argument(
+            "--game-version",
+            default=GAME_VERSION,
+            choices=modrinth_game_versions,
+            help="The game version to use to install mods"
+        )
         update_parser.set_defaults(func=self.update)
         remove_parser = subparsers.add_parser("remove", help="Remove a mod")
         remove_parser.add_argument("mod", help="The mod to remove")
         remove_parser.set_defaults(func=self.remove)
         install_parser = subparsers.add_parser("install", help="Install a mod")
         install_parser.add_argument("mod", help="Install a mod")
+        install_parser.add_argument(
+            "--channel",
+            default="release",
+            choices=["release", "beta", "alpha"],
+            help="The channel to get mods from"
+        )
+        install_parser.add_argument(
+            "--loader",
+            default=MOD_LOADER,
+            choices=modrinth_loaders,
+            help="The mod loader to target for"
+        )
+        install_parser.add_argument(
+            "--game-version",
+            default=GAME_VERSION,
+            choices=modrinth_game_versions,
+            help="The game version to use to install mods"
+        )
         install_parser.set_defaults(func=self.install)
         list_parser = subparsers.add_parser("list", help="List mods")
+        list_parser_exclusive = list_parser.add_mutually_exclusive_group()
+        list_parser_exclusive.add_argument(
+            "--enabled",
+            action="store_true",
+            default=False
+        )
+        list_parser_exclusive.add_argument(
+            "--disabled",
+            action="store_true",
+            default=False
+        )
         list_parser.set_defaults(func=self.list)
         search_parser = subparsers.add_parser("search", help="Search mods")
         search_parser.add_argument("term", help="The term to search for")
         search_parser.add_argument(
+            "--offset",
+            type=int,
+            default=0
+        )
+        search_parser.add_argument(
+            "--sorting",
+            choices=["relevance", "downloads", "follows", "newest", "updated"],
+            default="relevance"
+        )
+        search_parser.add_argument(
             "--category",
             action="append",
-            choices=get_categories(),
+            choices=modrinth_categories,
             default=[],
             help="Category(s) to filter for"
         )
         search_parser.add_argument(
+            "--limit",
+            type=int,
+            default=20,
+            choices=list(range(1, 101)),
+            help="The maximum number of results to return"
+        )
+        search_parser.add_argument(
             "--versions",
             action="append",
-            choices=get_game_versions(),
+            choices=modrinth_game_versions,
             default=[],
             help="Version(s) to filter for"
         )
-        search_parser.add_argument("--server-side", action="store_true", help="Filter by server side support")
-        search_parser.add_argument("--client-side", action="store_true", help="Filter by client side support")
-        search_parser.add_argument("--open-source", action="store_true", help="Filter by open source")
+        search_parser.add_argument(
+            "--server-side",
+            choices=["required", "optional", "unsupported", "unknown"],
+            default=False,
+            help="Filter by server side support"
+        )
+        search_parser.add_argument(
+            "--client-side",
+            choices=["required", "optional", "unsupported", "unknown"],
+            default=False,
+            help="Filter by client side support"
+        )
+        search_parser.add_argument(
+            "--open-source",
+            action="store_true",
+            help="Filter by open source"
+        )
+        search_parser.add_argument(
+            "--loader",
+            default=MOD_LOADER,
+            choices=modrinth_loaders,
+            help="The mod loader to filter for"
+        )
         search_parser.set_defaults(func=self.search)
         info_parser = subparsers.add_parser("info", help="Get info on a mod")
         info_parser.add_argument("mod", help="Get info on a mod")
@@ -242,8 +312,6 @@ class CLI:
         disable_parser.add_argument("mod", help="The mod to disable")
         disable_parser.set_defaults(func=self.disable)
         self.args = parser.parse_args()  # Parse the arguments
-        if self.args.verbose:
-            logger.setLevel(DEBUG)
         try:
             self.mods = list_mods(self.args.mod_dir)
         except FileNotFoundError:
@@ -253,9 +321,12 @@ class CLI:
             parser.print_help()
             return 0
 
-        if self.args.channel == "beta":
-            self.channel = ["release", "beta"]
-        elif self.args.channel == "alpha":
-            self.channel = ["release", "beta", "alpha"]
+        try:
+            if self.args.channel == "beta":
+                self.channel = ["release", "beta"]
+            elif self.args.channel == "alpha":
+                self.channel = ["release", "beta", "alpha"]
+        except AttributeError:
+            pass
 
         return self.args.func()  # Run the function

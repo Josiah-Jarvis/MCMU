@@ -1,5 +1,35 @@
 # Changelog
 
+## [v2.4.0.dev4] - 2026-06-23
+
+### Added
+
+* Added list --disabled
+* Added list --enabled
+* Now can list enabled and disabled mods separately
+* Added search --sorting
+* Added search --offset
+* Added search --limit
+
+### Changed
+
+* -c/--channel is now under the update_parser/install_parser instead of the main parser
+* -l/--loader is now under the update_parser/install_parser instead of the main parser
+* --game-version is now under the update_parser/install_parser instead of the main parser
+* Further improved how search --client-side and search --server-side work
+* Now makes sure environment variables MCMU_MOD_LOADER and MCMU_GAME_VERSION are valid
+
+### Removed
+
+* -c/--channel can now only be referred to as --channel
+* -l/--loader can now only be referred to as --loader
+* Removed --verbose flag as logging.debug() was unused in the code
+
+### Fixed
+
+* Added search --loader option that previously was not there but referenced
+* search --open-source
+
 ## [v2.4.0.dev3] - 2026-06-19
 
 ### Added

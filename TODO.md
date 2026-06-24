@@ -4,10 +4,9 @@
 
 ## In Progress
 
-[ ] Make a better search system
-
 ## Completed
 
+[x] Make a better search system - 2026-06-20
 [x] Check the sha1/sha512 of a downloaded mod - 2026-05-10
 [x] Add support for multiple mod loaders - 2026-05-09
 [x] Add support for disabling and enabling mods - 2026-04-24
