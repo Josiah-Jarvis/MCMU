@@ -10,19 +10,11 @@ Your .minecraft/mods/ folder must be empty before you use this program. Unintend
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-v] [--verbose] [--mod-dir MOD_DIR] {update,remove,install,list,search,info,enable,disable} ...
+usage: mcmu [-h] [-v] [--mod-dir MOD_DIR] {update,remove,install,list,search,info,enable,disable} ...
 
 A robust package to install, update, and manage Minecraft mods
 
-options:
-  -h, --help            show this help message and exit
-  -v, --version         Display the version
-  --verbose             Increase logging level
-  --mod-dir MOD_DIR     Path to the Minecraft mods folder
-
-subcommands:
-  The function to run
-
+positional arguments:
   {update,remove,install,list,search,info,enable,disable}
     update              Update mods
     remove              Remove a mod
@@ -32,6 +24,11 @@ subcommands:
     info                Get info on a mod
     enable              Enable a mod
     disable             Disable a mod
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version         Display the version
+  --mod-dir MOD_DIR     Path to the Minecraft mods folder
 
 Try 'mcmu COMMAND --help'
 ```

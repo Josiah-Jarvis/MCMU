@@ -3,7 +3,7 @@
 
 """Package wide code"""
 
-from logging import getLogger, basicConfig, INFO
+from logging import getLogger, basicConfig
 from importlib.metadata import version, PackageNotFoundError
 
 try:
@@ -12,5 +12,5 @@ except PackageNotFoundError:
     __version__ = "Version  Not Found"
 
 logger = getLogger(__name__)
-logger.setLevel(INFO)
+logger.setLevel(20)
 basicConfig(format="%(levelname)s: %(message)s")  # Set logging format

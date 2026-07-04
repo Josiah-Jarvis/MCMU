@@ -1,5 +1,9 @@
 # Changelog
 
+## [v2.4.0] - 2026-07-03
+
+Version 2.4.0 is finally here!
+
 ## [v2.4.0.dev4] - 2026-06-23
 
 ### Added
@@ -666,3 +670,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.4.0.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev2
 [v2.4.0.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev3
 [v2.4.0.dev4]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev4
+[v2.4.0.dev5]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0rc1

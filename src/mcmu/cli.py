@@ -78,7 +78,11 @@ class CLI:
         else:
             filter_for = ["enabled", "disabled"]
         for name, mod in self.mods.items():  # Iterate over all installed mods
-            if (mod.enabled and "enabled" in filter_for) or (not mod.enabled and "disabled" in filter_for):
+            if (
+                mod.enabled and "enabled" in filter_for
+            ) or (
+                not mod.enabled and "disabled" in filter_for
+            ):
                 print(
                     f"{name}\n\tVersion: {mod.version}\n\tFile: {mod.file_name}"
                 )
@@ -170,7 +174,8 @@ class CLI:
         """Parses command line arguments"""
         parser = ArgumentParser(
             description="A robust package to install, update, and manage Minecraft mods",
-            epilog="Try 'mcmu COMMAND --help'"
+            epilog="Try 'mcmu COMMAND --help'",
+            suggest_on_error=True
         )
         parser.add_argument(
             "-v",
@@ -184,10 +189,7 @@ class CLI:
             default=MOD_DIR,
             help="Path to the Minecraft mods folder"
         )
-        subparsers = parser.add_subparsers(
-            description="The function to run",
-            dest="command",
-        )
+        subparsers = parser.add_subparsers()
         update_parser = subparsers.add_parser("update", help="Update mods")
         update_parser.add_argument(
             "--channel",
@@ -237,12 +239,10 @@ class CLI:
         list_parser_exclusive.add_argument(
             "--enabled",
             action="store_true",
-            default=False
         )
         list_parser_exclusive.add_argument(
             "--disabled",
             action="store_true",
-            default=False
         )
         list_parser.set_defaults(func=self.list)
         search_parser = subparsers.add_parser("search", help="Search mods")
@@ -313,20 +313,20 @@ class CLI:
         disable_parser.set_defaults(func=self.disable)
         self.args = parser.parse_args()  # Parse the arguments
         try:
-            self.mods = list_mods(self.args.mod_dir)
-        except FileNotFoundError:
-            logger.error("Mod folder '%s' does not exist", self.args.mod_dir)
-            return 1
-        if self.args.command is None:
+            try:
+                self.mods = list_mods(self.args.mod_dir)
+                if self.args.channel == "beta":
+                    self.channel = ["release", "beta"]
+                elif self.args.channel == "alpha":
+                    self.channel = ["release", "beta", "alpha"]
+            except FileNotFoundError:
+                logger.error(
+                    "Mod folder '%s' does not exist", self.args.mod_dir
+                )
+                return 1
+            except AttributeError:
+                ...
+            return self.args.func()
+        except AttributeError:
             parser.print_help()
             return 0
-
-        try:
-            if self.args.channel == "beta":
-                self.channel = ["release", "beta"]
-            elif self.args.channel == "alpha":
-                self.channel = ["release", "beta", "alpha"]
-        except AttributeError:
-            pass
-
-        return self.args.func()  # Run the function

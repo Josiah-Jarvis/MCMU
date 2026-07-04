@@ -74,7 +74,7 @@ try:
         )
     else:
         logger.error(
-            "Game version '%s' not a valid game version, setting to default...",
+            "Game version '%s' not a valid game version setting to default...",
             GAME_VERSION
         )
         raise ValueError("Game version not a valid game version")
@@ -160,7 +160,10 @@ def download_dependency_s(
                     game_version,
                     channel
                 )
-                jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
+                jar_file = Path(
+                    mod_path,
+                    f"{mod_data['slug']}_version_{latest_version['version_number']}.jar"
+                )
                 ModAPI.get_file(
                     latest_version['files'][0]['url'],
                     jar_file,
@@ -168,21 +171,30 @@ def download_dependency_s(
                 )
                 print(f"\tDownloaded {jar_file} successfully.")
             elif dependency['dependency_type'] == "optional":
-                if ask(f"Would you like to install optional dependency: {mod_data['slug']}?"):
+                if ask(
+                    f"Would you like to install optional dependency: {mod_data['slug']}?"
+                ):
                     latest_version = get_latest_version(
                         mod_data['slug'],
                         mod_loader,
                         game_version,
                         channel
                     )
-                    jar_file = Path(mod_path, f"{mod_data['slug']}_version_{latest_version['version_number']}.jar")
+                    jar_file = Path(
+                        mod_path,
+                        f"{mod_data['slug']}_version_{latest_version['version_number']}.jar"
+                    )
                     ModAPI.get_file(
                         latest_version['files'][0]['url'],
                         jar_file,
                         latest_version['files'][0]['hashes']
                     )
-                    print(f"\tDownloaded {jar_file} successfully.")  # Print the success
-        elif (mod_data['slug'] in mods) and (dependency['dependency_type'] == "incompatible"):
+                    print(f"\tDownloaded {jar_file} successfully.")
+        elif (
+            mod_data['slug'] in mods
+        ) and (
+            dependency['dependency_type'] == "incompatible"
+        ):
             print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
 
 

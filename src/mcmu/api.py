@@ -9,11 +9,16 @@ from requests import get
 from . import __version__
 
 
+USER_AGENT = "Josiah-Jarvis/MCMU/"
+USER_AGENT += f"{__version__} "
+USER_AGENT += "(https://github.com/Josiah-Jarvis/MCMU)"
+
+
 class ModrinthAPI:
     """Modrinth API class"""
     def __init__(self):
         self.headers = {
-            'User-Agent': f"Josiah-Jarvis/MCMU/{__version__} (https://github.com/Josiah-Jarvis/MCMU)",
+            'User-Agent': USER_AGENT,
         }
 
     def query(
@@ -118,7 +123,11 @@ class ModrinthAPI:
                         jar_file.write(chunk)
                         hash_sha1.update(chunk)
                         hash_sha512.update(chunk)
-            if (hash_sha1.hexdigest() == hash_list['sha1']) and (hash_sha512.hexdigest() == hash_list['sha512']):
+            if (
+                hash_sha1.hexdigest() == hash_list['sha1']
+            ) and (
+                hash_sha512.hexdigest() == hash_list['sha512']
+            ):
                 return True
             raise UserWarning("Hash's do not match")
         except PermissionError as exc:
