@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Package wide code"""
 
-from logging import getLogger, basicConfig
 from importlib.metadata import version, PackageNotFoundError
+from logging import getLogger, basicConfig
 
 try:
     __version__ = version("mcmu")

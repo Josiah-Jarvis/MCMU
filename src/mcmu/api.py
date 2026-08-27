@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """ModrinthAPI class"""
 
-from hashlib import sha1, sha512
+from . import __version__
+from hashlib import sha512
 from pathlib import Path
 from requests import get
-from . import __version__
 
 
 USER_AGENT = "Josiah-Jarvis/MCMU/"
@@ -115,19 +114,13 @@ class ModrinthAPI:
         if response.status_code == 404:
             raise UserWarning("Version file failed to download")
         try:
-            hash_sha1 = sha1(usedforsecurity=False)
             hash_sha512 = sha512(usedforsecurity=False)
             with open(path, 'wb') as jar_file:  # Write to the jar file
                 for chunk in response.iter_content(chunk_size=1024):
                     if chunk:
                         jar_file.write(chunk)
-                        hash_sha1.update(chunk)
                         hash_sha512.update(chunk)
-            if (
-                hash_sha1.hexdigest() == hash_list['sha1']
-            ) and (
-                hash_sha512.hexdigest() == hash_list['sha512']
-            ):
+            if hash_sha512.hexdigest() == hash_list['sha512']:
                 return True
             raise UserWarning("Hash's do not match")
         except PermissionError as exc:

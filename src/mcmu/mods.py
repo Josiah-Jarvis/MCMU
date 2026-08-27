@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """A Mod class"""
 
@@ -52,7 +51,3 @@ class Mod:
                     f"{self.name}_version_{self.version}.jar.disabled"
                 )
             )
-
-    def delete(self):
-        """Delete a mod"""
-        self.file.unlink()

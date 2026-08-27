@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Main helper script (python3 -m mcmu)"""
 
-from .shared import logger
 from .cli import CLI
+from .shared import logger
 
 
 def main() -> int:

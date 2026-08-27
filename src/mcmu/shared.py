@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Shared helper scripts for MCMU"""
 
-from re import match
+from . import logger
+from .api import ModrinthAPI
+from .mods import Mod
 from os import listdir, getenv, environ
 from pathlib import Path
 from platform import system
-
-
-from . import logger
-from .mods import Mod
-from .api import ModrinthAPI
+from re import match
 
 ModAPI = ModrinthAPI()
 
@@ -79,7 +76,7 @@ try:
         )
         raise ValueError("Game version not a valid game version")
 except (KeyError, ValueError):
-    GAME_VERSION = "26.2"
+    GAME_VERSION = "26.3"
 
 try:
     MOD_LOADER = environ['MCMU_MOD_LOADER']

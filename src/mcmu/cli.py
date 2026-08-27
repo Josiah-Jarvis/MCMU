@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """CLI UI"""
 
-from argparse import ArgumentParser
-
 from . import __version__, logger
 from .shared import update_mods, install_mod, list_mods, ModAPI, ask, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER
+from argparse import ArgumentParser
 
 
 class CLI:
@@ -33,7 +31,7 @@ class CLI:
         """CLI function to remove mod"""
         try:
             if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes."):
-                self.mods[self.args.mod].delete()
+                self.mods[self.args.mod].file.unlink()
                 logger.info("Mod '%s' successfully deleted", self.args.mod)
         except KeyError:
             logger.error("Mod '%s' not installed", self.args.mod)
