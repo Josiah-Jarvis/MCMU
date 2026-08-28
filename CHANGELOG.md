@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.5.0] - 2026-09-28
+
+### Changed
+
+* Bumped game version to 26.3
+* Removed checking sha1
+
 ## [v2.5.0.dev1] - 2026-09-27
 
 ### Changed
