@@ -1,14 +1,66 @@
 """Shared helper scripts for MCMU"""
 
+from hashlib import sha512
 from logging import getLogger
 from os import environ, getenv, listdir, replace
 from pathlib import Path
 from platform import system
 from re import match
-from .api import ModrinthAPI
+from requests import get
+from . import USER_AGENT
 
 logger = getLogger(__name__)
-ModAPI = ModrinthAPI()
+
+
+def query(
+    endpoint: str = "https://api.modrinth.com/v2/",  # The API endpoint
+    parameters: dict | None = None  # The parameters to pass the API
+) -> dict:  # API json
+    """Query's the Modrinth API
+    Raises:
+        DeprecationWarning: If response is 410
+        UserWarning: If response is 400 or 404
+    """
+    response = get(
+        url=f"https://api.modrinth.com/v2/{endpoint}",
+        params=parameters,
+        headers={'User-Agent': USER_AGENT},
+        timeout=10
+    )
+    if response.status_code == 410:
+        raise DeprecationWarning("Modrinth API deprecated")
+    if response.status_code == 404:
+        raise UserWarning(f"Mod: {endpoint} not found")
+    if response.status_code == 400:
+        raise UserWarning("API request invalid")
+    return response.json()
+
+
+def get_file(
+    file: str,  # The file to download
+    path: Path,  # The file to write to
+    hash_list: list  # The  hashs
+) -> bool:  # True if success
+    """Gets file from the CDN
+    Raises:
+        UserWarning: 404 code, hash's do not match
+        PermissionError: No permission to write to file
+    """
+    response = get(file, stream=True, timeout=10, headers={'User-Agent': USER_AGENT})
+    if response.status_code == 404:
+        raise UserWarning("Version file failed to download")
+    try:
+        hash_sha512 = sha512(usedforsecurity=False)
+        with open(path, 'wb') as jar_file:  # Write to the jar file
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    jar_file.write(chunk)
+                    hash_sha512.update(chunk)
+        if hash_sha512.hexdigest() == hash_list['sha512']:
+            return True
+        raise UserWarning("Hash's do not match")
+    except PermissionError as exc:
+        raise PermissionError(f"No permission to write: {path}") from exc
 
 
 class Mod:
@@ -60,7 +112,7 @@ class Mod:
 
 def get_categories() -> list:
     """Get a list of categories"""
-    response = ModAPI.query("tag/category")
+    response = query("tag/category")
     categories = []
     for category in response:
         if category['project_type'] == "mod":
@@ -70,7 +122,7 @@ def get_categories() -> list:
 
 def get_loaders() -> list:
     """Get a list of loaders"""
-    response = ModAPI.query("tag/loader")
+    response = query("tag/loader")
     loaders = []
     for loader in response:
         if "mod" in loader['supported_project_types']:
@@ -80,7 +132,7 @@ def get_loaders() -> list:
 
 def get_game_versions() -> list:
     """Get a list of game versions"""
-    response = ModAPI.query("tag/game_version")
+    response = query("tag/game_version")
     versions = []
     for version in response:
         versions.append(version['version'])
@@ -152,9 +204,12 @@ def get_latest_version(
     channel: list  # The channel to get mods from
 ) -> dict:  # Modrinth mod object or False if already at latest version
     """Checks for mod update from Modrinth"""
-    response = ModAPI.project_version(
-        mod_name, f"[\"{mod_loader}\"]", f'["{game_version}"]'
-    )
+    version_parameters = {
+        'loaders': f'["{mod_loader}"]',
+        'game_versions': f'["{game_version}"]',
+        'include_changelog': 'false'
+    }
+    response = query(f"project/{mod_name}/version", version_parameters)
     latest_version = {'version_number': "0"}
     for version in response:  # Check each mod version in the returned data
         if version['version_type'] in channel and version["version_number"] > latest_version["version_number"]:
@@ -190,7 +245,7 @@ def download_dependency_s(
 ):
     """Download a mods dependency's"""
     for dependency in dependency_s:
-        mod_data = ModAPI.project(dependency['project_id'])
+        mod_data = query(f"project/p{dependency['project_id']}")
         if mod_data['slug'] not in mods:
             if dependency['dependency_type'] == "required":
                 latest_version = get_latest_version(
@@ -203,7 +258,7 @@ def download_dependency_s(
                     mod_path,
                     f"{mod_data['slug']}_version_{latest_version['version_number']}.jar"
                 )
-                ModAPI.get_file(
+                get_file(
                     latest_version['files'][0]['url'],
                     jar_file,
                     latest_version['files'][0]['hashes']
@@ -223,7 +278,7 @@ def download_dependency_s(
                         mod_path,
                         f"{mod_data['slug']}_version_{latest_version['version_number']}.jar"
                     )
-                    ModAPI.get_file(
+                    get_file(
                         latest_version['files'][0]['url'],
                         jar_file,
                         latest_version['files'][0]['hashes']
@@ -273,7 +328,7 @@ def update_mods(
                     mod_path,
                     f"{mod_name}_version_{latest_version['version_number']}.jar"
                 )
-                ModAPI.get_file(
+                get_file(
                     latest_version['files'][0]['url'],
                     jar_file,
                     latest_version['files'][0]['hashes']
@@ -306,7 +361,7 @@ def install_mod(
         return True
     mod = mod.split("==")
     if len(mod) > 1:
-        latest_version = ModAPI.get_project_version(mod[0], mod[1])
+        latest_version = query(f"project/{mod[0]}/version/{mod[1]}")
         if latest_version["version_number"] == "0":
             latest_version = False
         if latest_version and (game_version not in latest_version['game_versions']):
@@ -330,7 +385,7 @@ def install_mod(
                 mod_path,
                 f"{mod[0]}_version_{latest_version['version_number']}.jar"
             )
-            ModAPI.get_file(
+            get_file(
                 latest_version['files'][0]['url'],
                 jar_file,
                 latest_version['files'][0]['hashes']
@@ -360,7 +415,7 @@ def install_mod(
                 mod_path,
                 f"{mod[0]}_version_{latest_version['version_number']}.jar"
             )
-            ModAPI.get_file(
+            get_file(
                 latest_version['files'][0]['url'],
                 jar_file,
                 latest_version['files'][0]['hashes']

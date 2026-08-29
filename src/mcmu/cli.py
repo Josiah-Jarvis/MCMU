@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from logging import getLogger
 from . import __version__
-from .shared import update_mods, install_mod, list_mods, ModAPI, ask, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER
+from .shared import update_mods, install_mod, list_mods, ask, query, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER
 
 logger = getLogger(__name__)
 
@@ -107,13 +107,14 @@ class CLI:
         if self.args.open_source:
             facets += ",[\"open_source:true\"]"
         facets += "]"
-        response = ModAPI.search(
-            self.args.term,
-            self.args.sorting,
-            self.args.offset,
-            facets,
-            self.args.limit
-        )
+        search_parameters = {
+            'query': self.args.term,
+            'facets': facets,
+            'index': self.args.sorting,
+            'offset': self.args.offset,
+            'limit': self.args.limit
+        }
+        response = query("search", search_parameters)
         for mod in response['hits']:  # Iterate over and list all the mods
             search = f"""{mod['title']}:
     Description: {mod['description']}
@@ -128,14 +129,14 @@ class CLI:
     def info(self) -> int:
         """CLI function to get info on a mod"""
         try:
-            response = ModAPI.project(self.args.mod)
+            response = query(f"project/{self.args.mod}")
             print(f"""{response['slug']}
     Title: {response['title']}
     Description: {response['description']}
     Client Side: {response['client_side']}
 """)
             print("Dependency's:")
-            dependencies = ModAPI.project_dependencies(self.args.mod)
+            dependencies = query(f"project/{self.args.mod}/dependencies")
             dependency_text = ""
             for mod in dependencies['projects']:
                 dependency_text += f"""\t{mod['title']}"""

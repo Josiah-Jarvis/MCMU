@@ -1,10 +1,9 @@
 # Changelog
 
-## [v3.0.271.dev1] - 2026-xx-xx
+## [v3.0.263.dev1] - 2026-xx-xx
 
 ### Changed
 
-* Bumped game version to 27.1
 * Changed logging format
 
 ### Removed
@@ -700,3 +699,5 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.4.0.dev4]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0.dev4
 [v2.4.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.4.0
 [v2.5.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.5.0.dev1
+[v2.5.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.5.0
+[v3.0.263.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v3.0.263.dev1
