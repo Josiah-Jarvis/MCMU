@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """A Mod class"""
 
 from os import replace

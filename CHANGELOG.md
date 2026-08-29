@@ -1,5 +1,12 @@
 # Changelog
 
+## [v3.0.271.dev1] - 2026-xx-xx
+
+### Changed
+
+* Bumped game version to 27.1
+* Fixed logging level being set to debug when MCMU is run as program
+
 ## [v2.5.0] - 2026-09-28
 
 ### Changed

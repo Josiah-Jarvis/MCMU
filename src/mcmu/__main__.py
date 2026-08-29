@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Main helper script (python3 -m mcmu)"""
 
 from .cli import CLI
@@ -9,7 +7,6 @@ from .shared import logger
 def main() -> int:
     """Main function"""
     try:
-        logger.setLevel(10)  # Set to debug
         cli = CLI()  # Set up CLI class
         return cli.cli()  # Run CLI
     except KeyboardInterrupt:  # If CTRL+C
@@ -18,4 +15,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    logger.setLevel(10)  # Set to debug
     raise SystemExit(main())

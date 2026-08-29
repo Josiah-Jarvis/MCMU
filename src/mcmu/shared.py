@@ -1,14 +1,12 @@
-#!/usr/bin/env python3
-
 """Shared helper scripts for MCMU"""
 
-from . import logger
-from .api import ModrinthAPI
-from .mods import Mod
 from os import listdir, getenv, environ
 from pathlib import Path
 from platform import system
 from re import match
+from . import logger
+from .api import ModrinthAPI
+from .mods import Mod
 
 ModAPI = ModrinthAPI()
 
@@ -76,7 +74,7 @@ try:
         )
         raise ValueError("Game version not a valid game version")
 except (KeyError, ValueError):
-    GAME_VERSION = "26.3"
+    GAME_VERSION = "27.1"
 
 try:
     MOD_LOADER = environ['MCMU_MOD_LOADER']
@@ -97,9 +95,7 @@ except (KeyError, ValueError):
 
 def ask(question: str) -> bool:
     """Ask a question"""
-    if input(f"{question} [Y/n]: ").lower() in ("y", ""):  # Check if y or ""
-        return True  # Return 'yes'
-    return False  # Return 'no'
+    return input(f"{question} [Y/n]: ").lower() in ("y", "")
 
 
 def get_latest_version(
@@ -114,9 +110,8 @@ def get_latest_version(
     )
     latest_version = {'version_number': "0"}
     for version in response:  # Check each mod version in the returned data
-        if version['version_type'] in channel:
-            if version["version_number"] > latest_version["version_number"]:
-                latest_version = version  # Set to latest version if newer
+        if version['version_type'] in channel and version["version_number"] > latest_version["version_number"]:
+            latest_version = version  # Set to latest version if newer
     return latest_version  # Return the latest version
 
 
@@ -203,7 +198,7 @@ def update_mods(
     channel: list = "release"
 ) -> bool:
     """Updates mods"""
-    for mod_name in mods:
+    for mod_name in mods.items():
         latest_version = get_latest_version(
             mod_name,
             mod_loader,
@@ -267,9 +262,8 @@ def install_mod(
         latest_version = ModAPI.get_project_version(mod[0], mod[1])
         if latest_version["version_number"] == "0":
             latest_version = False
-        if latest_version:
-            if game_version not in latest_version['game_versions']:
-                latest_version = False
+        if latest_version and (game_version not in latest_version['game_versions']):
+            latest_version = False
         if latest_version:
             logger.error(
                 "%s does not support this game version.",
@@ -304,9 +298,8 @@ def install_mod(
     )
     if latest_version["version_number"] == "0":
         latest_version = False
-    if latest_version:
-        if game_version not in latest_version['game_versions']:
-            latest_version = False
+    if latest_version and (game_version not in latest_version['game_versions']):
+        latest_version = False
     if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?"):
             download_dependency_s(
@@ -336,10 +329,10 @@ def install_mod(
 
 
 __all__ = [
-    "modrinth_categories",
-    "modrinth_loaders",
-    "modrinth_game_versions",
     "GAME_VERSION",
     "MOD_DIR",
-    "MOD_LOADER"
+    "MOD_LOADER",
+    "modrinth_categories",
+    "modrinth_game_versions",
+    "modrinth_loaders"
 ]

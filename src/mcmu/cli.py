@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-
 """CLI UI"""
 
+from argparse import ArgumentParser
 from . import __version__, logger
 from .shared import update_mods, install_mod, list_mods, ModAPI, ask, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER
-from argparse import ArgumentParser
 
 
 class CLI:

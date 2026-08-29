@@ -1,16 +1,9 @@
-#!/usr/bin/env python3
-
 """ModrinthAPI class"""
 
-from . import __version__
 from hashlib import sha512
 from pathlib import Path
 from requests import get
-
-
-USER_AGENT = "Josiah-Jarvis/MCMU/"
-USER_AGENT += f"{__version__} "
-USER_AGENT += "(https://github.com/Josiah-Jarvis/MCMU)"
+from . import USER_AGENT
 
 
 class ModrinthAPI:
@@ -23,7 +16,7 @@ class ModrinthAPI:
     def query(
         self,
         endpoint: str = "https://api.modrinth.com/v2/",  # The API endpoint
-        parameters: dict = None  # The parameters to pass the API
+        parameters: dict | None = None  # The parameters to pass the API
     ) -> dict:  # API json
         """Query's the Modrinth API
 
