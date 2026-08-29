@@ -1,8 +1,11 @@
 """CLI UI"""
 
 from argparse import ArgumentParser
-from . import __version__, logger
+from logging import getLogger
+from . import __version__
 from .shared import update_mods, install_mod, list_mods, ModAPI, ask, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER
+
+logger = getLogger(__name__)
 
 
 class CLI:

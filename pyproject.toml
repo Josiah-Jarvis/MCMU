@@ -15,7 +15,7 @@ maintainers = [
 description = "A utility to update Minecraft java edition mods from Modrinth"
 readme = "README.md"
 license = "MIT"
-keywords = ["Minecraft", "Mods", "Java", "Modrinth"]
+keywords = ["java", "minecraft", "minecraft-mods", "mod-manager", "modrinth", "modrinth-api", "package-manager", "python"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -51,6 +51,6 @@ homepage = "https://github.com/Josiah-Jarvis/MCMU"
 source = "https://github.com/Josiah-Jarvis/MCMU/releases"
 download = "https://pypi.org/project/mcmu/#files"
 changelog = "https://github.com/Josiah-Jarvis/MCMU/blob/master/CHANGELOG.md"
-releasenotes = "https://github.com/Josiah-Jarvis/MCMU/compare/v2.5.0...v3.0.0" # Change before every release
+releasenotes = "https://github.com/Josiah-Jarvis/MCMU/compare/v2.5.0...v3.0.271" # Change before every release
 documentation = "https://github.com/Josiah-Jarvis/MCMU/wiki"
 issues = "https://github.com/Josiah-Jarvis/MCMU/issues"

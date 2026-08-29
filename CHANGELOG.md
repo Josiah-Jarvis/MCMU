@@ -5,7 +5,11 @@
 ### Changed
 
 * Bumped game version to 27.1
-* Fixed logging level being set to debug when MCMU is run as program
+* Changed logging format
+
+### Removed
+
+* Removed the inactive debug code
 
 ## [v2.5.0] - 2026-09-28
 

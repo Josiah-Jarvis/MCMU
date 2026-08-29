@@ -1,7 +1,7 @@
 """Package wide code"""
 
 from importlib.metadata import version, PackageNotFoundError
-from logging import getLogger
+from logging import getLogger, basicConfig
 
 try:
     __version__ = version("mcmu")
@@ -13,4 +13,4 @@ USER_AGENT += f"{__version__} "
 USER_AGENT += "(https://github.com/Josiah-Jarvis/MCMU)"
 
 logger = getLogger(__name__)
-logger.setLevel(20)
+basicConfig(format="%(levelname)s:%(name)s %(message)s", level=20)
