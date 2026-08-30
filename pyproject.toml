@@ -12,7 +12,7 @@ authors = [
 maintainers = [
     {name="Josiah Jarvis"}
 ]
-description = "A utility to update Minecraft java edition mods from Modrinth"
+description = "A robust package to install, update, and manage Minecraft mods"
 readme = "README.md"
 license = "MIT"
 keywords = ["java", "minecraft", "minecraft-mods", "mod-manager", "modrinth", "modrinth-api", "package-manager", "python"]

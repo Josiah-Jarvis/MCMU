@@ -6,10 +6,6 @@
 
 * Changed logging format
 
-### Removed
-
-* Removed the inactive debug code
-
 ## [v2.5.0] - 2026-09-28
 
 ### Changed

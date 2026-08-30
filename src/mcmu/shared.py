@@ -1,15 +1,21 @@
 """Shared helper scripts for MCMU"""
 
 from hashlib import sha512
-from logging import getLogger
+from importlib.metadata import version, PackageNotFoundError
 from os import environ, getenv, listdir, replace
 from pathlib import Path
 from platform import system
 from re import match
 from requests import get
-from . import USER_AGENT
+from . import logger
 
-logger = getLogger(__name__)
+try:
+    __version__ = version("mcmu")
+except PackageNotFoundError:
+    __version__ = "Version  Not Found"
+
+USER_AGENT = f"Josiah-Jarvis/MCMU/{__version__} "
+USER_AGENT += "(https://github.com/Josiah-Jarvis/MCMU)"
 
 
 def query(
@@ -46,7 +52,9 @@ def get_file(
         UserWarning: 404 code, hash's do not match
         PermissionError: No permission to write to file
     """
-    response = get(file, stream=True, timeout=10, headers={'User-Agent': USER_AGENT})
+    response = get(
+        file, stream=True, timeout=10, headers={'User-Agent': USER_AGENT}
+    )
     if response.status_code == 404:
         raise UserWarning("Version file failed to download")
     try:
@@ -68,12 +76,12 @@ class Mod:
     def __init__(
         self,
         name: str,
-        version: str,
+        mod_version: str,
         file_name: Path,
         mod_folder: Path
     ):
         self.name = name
-        self.version = version
+        self.version = mod_version
         self.file_name = file_name
         self.mod_folder = mod_folder
         self.file = Path(mod_folder, file_name)
@@ -134,8 +142,8 @@ def get_game_versions() -> list:
     """Get a list of game versions"""
     response = query("tag/game_version")
     versions = []
-    for version in response:
-        versions.append(version['version'])
+    for mod_version in response:
+        versions.append(mod_version['version'])
     return versions
 
 
@@ -211,8 +219,8 @@ def get_latest_version(
     }
     response = query(f"project/{mod_name}/version", version_parameters)
     latest_version = {'version_number': "0"}
-    for version in response:  # Check each mod version in the returned data
-        if version['version_type'] in channel and version["version_number"] > latest_version["version_number"]:
+    for mod_version in response:  # Check each mod version in the returned data
+        if mod_version['version_type'] in channel and mod_version["version_number"] > latest_version["version_number"]:
             latest_version = version  # Set to latest version if newer
     return latest_version  # Return the latest version
 
@@ -225,7 +233,7 @@ def list_mods(mod_path: Path) -> dict[Mod]:
         try:
             mods[m.group(1)] = Mod(
                 name=m.group(1),
-                version=m.group(2),
+                mod_version=m.group(2),
                 file_name=mod,
                 mod_folder=mod_path,
             )

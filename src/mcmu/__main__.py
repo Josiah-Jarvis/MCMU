@@ -1,5 +1,7 @@
 """Main helper script (python3 -m mcmu)"""
 
+from logging import DEBUG
+from . import logger
 from .cli import CLI
 
 
@@ -14,4 +16,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    logger.level = DEBUG
+    logger.debug("DEBUG mode on")
     raise SystemExit(main())
