@@ -1,7 +1,7 @@
 """Shared helper scripts for MCMU"""
 
 from hashlib import sha512
-from importlib.metadata import version, PackageNotFoundError
+from importlib.metadata import PackageNotFoundError, version
 from os import environ, getenv, listdir, replace
 from pathlib import Path
 from platform import system
@@ -17,9 +17,17 @@ except PackageNotFoundError:
 USER_AGENT = f"Josiah-Jarvis/MCMU/{__version__} "
 USER_AGENT += "(https://github.com/Josiah-Jarvis/MCMU)"
 
+try:
+    environ["MCMU_ALLOW_EXPERIMENTAL_VERSIONS"]
+except KeyError:
+    MCMU_ALLOW_EXPERIMENTAL_VERSIONS = False
+else:
+    MCMU_ALLOW_EXPERIMENTAL_VERSIONS = True
+    logger.info("Allowing experimental versions because of environment variable")
+
 
 def query(
-    endpoint: str = "https://api.modrinth.com/v2/",  # The API endpoint
+    endpoint: str = "",  # The API endpoint
     parameters: dict | None = None  # The parameters to pass the API
 ) -> dict:  # API json
     """Query's the Modrinth API
@@ -36,7 +44,7 @@ def query(
     if response.status_code == 410:
         raise DeprecationWarning("Modrinth API deprecated")
     if response.status_code == 404:
-        raise UserWarning(f"Mod: {endpoint} not found")
+        raise UserWarning(f"Endpoint: https://api.modrinth.com/v2/{endpoint} not found")
     if response.status_code == 400:
         raise UserWarning("API request invalid")
     return response.json()
@@ -120,9 +128,8 @@ class Mod:
 
 def get_categories() -> list:
     """Get a list of categories"""
-    response = query("tag/category")
     categories = []
-    for category in response:
+    for category in query("tag/category"):
         if category['project_type'] == "mod":
             categories.append(category['name'])
     return categories
@@ -130,9 +137,8 @@ def get_categories() -> list:
 
 def get_loaders() -> list:
     """Get a list of loaders"""
-    response = query("tag/loader")
     loaders = []
-    for loader in response:
+    for loader in query("tag/loader"):
         if "mod" in loader['supported_project_types']:
             loaders.append(loader['name'])
     return loaders
@@ -140,14 +146,13 @@ def get_loaders() -> list:
 
 def get_game_versions() -> list:
     """Get a list of game versions"""
-    response = query("tag/game_version")
     versions = []
-    for mod_version in response:
-        versions.append(mod_version['version'])
+    for mod_version in query("tag/game_version"):
+        if (mod_version['version_type'] == "release") or MCMU_ALLOW_EXPERIMENTAL_VERSIONS:
+            versions.append(mod_version['version'])
     return versions
 
 
-modrinth_categories = get_categories()
 modrinth_loaders = get_loaders()
 modrinth_game_versions = get_game_versions()
 
@@ -181,7 +186,7 @@ try:
         )
         raise ValueError("Game version not a valid game version")
 except (KeyError, ValueError):
-    GAME_VERSION = "27.1"
+    GAME_VERSION = "26.3"
 
 try:
     MOD_LOADER = environ['MCMU_MOD_LOADER']
@@ -212,16 +217,15 @@ def get_latest_version(
     channel: list  # The channel to get mods from
 ) -> dict:  # Modrinth mod object or False if already at latest version
     """Checks for mod update from Modrinth"""
-    version_parameters = {
+    version_params = {
         'loaders': f'["{mod_loader}"]',
         'game_versions': f'["{game_version}"]',
         'include_changelog': 'false'
     }
-    response = query(f"project/{mod_name}/version", version_parameters)
     latest_version = {'version_number': "0"}
-    for mod_version in response:  # Check each mod version in the returned data
+    for mod_version in query(f"project/{mod_name}/version", version_params):
         if mod_version['version_type'] in channel and mod_version["version_number"] > latest_version["version_number"]:
-            latest_version = version  # Set to latest version if newer
+            latest_version = mod_version  # Set to latest version if newer
     return latest_version  # Return the latest version
 
 
@@ -229,7 +233,7 @@ def list_mods(mod_path: Path) -> dict[Mod]:
     """Gets a list of installed mods"""
     mods = {}
     for mod in listdir(mod_path):
-        m = match(r'^(.*?)_version_(.*)\.(?:jar|jar.disabled)$', str(mod))
+        m = match(r'^(.*?)_version_(.*)\.(?:jar|jar.disabled)$', mod)
         try:
             mods[m.group(1)] = Mod(
                 name=m.group(1),
@@ -253,7 +257,7 @@ def download_dependency_s(
 ):
     """Download a mods dependency's"""
     for dependency in dependency_s:
-        mod_data = query(f"project/p{dependency['project_id']}")
+        mod_data = query(f"project/{dependency['project_id']}")
         if mod_data['slug'] not in mods:
             if dependency['dependency_type'] == "required":
                 latest_version = get_latest_version(
@@ -271,7 +275,7 @@ def download_dependency_s(
                     jar_file,
                     latest_version['files'][0]['hashes']
                 )
-                print(f"\tDownloaded {jar_file} successfully.")
+                logger.info("\tDownloaded %s successfully", jar_file)
             elif dependency['dependency_type'] == "optional":
                 if ask(
                     f"Would you like to install optional dependency: {mod_data['slug']}?"
@@ -291,13 +295,13 @@ def download_dependency_s(
                         jar_file,
                         latest_version['files'][0]['hashes']
                     )
-                    print(f"\tDownloaded {jar_file} successfully.")
+                    logger.info("\tDownloaded %s successfully", jar_file)
         elif (
             mod_data['slug'] in mods
         ) and (
             dependency['dependency_type'] == "incompatible"
         ):
-            print(f"Incompatible dependency: {mod_data['slug']} installed, please remove.")
+            logger.warning("Incompatible dependency: %s installed, please remove", mod_data['slug'])
 
 
 def update_mods(
@@ -308,22 +312,22 @@ def update_mods(
     channel: list = "release"
 ) -> bool:
     """Updates mods"""
-    for mod_name in mods:
+    for mod_name, mod_class in mods.items():
         latest_version = get_latest_version(
             mod_name,
             mod_loader,
             game_version,
             channel
         )  # Check for update
-        if not latest_version["version_number"] > mods[mod_name].version:
+        if latest_version["version_number"] <= mod_class.version:
             latest_version = False
         if latest_version:  # If latest version is a dict it should be True
             old_file = Path(
                 mod_path,
-                mods[mod_name].file_name
+                mod_class.file_name
             )  # Path to the old mod file
             additional_storage = latest_version['files'][0]['size'] - old_file.stat().st_size  # Calculate how much more storage will be taken up
-            if ask(f"{mods[mod_name].name} will take up: {additional_storage} additional bytes. Would you like to install?"):
+            if ask(f"{mod_class.name} will take up: {additional_storage} additional bytes. Would you like to install?"):
                 download_dependency_s(
                     latest_version['dependencies'],
                     mods,
@@ -341,17 +345,17 @@ def update_mods(
                     jar_file,
                     latest_version['files'][0]['hashes']
                 )
-                print(f"Downloaded mod at {jar_file} successfully.")
-                print(f"Deleting old file: {old_file}")
+                logger.info("Downloaded mod at %s successfully", jar_file)
+                logger.info("Deleting old file: %s", old_file)
                 try:
                     old_file.unlink()  # Delete old file
                 except PermissionError:
-                    print("No permission to delete the file.")
+                    logger.error("No permission to delete the file")
                     return False
             else:
-                print("Canceling.")
+                logger.info("Canceling")
         else:
-            print(f"Mod '{mod_name}' at latest version!")
+            logger.info("Mod '%s' at latest version!", mod_name)
     return True
 
 
@@ -365,7 +369,7 @@ def install_mod(
 ) -> bool:
     """Installs a mod"""
     if mod in mods:  # If mod already installed exit
-        print(f"{mod} already installed.")
+        logger.info("%s already installed", mod)
         return True
     mod = mod.split("==")
     if len(mod) > 1:
@@ -376,7 +380,7 @@ def install_mod(
             latest_version = False
         if latest_version:
             logger.error(
-                "%s does not support this game version.",
+                "%s does not support this game version",
                 mod[1]
             )
             return False
@@ -398,7 +402,7 @@ def install_mod(
                 jar_file,
                 latest_version['files'][0]['hashes']
                 )
-            print(f"Downloaded mod at {jar_file} successfully.")
+            logger.info("Downloaded mod at %s successfully", jar_file)
             return True
     latest_version = get_latest_version(
         mod[0],
@@ -428,21 +432,11 @@ def install_mod(
                 jar_file,
                 latest_version['files'][0]['hashes']
                 )
-            print(f"Downloaded mod at {jar_file} successfully.")  # Success
+            logger.info("Downloaded mod at %s successfully", jar_file)
         else:
-            print("Canceling.")
+            logger.info("Canceling")
             return True
     else:
         logger.error("Mod does not exist for that version and loader")
         return False
     return True
-
-
-__all__ = [
-    "GAME_VERSION",
-    "MOD_DIR",
-    "MOD_LOADER",
-    "modrinth_categories",
-    "modrinth_game_versions",
-    "modrinth_loaders"
-]

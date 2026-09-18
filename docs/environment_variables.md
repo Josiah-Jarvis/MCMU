@@ -13,3 +13,7 @@ This specifies the game version to install and update mods to. Note running `mcm
 ## MCMU_MOD_LOADER
 
 This specifies the mod loader to install and update mods for. Note running `mcmu update --loader <game-version>` or mcmu install <mod> --loader <game-version>` overrides the value stored in the environment variable.
+
+## MCMU_ALLOW_EXPERIMENTAL_VERSIONS
+
+If present will allow the user to target for snapshots, release candidates and pre releases regardless of the value of the variable.

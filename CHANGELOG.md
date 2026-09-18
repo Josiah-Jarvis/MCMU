@@ -1,19 +1,24 @@
 # Changelog
 
-## [v3.0.263.dev1] - 2026-xx-xx
+## [v3.0.263.dev1] - 2026-09-15
+
+### Added
+
+* Now prints the version and loader targeting for
+* New ENV variable MCMU_ALLOW_EXPERIMENTAL_VERSIONS
 
 ### Changed
 
 * Changed logging format
 
-## [v2.5.0] - 2026-09-28
+## [v2.5.0] - 2026-08-28
 
 ### Changed
 
 * Bumped game version to 26.3
 * Removed checking sha1
 
-## [v2.5.0.dev1] - 2026-09-27
+## [v2.5.0.dev1] - 2026-08-27
 
 ### Changed
 

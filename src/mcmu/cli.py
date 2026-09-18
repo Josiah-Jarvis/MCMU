@@ -2,7 +2,9 @@
 
 from argparse import ArgumentParser
 from . import logger
-from .shared import update_mods, install_mod, list_mods, ask, query, modrinth_categories, modrinth_game_versions, modrinth_loaders, GAME_VERSION, MOD_DIR, MOD_LOADER, __version__
+from .shared import ask, install_mod, list_mods, update_mods, query, \
+    get_categories, modrinth_game_versions, modrinth_loaders, \
+    GAME_VERSION, MOD_DIR, MOD_LOADER, __version__
 
 
 class CLI:
@@ -15,20 +17,20 @@ class CLI:
 
     def update(self) -> int:
         """CLI function to update mod"""
-        if not update_mods(
+        if update_mods(
             self.mods,
             self.args.mod_dir,
             self.args.game_version,
             self.args.loader,
             self.channel
         ):
-            return 1
-        return 0
+            return 0
+        return 1
 
     def remove(self) -> int:
         """CLI function to remove mod"""
         try:
-            if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes."):
+            if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes"):
                 self.mods[self.args.mod].file.unlink()
                 logger.info("Mod '%s' successfully deleted", self.args.mod)
         except KeyError:
@@ -42,7 +44,7 @@ class CLI:
             return 1
         except FileNotFoundError:
             logger.warning(
-                "Mod file '%s' does not exist.",
+                "Mod file '%s' does not exist",
                 self.mods[self.args.mod].file_name
             )
             return 1
@@ -51,7 +53,7 @@ class CLI:
     def install(self) -> int:
         """CLI function to install mod"""
         try:
-            if not install_mod(
+            if install_mod(
                 self.args.mod,
                 self.mods,
                 self.args.mod_dir,
@@ -59,11 +61,11 @@ class CLI:
                 self.args.loader,
                 self.channel
             ):
-                return 1
+                return 0
         except UserWarning:
             logger.error("Mod '%s' does not exist on Modrinth", self.args.mod)
             return 1
-        return 0
+        return 1
 
     def list(self) -> int:
         """CLI function to list mod"""
@@ -175,16 +177,16 @@ class CLI:
             suggest_on_error=True
         )
         parser.add_argument(
+            "--mod-dir",
+            default=MOD_DIR,
+            help="Path to the Minecraft mods folder"
+        )
+        parser.add_argument(
             "-v",
             "--version",
             help="Display the version",
             action="version",
             version=__version__
-        )
-        parser.add_argument(
-            "--mod-dir",
-            default=MOD_DIR,
-            help="Path to the Minecraft mods folder"
         )
         subparsers = parser.add_subparsers()
         update_parser = subparsers.add_parser("update", help="Update mods")
@@ -257,7 +259,7 @@ class CLI:
         search_parser.add_argument(
             "--category",
             action="append",
-            choices=modrinth_categories,
+            choices=get_categories(),
             default=[],
             help="Category(s) to filter for"
         )
@@ -308,7 +310,13 @@ class CLI:
         disable_parser = subparsers.add_parser("disable", help="Disable a mod")
         disable_parser.add_argument("mod", help="The mod to disable")
         disable_parser.set_defaults(func=self.disable)
+
         self.args = parser.parse_args()  # Parse the arguments
+        try:
+            logger.info("Targeted loader '%s'", self.args.loader)
+            logger.info("Targeted game version '%s'", self.args.game_version)
+        except AttributeError:
+            ...
         try:
             try:
                 self.mods = list_mods(self.args.mod_dir)
