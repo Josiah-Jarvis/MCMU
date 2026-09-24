@@ -6,8 +6,7 @@ from .cli import CLI
 def main() -> int:
     """Main function"""
     try:
-        cli = CLI()  # Set up CLI class
-        return cli.cli()  # Run CLI
+        return CLI().cli()  # Run CLI
     except KeyboardInterrupt:  # If CTRL+C
         print(" pressed, exiting...")  # Print error
         return 130  # Exit

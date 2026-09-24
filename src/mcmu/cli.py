@@ -1,10 +1,10 @@
 """CLI UI"""
 
 from argparse import ArgumentParser
+from pathlib import Path
 from . import logger
 from .shared import ask, install_mod, list_mods, update_mods, query, \
-    get_categories, modrinth_game_versions, modrinth_loaders, \
-    GAME_VERSION, MOD_DIR, MOD_LOADER, __version__
+    GAME_VERSION, MOD_DIR, MOD_LOADER, __version__, CachedData
 
 
 class CLI:
@@ -188,6 +188,11 @@ class CLI:
             action="version",
             version=__version__
         )
+        parser.add_argument(
+            "--clear-cache",
+            action="store_true",
+            help="Clears the cache"
+        )
         subparsers = parser.add_subparsers()
         update_parser = subparsers.add_parser("update", help="Update mods")
         update_parser.add_argument(
@@ -199,13 +204,13 @@ class CLI:
         update_parser.add_argument(
             "--loader",
             default=MOD_LOADER,
-            choices=modrinth_loaders,
+            choices=CachedData.loaders,
             help="The mod loader to target for"
         )
         update_parser.add_argument(
             "--game-version",
             default=GAME_VERSION,
-            choices=modrinth_game_versions,
+            choices=CachedData.game_versions,
             help="The game version to use to install mods"
         )
         update_parser.set_defaults(func=self.update)
@@ -223,13 +228,13 @@ class CLI:
         install_parser.add_argument(
             "--loader",
             default=MOD_LOADER,
-            choices=modrinth_loaders,
+            choices=CachedData.loaders,
             help="The mod loader to target for"
         )
         install_parser.add_argument(
             "--game-version",
             default=GAME_VERSION,
-            choices=modrinth_game_versions,
+            choices=CachedData.game_versions,
             help="The game version to use to install mods"
         )
         install_parser.set_defaults(func=self.install)
@@ -259,7 +264,7 @@ class CLI:
         search_parser.add_argument(
             "--category",
             action="append",
-            choices=get_categories(),
+            choices=CachedData.categories,
             default=[],
             help="Category(s) to filter for"
         )
@@ -273,7 +278,7 @@ class CLI:
         search_parser.add_argument(
             "--versions",
             action="append",
-            choices=modrinth_game_versions,
+            choices=CachedData.game_versions,
             default=[],
             help="Version(s) to filter for"
         )
@@ -297,7 +302,7 @@ class CLI:
         search_parser.add_argument(
             "--loader",
             default=MOD_LOADER,
-            choices=modrinth_loaders,
+            choices=CachedData.loaders,
             help="The mod loader to filter for"
         )
         search_parser.set_defaults(func=self.search)
@@ -312,6 +317,8 @@ class CLI:
         disable_parser.set_defaults(func=self.disable)
 
         self.args = parser.parse_args()  # Parse the arguments
+        if self.args.clear_cache:
+            Path(MOD_DIR, ".mcmu_modrinth_cache").unlink()
         try:
             logger.info("Targeted loader '%s'", self.args.loader)
             logger.info("Targeted game version '%s'", self.args.game_version)

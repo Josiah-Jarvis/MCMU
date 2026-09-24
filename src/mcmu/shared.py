@@ -1,7 +1,9 @@
 """Shared helper scripts for MCMU"""
 
+from datetime import datetime, timedelta, UTC
 from hashlib import sha512
 from importlib.metadata import PackageNotFoundError, version
+from json import load, dump, JSONDecodeError
 from os import environ, getenv, listdir, replace
 from pathlib import Path
 from platform import system
@@ -23,7 +25,9 @@ except KeyError:
     MCMU_ALLOW_EXPERIMENTAL_VERSIONS = False
 else:
     MCMU_ALLOW_EXPERIMENTAL_VERSIONS = True
-    logger.info("Allowing experimental versions because of environment variable")
+    logger.info(
+        "Allowing experimental versions because of environment variable"
+    )
 
 
 def query(
@@ -44,7 +48,9 @@ def query(
     if response.status_code == 410:
         raise DeprecationWarning("Modrinth API deprecated")
     if response.status_code == 404:
-        raise UserWarning(f"Endpoint: https://api.modrinth.com/v2/{endpoint} not found")
+        raise UserWarning(
+            f"Endpoint: https://api.modrinth.com/v2/{endpoint} not found"
+        )
     if response.status_code == 400:
         raise UserWarning("API request invalid")
     return response.json()
@@ -126,36 +132,6 @@ class Mod:
             )
 
 
-def get_categories() -> list:
-    """Get a list of categories"""
-    categories = []
-    for category in query("tag/category"):
-        if category['project_type'] == "mod":
-            categories.append(category['name'])
-    return categories
-
-
-def get_loaders() -> list:
-    """Get a list of loaders"""
-    loaders = []
-    for loader in query("tag/loader"):
-        if "mod" in loader['supported_project_types']:
-            loaders.append(loader['name'])
-    return loaders
-
-
-def get_game_versions() -> list:
-    """Get a list of game versions"""
-    versions = []
-    for mod_version in query("tag/game_version"):
-        if (mod_version['version_type'] == "release") or MCMU_ALLOW_EXPERIMENTAL_VERSIONS:
-            versions.append(mod_version['version'])
-    return versions
-
-
-modrinth_loaders = get_loaders()
-modrinth_game_versions = get_game_versions()
-
 try:
     MOD_DIR = environ['MCMU_MOD_PATH']
     logger.info(
@@ -172,9 +148,75 @@ except KeyError:
     else:  # Should be linux or other unix like systems
         MOD_DIR = Path(Path.home(), ".minecraft/mods/")
 
+
+class ModrinthData:
+    """Gets different data about Modrinth"""
+    def __init__(self, mod_dir: Path = MOD_DIR):
+        self.categories = []
+        self.loaders = []
+        self.game_versions = []
+        self.cache_file = Path(mod_dir, ".mcmu_modrinth_cache")
+        self.date_format = "%d/%m/%y %H:%M:%S.%f"
+
+    def get_categories(self) -> list:
+        """Get a list of categories"""
+        for category in query("tag/category"):
+            if category['project_type'] == "mod":
+                self.categories.append(category['name'])
+
+    def get_loaders(self) -> list:
+        """Get a list of loaders"""
+        for loader in query("tag/loader"):
+            if "mod" in loader['supported_project_types']:
+                self.loaders.append(loader['name'])
+
+    def get_game_versions(self) -> list:
+        """Get a list of game versions"""
+        for mod_version in query("tag/game_version"):
+            if (mod_version['version_type'] == "release") or MCMU_ALLOW_EXPERIMENTAL_VERSIONS:
+                self.game_versions.append(mod_version['version'])
+
+    def store_data(self):
+        """Store Modrinth Category Data"""
+        self.get_categories()
+        self.get_loaders()
+        self.get_game_versions()
+        expires_date = datetime.now(tz=UTC) + timedelta(days=30)
+        cache = {}
+        cache['expires'] = expires_date.strftime(self.date_format)
+        cache['categories'] = self.categories
+        cache['loaders'] = self.loaders
+        cache['game_versions'] = self.game_versions
+        with open(self.cache_file, "w", encoding="UTF-8") as fp:
+            dump(cache, fp, indent=4)
+        logger.info("Cache file created")
+
+    def load_data(self):
+        """Loads the Modrinth data in"""
+        try:
+            with open(self.cache_file, "r", encoding="UTF-8") as fp:
+                cache = load(fp)
+                if datetime.strptime(cache['expires'], self.date_format).astimezone(UTC) < datetime.now(tz=UTC):
+                    self.store_data()
+                    logger.info("Updated Cache File")
+                else:
+                    self.categories = cache['categories']
+                    self.loaders = cache['loaders']
+                    self.game_versions = cache['game_versions']
+        except FileNotFoundError:
+            logger.warning("Cache file not found, creating...")
+            self.store_data()
+        except JSONDecodeError:
+            logger.error("Cache file corrupted, deleting...")
+            self.cache_file.unlink()
+
+
+CachedData = ModrinthData()
+CachedData.load_data()
+
 try:
     GAME_VERSION = environ['MCMU_GAME_VERSION']
-    if GAME_VERSION in modrinth_game_versions:
+    if GAME_VERSION in CachedData.game_versions:
         logger.info(
             "Game version set to '%s' because of environment variable",
             GAME_VERSION
@@ -190,7 +232,7 @@ except (KeyError, ValueError):
 
 try:
     MOD_LOADER = environ['MCMU_MOD_LOADER']
-    if MOD_LOADER in modrinth_loaders:
+    if MOD_LOADER in CachedData.loaders:
         logger.info(
             "Mod loader set to '%s' because of environment variable",
             MOD_LOADER

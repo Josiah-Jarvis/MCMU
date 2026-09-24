@@ -1,5 +1,15 @@
 # Changelog
 
+## [v3.0.263.dev2] - 2026-09-24
+
+### Added
+
+* Added mcmu --clear-cache
+
+### Changed
+
+* Now caches Modrinth Category, Loader, and Game Version data to reduce network requests
+
 ## [v3.0.263.dev1] - 2026-09-15
 
 ### Added
@@ -702,3 +712,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.5.0.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.5.0.dev1
 [v2.5.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.5.0
 [v3.0.263.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v3.0.263.dev1
+[v3.0.263.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v3.0.263.dev2
