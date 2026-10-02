@@ -1,5 +1,21 @@
 # Changelog
 
+## [v3.0.263.dev3] - 2026-10-02
+
+### Added
+
+* Added mcmu cache
+
+### Changed
+
+* Refined logging messages
+* Re did caching system to make it more robust
+
+### Removed
+
+* Removed MCMU_ALLOW_EXPERIMENTAL_VERSIONS
+* mcmu --clear-cache
+
 ## [v3.0.263.dev2] - 2026-09-24
 
 ### Added
@@ -713,3 +729,4 @@ This is the first release candidate for version [1.0.0+1.21.11].
 [v2.5.0]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v2.5.0
 [v3.0.263.dev1]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v3.0.263.dev1
 [v3.0.263.dev2]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v3.0.263.dev2
+[v3.0.263.dev3]: https://github.com/Josiah-Jarvis/MCMU/releases/tag/v3.0.263.dev3

@@ -1,10 +1,8 @@
 """CLI UI"""
 
 from argparse import ArgumentParser
-from pathlib import Path
-from . import logger
 from .shared import ask, install_mod, list_mods, update_mods, query, \
-    GAME_VERSION, MOD_DIR, MOD_LOADER, __version__, CachedData
+    GAME_VERSION, MOD_DIR, MOD_LOADER, __version__, CachedData, logger
 
 
 class CLI:
@@ -169,6 +167,43 @@ class CLI:
             )
         return 0
 
+    def cache_file(self) -> int:
+        """mcmu cache file"""
+        logger.info(CachedData.cache_file)
+        return 0
+
+    def cache_info(self) -> int:
+        """mcmu cache info"""
+        logger.info(CachedData.cache['expires'])
+        logger.info(CachedData.cache['categories'])
+        logger.info(CachedData.cache['loaders'])
+        logger.info(CachedData.cache['game_versions'])
+
+    def cache_list(self) -> int:
+        """mcmu cache list"""
+        logger.info(CachedData.cache['categories'])
+        logger.info(CachedData.cache['loaders'])
+        logger.info(CachedData.cache['game_versions'])
+
+    def cache_remove(self) -> int:
+        """mcmu cache remove"""
+        if self.args.data == "categories":
+            CachedData.cache['categories'] = []
+        elif self.args.data == "loaders":
+            CachedData.cache['loaders'] = []
+        elif self.args.data == "game_versions":
+            CachedData.cache['game_versions'] = []
+        
+        CachedData.store_data(get_data=False)
+
+        return 0
+
+    def cache_purge(self) -> int:
+        """mcmu cache purge"""
+        CachedData.cache_file.unlink()
+        logger.info("Deleted cache file")
+        return 0
+
     def cli(self) -> dict:
         """Parses command line arguments"""
         parser = ArgumentParser(
@@ -188,11 +223,6 @@ class CLI:
             action="version",
             version=__version__
         )
-        parser.add_argument(
-            "--clear-cache",
-            action="store_true",
-            help="Clears the cache"
-        )
         subparsers = parser.add_subparsers()
         update_parser = subparsers.add_parser("update", help="Update mods")
         update_parser.add_argument(
@@ -204,13 +234,13 @@ class CLI:
         update_parser.add_argument(
             "--loader",
             default=MOD_LOADER,
-            choices=CachedData.loaders,
+            choices=CachedData.cache['loaders'],
             help="The mod loader to target for"
         )
         update_parser.add_argument(
             "--game-version",
             default=GAME_VERSION,
-            choices=CachedData.game_versions,
+            choices=CachedData.cache['game_versions'],
             help="The game version to use to install mods"
         )
         update_parser.set_defaults(func=self.update)
@@ -228,13 +258,13 @@ class CLI:
         install_parser.add_argument(
             "--loader",
             default=MOD_LOADER,
-            choices=CachedData.loaders,
+            choices=CachedData.cache['loaders'],
             help="The mod loader to target for"
         )
         install_parser.add_argument(
             "--game-version",
             default=GAME_VERSION,
-            choices=CachedData.game_versions,
+            choices=CachedData.cache['game_versions'],
             help="The game version to use to install mods"
         )
         install_parser.set_defaults(func=self.install)
@@ -264,7 +294,7 @@ class CLI:
         search_parser.add_argument(
             "--category",
             action="append",
-            choices=CachedData.categories,
+            choices=CachedData.cache['categories'],
             default=[],
             help="Category(s) to filter for"
         )
@@ -278,7 +308,7 @@ class CLI:
         search_parser.add_argument(
             "--versions",
             action="append",
-            choices=CachedData.game_versions,
+            choices=CachedData.cache['game_versions'],
             default=[],
             help="Version(s) to filter for"
         )
@@ -302,7 +332,7 @@ class CLI:
         search_parser.add_argument(
             "--loader",
             default=MOD_LOADER,
-            choices=CachedData.loaders,
+            choices=CachedData.cache['loaders'],
             help="The mod loader to filter for"
         )
         search_parser.set_defaults(func=self.search)
@@ -315,10 +345,44 @@ class CLI:
         disable_parser = subparsers.add_parser("disable", help="Disable a mod")
         disable_parser.add_argument("mod", help="The mod to disable")
         disable_parser.set_defaults(func=self.disable)
+        cache_parser = subparsers.add_parser(
+            "cache",
+            help="Inspect and manage MCMU's cache"
+        )
+        cache_parser_commands = cache_parser.add_subparsers()
+        cache_parser_commands.add_parser(
+            "file",
+            help="Show the cache file path"
+        ).set_defaults(func=self.cache_file)
+        cache_parser_commands.add_parser(
+            "info",
+            help="Get info about the cache"
+        ).set_defaults(func=self.cache_info)
+        cache_parser_commands.add_parser(
+            "list",
+            help="List the contents of the cache"
+        ).set_defaults(func=self.cache_list)
+        cache_parser_remove = cache_parser_commands.add_parser(
+            "remove",
+            help="Remove items from the cache"
+        )
+        cache_parser_remove.add_argument(
+            "--data",
+            choices=[
+                "categories",
+                "loaders",
+                "game_versions"
+            ],
+            required=True,
+            help="Remove an item from the cache"
+        )
+        cache_parser_remove.set_defaults(func=self.cache_remove)
+        cache_parser_commands.add_parser(
+            "purge",
+            help="Purge the cache"
+        ).set_defaults(func=self.cache_purge)
 
         self.args = parser.parse_args()  # Parse the arguments
-        if self.args.clear_cache:
-            Path(MOD_DIR, ".mcmu_modrinth_cache").unlink()
         try:
             logger.info("Targeted loader '%s'", self.args.loader)
             logger.info("Targeted game version '%s'", self.args.game_version)
