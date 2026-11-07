@@ -1,3 +1,0 @@
-# MCMU
-
-blank
