@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling >= 1.29"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "mcmu"
-version = "3.0.263.dev3"
+version = "3.0.263.dev4"
 requires-python = ">=3.14"
 authors = [
     {name="Josiah Jarvis"}
@@ -15,6 +15,7 @@ maintainers = [
 description = "A robust package to install, update, and manage Minecraft mods"
 readme = "README.md"
 license = "MIT"
+license-files = ["LICENSE"]
 keywords = ["java", "minecraft", "minecraft-mods", "mod-manager", "modrinth", "modrinth-api", "package-manager", "python"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -23,7 +24,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
     "Intended Audience :: Other Audience",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: MacOS",
     "Operating System :: Microsoft :: Windows",
@@ -44,7 +44,7 @@ classifiers = [
 ]
 
 [project.scripts]
-mcmu = "mcmu:__main__.main()"
+mcmu = "mcmu:__main__.main"
 
 [project.urls]
 homepage = "https://github.com/Josiah-Jarvis/MCMU"

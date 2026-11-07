@@ -1,10 +1,27 @@
 # Changelog
 
+## [v3.0.264.dev1] - 2026-xx-xx
+
+### Changed
+
+* Changed version to 26.4
+
+## [v3.0.263.dev4] - 2026-11-07
+
+### Removed
+
+* Removed mcmu cache list as it is basically mcmu cache info
+
+### Changed
+
+* Changed list format on `mcmu list`
+* Changed entry point from 'mcmu:__main__.main()' to 'mcmu:__main__.main'
+
 ## [v3.0.263.dev3] - 2026-10-02
 
 ### Added
 
-* Added mcmu cache
+* Added `mcmu cache`
 
 ### Changed
 
@@ -14,13 +31,13 @@
 ### Removed
 
 * Removed MCMU_ALLOW_EXPERIMENTAL_VERSIONS
-* mcmu --clear-cache
+* Removed `mcmu --clear-cache`
 
 ## [v3.0.263.dev2] - 2026-09-24
 
 ### Added
 
-* Added mcmu --clear-cache
+* Added `mcmu --clear-cache`
 
 ### Changed
 
@@ -62,12 +79,11 @@ Version 2.4.0 is finally here!
 
 ### Added
 
-* Added list --disabled
-* Added list --enabled
+* Added `mcmu list [--enabled | --disabled]`
 * Now can list enabled and disabled mods separately
-* Added search --sorting
-* Added search --offset
-* Added search --limit
+* Added `mcmu search --sorting`
+* Added `mcmu search --offset`
+* Added `mcmu search --limit`
 
 ### Changed
 

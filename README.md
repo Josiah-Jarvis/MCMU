@@ -4,18 +4,19 @@ A utility to update and install Minecraft mods for java edition.
 
 **!IMPORTANT!**
 
-Your .minecraft/mods/ folder must be empty before you use this program. Unintended things might happen if it is not empty.
+Your .minecraft/mods/ folder should be empty before you use this program. Unintended things may happen if it is not empty.
 
 ## Usage
 
 ```bash
 $ mcmu --help
-usage: mcmu [-h] [-v] [--mod-dir MOD_DIR] {update,remove,install,list,search,info,enable,disable} ...
+usage: mcmu [-h] [--mod-dir MOD_DIR] [-v]
+            {update,remove,install,list,search,info,enable,disable,cache} ...
 
 A robust package to install, update, and manage Minecraft mods
 
 positional arguments:
-  {update,remove,install,list,search,info,enable,disable}
+  {update,remove,install,list,search,info,enable,disable,cache}
     update              Update mods
     remove              Remove a mod
     install             Install a mod
@@ -24,11 +25,12 @@ positional arguments:
     info                Get info on a mod
     enable              Enable a mod
     disable             Disable a mod
+    cache               Inspect and manage MCMU's cache
 
 options:
   -h, --help            show this help message and exit
-  -v, --version         Display the version
   --mod-dir MOD_DIR     Path to the Minecraft mods folder
+  -v, --version         Display the version
 
 Try 'mcmu COMMAND --help'
 ```

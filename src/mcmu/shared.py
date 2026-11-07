@@ -106,6 +106,7 @@ class Mod:
                     f"{self.name}_version_{self.version}.jar"
                 )
             )
+            self.enabled = True
 
     def disable(self):
         """Disable mod"""
@@ -120,6 +121,7 @@ class Mod:
                     f"{self.name}_version_{self.version}.jar.disabled"
                 )
             )
+            self.enabled = False
 
 
 try:
@@ -168,13 +170,13 @@ class ModrinthData:
             if mod_version['version_type'] == "release":
                 self.cache['game_versions'].append(mod_version['version'])
 
-    def store_data(self, get_data: bool=True):
+    def store_data(self, get_data: bool = True):
         """Store Modrinth Category Data"""
         if get_data:
             self.get_categories()
             self.get_loaders()
             self.get_game_versions()
-        
+
         if self.cache['expires'] == "":
             expires_date = datetime.now(tz=UTC) + timedelta(days=30)
             self.cache['expires'] = expires_date.strftime(self.date_format)
@@ -230,7 +232,7 @@ CachedData.load_data()
 
 try:
     GAME_VERSION = environ['MCMU_GAME_VERSION']
-    if GAME_VERSION in CachedData.game_versions:
+    if GAME_VERSION in CachedData.cache['game_versions']:
         logger.info(
             "MCMU_GAME_VERSION=%s",
             GAME_VERSION
@@ -246,7 +248,7 @@ except (KeyError, ValueError):
 
 try:
     MOD_LOADER = environ['MCMU_MOD_LOADER']
-    if MOD_LOADER in CachedData.loaders:
+    if MOD_LOADER in CachedData.cache['loaders']:
         logger.info(
             "MCMU_MOD_LOADER=%s",
             MOD_LOADER
@@ -357,7 +359,10 @@ def download_dependency_s(
         ) and (
             dependency['dependency_type'] == "incompatible"
         ):
-            logger.warning("Incompatible dependency: %s installed, please remove", mod_data['slug'])
+            logger.warning(
+                "Incompatible dependency: %s installed, please remove",
+                mod_data['slug']
+            )
 
 
 def update_mods(
@@ -432,7 +437,9 @@ def install_mod(
         latest_version = query(f"project/{mod[0]}/version/{mod[1]}")
         if latest_version["version_number"] == "0":
             latest_version = False
-        if latest_version and (game_version not in latest_version['game_versions']):
+        if latest_version and (
+            game_version not in latest_version['game_versions']
+        ):
             latest_version = False
         if latest_version:
             logger.error(
@@ -468,7 +475,9 @@ def install_mod(
     )
     if latest_version["version_number"] == "0":
         latest_version = False
-    if latest_version and (game_version not in latest_version['game_versions']):
+    if latest_version and (
+        game_version not in latest_version['game_versions']
+    ):
         latest_version = False
     if latest_version:  # Should be True if it is a dict with items
         if ask(f"{mod[0]} will take up: {latest_version['files'][0]['size']} bytes. Would you like to install?"):

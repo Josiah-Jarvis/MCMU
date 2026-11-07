@@ -30,7 +30,7 @@ class CLI:
         try:
             if ask(f"Would you like to remove {self.mods[self.args.mod].name}? This operation will clear {self.mods[self.args.mod].file.stat().st_size} bytes"):
                 self.mods[self.args.mod].file.unlink()
-                logger.info("Mod '%s' successfully deleted", self.args.mod)
+                print(f"Mod '{self.args.mod}' successfully deleted")
         except KeyError:
             logger.error("Mod '%s' not installed", self.args.mod)
             return 1
@@ -73,15 +73,14 @@ class CLI:
             filter_for = ["disabled"]
         else:
             filter_for = ["enabled", "disabled"]
+        print(f"{'name':<64} Version\n{'-'*64:<64}|{'-'*16}")
         for name, mod in self.mods.items():  # Iterate over all installed mods
             if (
                 mod.enabled and "enabled" in filter_for
             ) or (
                 not mod.enabled and "disabled" in filter_for
             ):
-                print(
-                    f"{name}\n\tVersion: {mod.version}\n\tFile: {mod.file_name}"
-                )
+                print(f"{name:<64} {mod.version}")
         return 0
 
     def search(self) -> int:
@@ -147,7 +146,7 @@ class CLI:
         """CLI function to enable mod"""
         try:
             self.mods[self.args.mod].enable()
-            logger.info("Successfully enabled mod '%s'", self.args.mod)
+            print(f"Successfully enabled mod '{self.args.mod}'")
         except KeyError:
             logger.error(
                 "Mod '%s' not installed so can't enable",
@@ -159,7 +158,7 @@ class CLI:
         """CLI function to disable mod"""
         try:
             self.mods[self.args.mod].disable()
-            logger.info("Successfully disabled mod '%s'", self.args.mod)
+            print(f"Successfully disabled mod '{self.args.mod}'")
         except KeyError:
             logger.error(
                 "Mod '%s' not installed so can't disable",
@@ -169,21 +168,15 @@ class CLI:
 
     def cache_file(self) -> int:
         """mcmu cache file"""
-        logger.info(CachedData.cache_file)
+        print(CachedData.cache_file)
         return 0
 
     def cache_info(self) -> int:
         """mcmu cache info"""
-        logger.info(CachedData.cache['expires'])
-        logger.info(CachedData.cache['categories'])
-        logger.info(CachedData.cache['loaders'])
-        logger.info(CachedData.cache['game_versions'])
-
-    def cache_list(self) -> int:
-        """mcmu cache list"""
-        logger.info(CachedData.cache['categories'])
-        logger.info(CachedData.cache['loaders'])
-        logger.info(CachedData.cache['game_versions'])
+        print(CachedData.cache['expires'])
+        print(CachedData.cache['categories'])
+        print(CachedData.cache['loaders'])
+        print(CachedData.cache['game_versions'])
 
     def cache_remove(self) -> int:
         """mcmu cache remove"""
@@ -193,7 +186,7 @@ class CLI:
             CachedData.cache['loaders'] = []
         elif self.args.data == "game_versions":
             CachedData.cache['game_versions'] = []
-        
+
         CachedData.store_data(get_data=False)
 
         return 0
@@ -201,7 +194,7 @@ class CLI:
     def cache_purge(self) -> int:
         """mcmu cache purge"""
         CachedData.cache_file.unlink()
-        logger.info("Deleted cache file")
+        print("Deleted cache file")
         return 0
 
     def cli(self) -> dict:
@@ -358,10 +351,6 @@ class CLI:
             "info",
             help="Get info about the cache"
         ).set_defaults(func=self.cache_info)
-        cache_parser_commands.add_parser(
-            "list",
-            help="List the contents of the cache"
-        ).set_defaults(func=self.cache_list)
         cache_parser_remove = cache_parser_commands.add_parser(
             "remove",
             help="Remove items from the cache"
